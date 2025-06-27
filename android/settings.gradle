@@ -1,0 +1,8 @@
+pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
+plugins { id("com.facebook.react.settings") }
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+rootProject.name = 'plsWork'
+include ':app'
+includeBuild("../node_modules/@react-native/gradle-plugin")
+include ':@mitsuharu_react-native-sunmi-printer-library'
+project(':@mitsuharu_react-native-sunmi-printer-library').projectDir = new File(rootProject.projectDir, '../node_modules/@mitsuharu/react-native-sunmi-printer-library/android')
