@@ -3,6 +3,10 @@ import { View, Button, StyleSheet, Alert,Text, Image, TouchableOpacity } from 'r
 import * as SunmiPrinterLibrary from '@mitsuharu/react-native-sunmi-printer-library'
 import { TopBar } from './src/components/top-bar/TopBar';
 import { VehicleSearcher } from './src/screens/searcher/VehicleSearcher';
+import LoginScreen from './src/screens/auth/LoginScreen';
+import ForgotPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
+import ForgetPassword from './src/components/login/ForgetPassword';
+import ForgetPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
 
 export default function App() {
   const App = async () => {
@@ -24,7 +28,7 @@ export default function App() {
   return (
     <>
       {/*<TopBar/>*/}
-      <VehicleSearcher/>
+      <ForgetPasswordScreen/>
       {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image
