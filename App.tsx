@@ -22,7 +22,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <View style={styles.container}>
       {/*<TopBar/>*/}
       <VehicleSearcher/>
       {/*<View style={styles.container}>
@@ -39,17 +39,15 @@ export default function App() {
             <Text style={styles.buttonText}>INGRESA</Text>
           </TouchableOpacity>
         </View>*/}
-    </>
+    </View>
     );
   };
   
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
-      //justifyContent: 'space-between',
       alignItems: 'center',
-      paddingVertical: 40,
+      backgroundColor:"white",
     },
     centerContent: {
       flex: 1,

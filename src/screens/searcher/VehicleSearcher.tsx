@@ -42,12 +42,14 @@ const styles = StyleSheet.create({
         backgroundColor:"white",
         borderWidth: 1,
         borderRadius: 8,
+        color:"black",
         maxHeight:height * 0.9
     },
     title:{},
     VehicleSearcherContainer: {
         display: 'flex',
         justifyContent: 'space-around',
+        backgroundColor:"white",
         flex: 2,
         padding: 10,
         alignSelf: 'stretch',
