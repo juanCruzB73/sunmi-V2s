@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Button, StyleSheet, Alert,Text, Image, TouchableOpacity } from 'react-native';
 import * as SunmiPrinterLibrary from '@mitsuharu/react-native-sunmi-printer-library'
 import { TopBar } from './src/components/top-bar/TopBar';
+import { VehicleSearcher } from './src/screens/searcher/VehicleSearcher';
 
 export default function App() {
   const App = async () => {
@@ -22,8 +23,9 @@ export default function App() {
 
   return (
     <>
-      <TopBar/>
-      <View style={styles.container}>
+      {/*<TopBar/>*/}
+      <VehicleSearcher/>
+      {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image
               source={require('./src/assets/logoNoLetter.jpeg')} // Asegúrate de tener el logo en esta ruta
@@ -36,7 +38,7 @@ export default function App() {
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>INGRESA</Text>
           </TouchableOpacity>
-        </View>
+        </View>*/}
     </>
     );
   };
