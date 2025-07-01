@@ -1,35 +1,12 @@
 import React from 'react';
-import { View, Button, StyleSheet, Alert,Text, Image, TouchableOpacity } from 'react-native';
-import * as SunmiPrinterLibrary from '@mitsuharu/react-native-sunmi-printer-library'
-import { TopBar } from './src/components/top-bar/TopBar';
+import { View, StyleSheet, Alert } from 'react-native';
 import { VehicleSearcher } from './src/screens/searcher/VehicleSearcher';
-import LoginScreen from './src/screens/auth/LoginScreen';
-import ForgotPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
-import ForgetPassword from './src/components/login/ForgetPassword';
-import ForgetPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
-import ProfileScreen from './src/screens/profile/ProfileScreen';
 
 export default function App() {
-  const App = async () => {
-    try {
-      await SunmiPrinterLibrary.prepare()
-      await SunmiPrinterLibrary.printText('Hello from Sunmi V2s!\n');
-      await SunmiPrinterLibrary.printText('This is a test receipt.\n\n\n');
-      Alert.alert('Success', 'Printed successfully');
-    } catch (err) {
-      let errorMessage = 'Failed to print';
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      }
-      console.error(err);
-      Alert.alert('Error', errorMessage);
-    }
-  };
-
   return (
     <View style={styles.container}>
       {/*<TopBar/>*/}
-      <ProfileScreen/>
+      <VehicleSearcher/>
       {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image
