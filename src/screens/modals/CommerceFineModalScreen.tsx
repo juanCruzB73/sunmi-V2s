@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput } from 'react-native';
-import VehicleInput from '../../components/fine/VehicleFineInput';
-import VehicleFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';  
-import { TopBar } from '../../components/top-bar/TopBar';
 
-export const VehicleFineModalScreen: React.FC = () => {
-  const [vehicle, setVehicle] = useState({
-    patente: '',
-    marca: '',
+import { TopBar } from '../../components/top-bar/TopBar';
+import CommerceFineInput from '../../components/fine/CommerceFineInput';
+import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
+
+export const CommerceFineModalScreen: React.FC = () => {
+  const [commerce, setCommerce] = useState({
+    rutcommerce: '',
+    commerceregister: '',
     modelo: '',
-    color: '',
     tipo: '',
     anio: '',
     gravedad: '',
@@ -23,16 +23,15 @@ export const VehicleFineModalScreen: React.FC = () => {
   // const [comunaModal, setComunaModal] = useState(false); // Quitado
   const [calleModal, setCalleModal] = useState(false);
 
-  const handleChange = (field: keyof typeof vehicle, value: string) => {
-    setVehicle({ ...vehicle, [field]: value });
+  const handleChange = (field: keyof typeof commerce, value: string) => {
+    setCommerce({ ...commerce, [field]: value });
   };
 
   const handleClear = () => {
-    setVehicle({
-      patente: '',
-      marca: '',
+    setCommerce({
+      rutcommerce: '',
+      commerceregister: '',
       modelo: '',
-      color: '',
       tipo: '',
       anio: '',
       gravedad: '',
@@ -62,7 +61,7 @@ export const VehicleFineModalScreen: React.FC = () => {
           onPress={() => setGravedadModal(true)}
         >
           <Text style={styles.selectButtonText}>
-            {vehicle.gravedad ? vehicle.gravedad : 'Gravedad'}
+            {commerce.gravedad ? commerce.gravedad : 'Gravedad'}
           </Text>
         </TouchableOpacity>
         <Modal
@@ -104,7 +103,7 @@ export const VehicleFineModalScreen: React.FC = () => {
           onPress={() => setCalleModal(true)}
         >
           <Text style={styles.selectButtonText}>
-            {vehicle.calle ? vehicle.calle : 'Calle'}
+            {commerce.calle ? commerce.calle : 'Calle'}
           </Text>
         </TouchableOpacity>
         <Modal
@@ -141,10 +140,9 @@ export const VehicleFineModalScreen: React.FC = () => {
         </Modal>
 
         {/* Campos originales */}
-        <VehicleInput label="Patente" value={vehicle.patente} onChangeText={(v) => handleChange('patente', v)} />
-        <VehicleInput label="Marca" value={vehicle.marca} onChangeText={(v) => handleChange('marca', v)} />
-        <VehicleInput label="Modelo" value={vehicle.modelo} onChangeText={(v) => handleChange('modelo', v)} />
-        <VehicleInput label="Color" value={vehicle.color} onChangeText={(v) => handleChange('color', v)} />
+        <CommerceFineInput label="Rut Comercio" value={commerce.rutcommerce} onChangeText={(v) => handleChange('rutcommerce', v)} />
+        <CommerceFineInput label="Registro Comercio" value={commerce.commerceregister} onChangeText={(v) => handleChange('commerceregister', v)} />
+        <CommerceFineInput label="Modelo" value={commerce.modelo} onChangeText={(v) => handleChange('modelo', v)} />
 
         {/* Botón para seleccionar tipo de delito */}
         <TouchableOpacity
@@ -152,7 +150,7 @@ export const VehicleFineModalScreen: React.FC = () => {
           onPress={() => setModalVisible(true)}
         >
           <Text style={styles.selectButtonText}>
-            {vehicle.tipo ? vehicle.tipo : 'Tipo de delito'}
+            {commerce.tipo ? commerce.tipo : 'Tipo de delito'}
           </Text>
         </TouchableOpacity>
 
@@ -191,7 +189,7 @@ export const VehicleFineModalScreen: React.FC = () => {
         </Modal>
 
         {/* Numeración */}
-        <VehicleInput label="Numeración" value={vehicle.numeracion} onChangeText={(v) => handleChange('numeracion', v)} />
+        <CommerceFineInput label="Numeración" value={commerce.numeracion} onChangeText={(v) => handleChange('numeracion', v)} />
 
         {/* Imagen/Video (solo icono, funcionalidad aparte) */}
         <TouchableOpacity style={styles.selectButton}>
@@ -207,7 +205,7 @@ export const VehicleFineModalScreen: React.FC = () => {
         <TextInput
           style={styles.textArea}
           placeholder="Descripción del hecho"
-          value={vehicle.descripcion}
+          value={commerce.descripcion}
           onChangeText={(v) => handleChange('descripcion', v)}
           multiline
           numberOfLines={4}
@@ -215,7 +213,7 @@ export const VehicleFineModalScreen: React.FC = () => {
 
         {/* Botones de pie de página */}
         <View style={styles.footer}>
-          <VehicleFooterButtons
+          <VehicleCommerceFooterButtons
             onCancel={() => {}}
             onClear={handleClear}
             onSave={() => {
