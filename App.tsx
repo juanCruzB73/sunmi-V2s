@@ -8,7 +8,8 @@ import ForgotPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
 import ForgetPassword from './src/components/login/ForgetPassword';
 import ForgetPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
 import ProfileScreen from './src/screens/profile/ProfileScreen';
-
+import VehicleScreen from './src/screens/Menu/VehicleScreen';
+import CommerceScreen from './src/screens/Menu/CommerceScreen';
 export default function App() {
   const App = async () => {
     try {
@@ -29,7 +30,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       {/*<TopBar/>*/}
-      <ProfileScreen/>
+      <CommerceScreen/>
       {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image

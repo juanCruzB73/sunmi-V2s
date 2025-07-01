@@ -16,7 +16,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ onPress }) => {
 const styles = StyleSheet.create({
   button: {
     marginTop: 80,
-    backgroundColor: '#ff3b30',
+    backgroundColor: '#1664C0',
     paddingVertical: 10,
     borderRadius: 15,
     alignItems: 'center',
