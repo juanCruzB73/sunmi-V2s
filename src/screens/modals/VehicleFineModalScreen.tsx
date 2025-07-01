@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import VehicleInput from '../../components/fine/VehicleFineInput';
-import VehicleFooterButtons from '../../components/fine/VehicleFooterButtons';  
+import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';  
 import { TopBar } from '../../components/top-bar/TopBar';
 import { TouchableOpacity, Text, Modal, FlatList } from 'react-native';
 
@@ -97,7 +97,7 @@ export const VehicleFineModalScreen: React.FC = () => {
         <VehicleInput label="Año" value={vehicle.anio} keyboardType="numeric" onChangeText={(v) => handleChange('anio', v)} />
 
         <View style={styles.footer}>
-          <VehicleFooterButtons
+          <VehicleCommerceFooterButtons
             onCancel={() => {}}
             onClear={handleClear}
             onSave={() => {

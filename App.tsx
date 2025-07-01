@@ -2,11 +2,12 @@ import React from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import VehicleFineScreen from './src/screens/fine/VehicleFineScreen';
 import { VehicleFineModalScreen } from './src/screens/modals/VehicleFineModalScreen';
+import { CommerceFineModalScreen } from './src/screens/modals/CommerceFineModalScreen';
 export default function App() {
   return (
     <View style={styles.container}>
       {/*<TopBar/>*/}
-      <VehicleFineModalScreen/>
+      <CommerceFineModalScreen/>
       {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image
