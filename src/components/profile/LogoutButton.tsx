@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 
 interface LogoutButtonProps {
   onPress: () => void;
@@ -13,9 +13,13 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ onPress }) => {
   );
 };
 
+const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   button: {
-    marginTop: 80,
+    width:width * 0.8,
+    marginTop: 30,
     backgroundColor: '#ff3b30',
     paddingVertical: 10,
     borderRadius: 15,
