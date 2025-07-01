@@ -2,7 +2,7 @@
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { TopBar } from '../../components/top-bar/TopBar'
 
-const ComerceFineScreen = () => {
+const CommerceFineScreen = () => {
         const onPress=()=>{};
         return (
         <>
@@ -98,4 +98,4 @@ const ComerceFineScreen = () => {
   });
 
 
-export default ComerceFineScreen
+export default CommerceFineScreen;

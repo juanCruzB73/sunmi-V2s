@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import ComerceFineScreen from './src/screens/fine/ComerceFineScreen';
+import  CommerceFineScreen  from './src/screens/fine/CommerceFineScreen';
 export default function App() {
   return (
     <View style={styles.container}>
       {/*<TopBar/>*/}
-      <ComerceFineScreen/>
+      <CommerceFineScreen/>
       {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image
