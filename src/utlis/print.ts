@@ -1,5 +1,6 @@
 import * as SunmiPrinterLibrary from '@mitsuharu/react-native-sunmi-printer-library';
 import { Alert } from 'react-native';
+
 export const handlePrint = async () => {
     try {
       await SunmiPrinterLibrary.prepare()
