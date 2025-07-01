@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 interface ProfileOptionProps {
@@ -19,6 +19,8 @@ const ProfileOption: React.FC<ProfileOptionProps> = ({ icon, label, onPress }) =
     </TouchableOpacity>
   );
 };
+const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -28,10 +30,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    maxWidth:width,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    
   },
   icon: {
     marginRight: 16,
