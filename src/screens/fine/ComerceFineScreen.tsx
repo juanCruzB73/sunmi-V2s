@@ -2,23 +2,23 @@
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { TopBar } from '../../components/top-bar/TopBar'
 
-const VehicleFineScreen = () => {
-  const onPress=()=>{};
-  
-      return (
+const ComerceFineScreen = () => {
+        const onPress=()=>{};
+        return (
         <>
             <TopBar/>
             <View style={styles.VehicleFineContainer}>
-                <Text style={styles.title}>Confirmar datos del Vehiculo</Text>
-                <View style={styles.container}>
+                <Text style={styles.title}>Confirmar datos del Comercio</Text>
+                 <View style={styles.container}>
                   <View style={styles.textFieldsContainer}>
                     <Text style={styles.plate}>asdw0000</Text>
-                    <Text style={styles.textField}>Propietario: travis blicke</Text>
-                    <Text style={styles.textField}>RUT propietario: 46542812</Text>
-                    <Text style={styles.textField}>Tipo de vehiculo: Auto</Text>
-                    <Text style={styles.textField}>Marca: Chebrolet</Text>
-                    <Text style={styles.textField}>Modelo: Corsa 2003</Text>
-                    <Text style={styles.textField}>Color: Rojo</Text>
+                    <Text style={styles.textField}>Registro comercial:</Text>
+                    <Text style={styles.textField}>Tipo de comercio: </Text>
+                    <Text style={styles.textField}>Comuna: </Text>
+                    <Text style={styles.textField}>Calle: </Text>
+                    <Text style={styles.textField}>Numeración: </Text>
+                    <Text style={styles.textField}>Licencia de comercio: </Text>
+                    <Text style={styles.textField}>Infracciones anteriores: </Text>
                   </View>
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.buttonGoBack} onPress={onPress}>
@@ -97,4 +97,5 @@ const VehicleFineScreen = () => {
       },
   });
 
-export default VehicleFineScreen
+
+export default ComerceFineScreen
