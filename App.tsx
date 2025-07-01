@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import VehicleFineScreen from './src/screens/fine/VehicleFineScreen';
+import { VehicleFineModalScreen } from './src/screens/modals/VehicleFineModalScreen';
 export default function App() {
   return (
     <View style={styles.container}>
       {/*<TopBar/>*/}
-      <VehicleFineScreen/>
+      <VehicleFineModalScreen/>
       {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image

@@ -11,7 +11,7 @@ const CommerceScreen: React.FC = () => {
       <CommerceButton label="Generar Factura" onPress={() => {}} />
     </View>
   </>
-   
+    
   );
 };
 
