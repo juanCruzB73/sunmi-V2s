@@ -7,6 +7,7 @@ import LoginScreen from './src/screens/auth/LoginScreen';
 import ForgotPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
 import ForgetPassword from './src/components/login/ForgetPassword';
 import ForgetPasswordScreen from './src/screens/auth/ForgetPasswordScreen';
+import ProfileScreen from './src/screens/profile/ProfileScreen';
 
 export default function App() {
   const App = async () => {
@@ -28,7 +29,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       {/*<TopBar/>*/}
-      <ForgetPasswordScreen/>
+      <ProfileScreen/>
       {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image
