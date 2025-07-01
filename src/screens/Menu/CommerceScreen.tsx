@@ -6,7 +6,7 @@ import CommerceButton from '../../components/commerce/CommerceButton';
 const CommerceScreen: React.FC = () => {
   return (<> 
   <TopBar />
-  <View style={styles.container}>
+    <View style={styles.container}>
       <CommerceButton label="Datos del comercio" onPress={() => {}} />
       <CommerceButton label="Generar Factura" onPress={() => {}} />
     </View>

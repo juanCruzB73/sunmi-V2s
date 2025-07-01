@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import { VehicleSearcher } from './src/screens/searcher/VehicleSearcher';
+import VehicleFineScreen from './src/screens/fine/VehicleFineScreen';
 export default function App() {
   return (
     <View style={styles.container}>
       {/*<TopBar/>*/}
-      <VehicleSearcher/>
+      <VehicleFineScreen/>
       {/*<View style={styles.container}>
           <View style={styles.centerContent}>
             <Image
