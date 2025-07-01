@@ -1,0 +1,4 @@
+me gusto el estilo del boton
+<TouchableOpacity style={styles.backButton} onPress={handleBack}>
+    <Text style={styles.backButtonText}>← Volver</Text>
+</TouchableOpacity>

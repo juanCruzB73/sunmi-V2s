@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import EmailInput from '../../components/forgotPassword/EmailInput';
 import LoginButton from '../../components/login/LoginButton';
+import { TopBar } from '../../components/top-bar/TopBar';
+import { Dimensions } from 'react-native';
+
 
 const ForgetPasswordScreen: React.FC = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
@@ -11,7 +14,6 @@ const ForgetPasswordScreen: React.FC = ({ navigation }: any) => {
       Alert.alert('Correo vacío', 'Por favor ingresá tu correo electrónico.');
       return;
     }
-
     Alert.alert('Recuperar contraseña', `Se enviará un correo a: ${email}`);
   };
 //A IMPLEMENTAR
@@ -20,27 +22,33 @@ const ForgetPasswordScreen: React.FC = ({ navigation }: any) => {
   };
 
   return (
-  <View style={styles.container}>
-    <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-      <Text style={styles.backButtonText}>← Volver</Text>
-    </TouchableOpacity>
-    <Text style={styles.title}>¿Olvidó su contraseña?</Text>
-    <Text style={styles.description}>
-      Ingrese su email para recuperar su contraseña
-    </Text>
+    <>
+      <TopBar/>
+      <View style={styles.container}>
+       <View style={styles.textContainer}>
+         <Text style={styles.title}>¿Olvidó su contraseña?</Text>
+          <Text style={styles.description}>
+            Ingrese su email para recuperar su contraseña
+          </Text>
+       </View>
 
-    <EmailInput value={email} onChangeText={setEmail} />
-    <LoginButton label="Enviarr" onPress={handleSend} />
-  </View>
+        <EmailInput value={email} onChangeText={setEmail} />
+        <LoginButton label="Enviar" onPress={handleSend} />
+      </View>
+  </>
 );
 };
 
+const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 50,
+    display:"flex",
+    padding:20,
     backgroundColor: '#fff',
+    width:width,
+    height:height
   },
   backButton: {
     position: 'absolute',
@@ -54,17 +62,20 @@ const styles = StyleSheet.create({
     color: '#007AFF',
   },
   title: {
-    fontSize: 26,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#000',
-    marginTop: 60, // Para que no tape el botón de volver
   },
   description: {
-    fontSize: 14,
+    fontSize: 17,
     marginTop: 12,
     marginBottom: 44,
     color: '#333',
   },
+  textContainer:{
+    display:"flex",
+    alignItems:"center"
+  }
 });
 
 export default ForgetPasswordScreen;

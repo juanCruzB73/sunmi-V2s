@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TextInput, StyleSheet, TextInputProps } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 interface EmailInputProps extends TextInputProps {
   value: string;
   onChangeText: (text: string) => void;
