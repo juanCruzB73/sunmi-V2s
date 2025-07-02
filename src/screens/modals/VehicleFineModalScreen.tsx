@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput } from 'react-native';
 import VehicleInput from '../../components/fine/VehicleFineInput';
-import VehicleFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';  
+import VehicleFooterButtons from '../../components/fine/VehicleFooterButtons';  
 import { TopBar } from '../../components/top-bar/TopBar';
 
 export const VehicleFineModalScreen: React.FC = () => {
@@ -215,7 +215,7 @@ export const VehicleFineModalScreen: React.FC = () => {
 
         {/* Botones de pie de página */}
         <View style={styles.footer}>
-          <VehicleFooterButtons
+          <VehicleCommerceFooterButtons
             onCancel={() => {}}
             onClear={handleClear}
             onSave={() => {

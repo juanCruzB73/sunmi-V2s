@@ -7,7 +7,7 @@ interface Props {
   onSave: () => void;
 }
 
-const VehicleFooterButtons: React.FC<Props> = ({ onCancel, onClear, onSave }) => (
+const VehicleCommerceFooterButtons: React.FC<Props> = ({ onCancel, onClear, onSave }) => (
   <View style={styles.container}>
     <TouchableOpacity style={[styles.button, styles.cancel]} onPress={onCancel}>
       <Text style={styles.text}>Eliminar</Text>
@@ -52,4 +52,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VehicleFooterButtons;
+export default VehicleCommerceFooterButtons;
