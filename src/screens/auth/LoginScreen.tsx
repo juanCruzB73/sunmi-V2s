@@ -5,12 +5,19 @@ import LoginButton from '../../components/login/LoginButton';
 import ForgetPassword from '../../components/login/ForgetPassword';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
+//import { useDispatch, useSelector } from 'react-redux';
+//import { AppDispatch } from '../../redux/store';
+//import { RootState } from '@reduxjs/toolkit/query';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
+
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  
 
   const handleLogin = () => {
     if (!email || !password) {
