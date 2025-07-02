@@ -4,8 +4,7 @@ import { TopBar } from '../../components/top-bar/TopBar';
 import CommerceFineInput from '../../components/fine/CommerceFineInput';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
 import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../router/StackNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CommerceFineModal'>;
