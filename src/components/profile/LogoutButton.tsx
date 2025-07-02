@@ -1,24 +1,28 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../router/StackNavigator';
 
-interface LogoutButtonProps {
-  onPress: () => void;
-}
+const { width } = Dimensions.get('window');
 
-const LogoutButton: React.FC<LogoutButtonProps> = ({ onPress }) => {
+const LogoutButton: React.FC = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const handleLogout = () => {
+    navigation.navigate('Login');
+  };
+
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>Salir</Text>
+    <TouchableOpacity style={styles.button} onPress={handleLogout}>
+      <Text style={styles.text}>Cerrar sesion</Text>
     </TouchableOpacity>
   );
 };
 
-const { width } = Dimensions.get('window');
-const { height } = Dimensions.get('window');
-
 const styles = StyleSheet.create({
   button: {
-    width:width * 0.8,
+    width: width * 0.8,
     marginTop: 30,
     backgroundColor: '#ff3b30',
     paddingVertical: 10,

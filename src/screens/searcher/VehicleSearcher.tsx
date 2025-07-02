@@ -3,6 +3,7 @@ import { TopBar } from '../../components/top-bar/TopBar';
 import { useState } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
+import React from 'react';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -27,13 +28,16 @@ export const VehicleSearcher = ({navigation}:Props) => {
                       value={plateNumber}
                       placeholder="Ingrese Matricula"
                       keyboardType="default"
-                  />
-                    <TouchableOpacity style={styles.button}>
-                      <Text style={styles.vehicleSearchButton}>Buscar</Text>
-                </TouchableOpacity>
-                </View>
-          </View>
-          </>
+                   />
+                            <TouchableOpacity
+                              style={styles.button}
+                              onPress={() => navigation.navigate('VehicleFineScreen')}
+                            >
+                              <Text style={styles.vehicleSearchButton}>Buscar</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </>
     )
 }
 const { width } = Dimensions.get('window');

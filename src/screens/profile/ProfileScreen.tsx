@@ -7,13 +7,13 @@ import { TopBar } from '../../components/top-bar/TopBar';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'profile'>;
 
 
 const ProfileScreen= ({navigation}:Props) => {
   return (
     <>
-    <TopBar navigation={navigation}/>
+<TopBar navigation={navigation} isProfileScreen />
     <View style={styles.container}>
       <ProfileHeader
         name="Pepe Rosa"
@@ -24,7 +24,7 @@ const ProfileScreen= ({navigation}:Props) => {
         <ProfileOption icon="question-circle" label="Ayuda" onPress={() => {}} />
         <ProfileOption icon="cog" label="Configuraciones" onPress={() => {}} />
       </View>
-      <LogoutButton onPress={() => {}} />
+      <LogoutButton />
     </View>
     </>
   );

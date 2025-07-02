@@ -10,14 +10,15 @@ type Props = NativeStackScreenProps<RootStackParamList, 'VehicleScreen'>;
 
 const VehicleScreen = ({navigation}:Props) => {
   return (
-  <> 
-    <TopBar navigation={navigation}/>
-    <View style={styles.container}>
-      <VehicleButton label="Datos del vehículo" onPress={() => {}} />
-      <VehicleButton label="Generar Multa" onPress={() => {}} />
-    </View>
-  </>
-   
+    <>
+      <TopBar navigation={navigation} />
+      <View style={styles.container}>
+        <VehicleButton
+          label="Datos del comercio"       />
+        <VehicleButton
+          label="Generar Factura"         />
+      </View>
+    </>
   );
 };
 

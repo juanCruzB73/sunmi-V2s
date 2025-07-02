@@ -1,29 +1,93 @@
-import React from 'react';
-import { View, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Image, StyleSheet, Dimensions, TouchableOpacity, Modal, Text, Animated, Easing } from 'react-native';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 type TopBarProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'|'CommerceMenu'|'VehicleScreen'|'FineSearcher'|'VehicleFineModal'|'CommerceFineModal'>;
+  navigation: NativeStackNavigationProp<
+    RootStackParamList,
+    'Home' | 'CommerceMenu' | 'VehicleScreen' | 'FineSearcher' | 'VehicleFineModal' | 'CommerceFineModal' | 'Printing' | 'profile' | 'CommerceSearcher' | 'CommerceMenu' | 'CommerceFineScreen' | 'VehicleFineScreen' | 'VehicleSearcher' 
+  >;
+  isProfileScreen?: boolean; // Nuevo prop opcional
 };
-export const TopBar = ({ navigation }: TopBarProps) => {
-  
+
+const SIDEBAR_WIDTH = 200;
+
+export const TopBar = ({ navigation, isProfileScreen = false }: TopBarProps) => {
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const slideAnim = useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
+
+  const openSidebar = () => {
+    setSidebarVisible(true);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 250,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const closeSidebar = () => {
+    Animated.timing(slideAnim, {
+      toValue: -SIDEBAR_WIDTH,
+      duration: 200,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: false,
+    }).start(() => setSidebarVisible(false));
+  };
+
   return (
     <View style={styles.container}>
-      <FontAwesome name="bars" size={30} style={styles.icon} />
+      {/* Hamburguesa o X */}
+      {isProfileScreen ? (
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <FontAwesome name="close" size={30} style={styles.icon} />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity onPress={openSidebar}>
+          <FontAwesome name="bars" size={30} style={styles.icon} />
+        </TouchableOpacity>
+      )}
+      {/* Logo */}
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>
         <Image
           source={require('../../assets/logoOriginal.jpeg')}
           style={{ width: 140, height: 50 }}
         />
       </TouchableOpacity>
+
+      {/* Sidebar Modal con animación */}
+      {!isProfileScreen && (
+        <Modal
+          visible={sidebarVisible}
+          transparent
+          animationType="none"
+          onRequestClose={closeSidebar}
+        >
+          <TouchableOpacity
+            style={styles.overlay}
+            activeOpacity={1}
+            onPress={closeSidebar}
+          >
+            <Animated.View style={[styles.sidebar, { transform: [{ translateX: slideAnim }] }]}>
+              <TouchableOpacity
+                style={styles.sidebarOption}
+                onPress={() => {
+                  closeSidebar();
+                  navigation.navigate('profile');
+                }}
+              >
+                <FontAwesome name="user" size={22} color="#333" />
+                <Text style={styles.sidebarText}>Perfil</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </View>
   );
 };
-
-// Exportación por defecto opcional (descomenta si quieres importar como default)
-// export default TopBar;
 
 const { width, height } = Dimensions.get('window');
 
@@ -41,5 +105,37 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 30,
     marginRight: 10,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    flexDirection: 'row',
+  },
+  sidebar: {
+    width: SIDEBAR_WIDTH,
+    backgroundColor: '#fff',
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    height: '100%',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+  },
+  sidebarOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  sidebarText: {
+    fontSize: 18,
+    marginLeft: 12,
+    color: '#333',
   },
 });

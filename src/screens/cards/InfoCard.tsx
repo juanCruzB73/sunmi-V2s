@@ -21,39 +21,43 @@ const InfoCard: FC<ICardInfoInitialState> = ({ item }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handlePrint = async () => {
-    navigation.navigate('Printing');
-    setTimeout(async () => {
-      try {
-        await SunmiPrinterLibrary.prepare();
-        await SunmiPrinterLibrary.printText('OFFICIAL TICKET\n');
-        await SunmiPrinterLibrary.printText('----------------\n');
-        await SunmiPrinterLibrary.printText(`Document #: ${item.nroMulta}\n`);
-        await SunmiPrinterLibrary.printText(`Type: ${item.type}\n`);
-        if (item.type === "Automovil") {
-          await SunmiPrinterLibrary.printText(`License Plate: ${item.plateOrRut}\n`);
-        } else {
-          await SunmiPrinterLibrary.printText(`RUT: ${item.plateOrRut}\n`);
-        }
-        await SunmiPrinterLibrary.printText(`Status: `);
-        await SunmiPrinterLibrary.printText(`${item.status.toUpperCase()}\n`);
-        await SunmiPrinterLibrary.printText('----------------\n');
-        await SunmiPrinterLibrary.printText('Thank you\n\n\n');
-        Alert.alert('Print Successful', 'Print Successful');
-      } catch (err) {
-        let errorMessage = 'Failed to print';
-        if (err instanceof Error) {
-          errorMessage = err.message;
-        }
-        Alert.alert('Error', errorMessage, [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(), // Vuelve a InfoCard
-          },
-        ]);
+  navigation.navigate('Printing');
+  setTimeout(async () => {
+    try {
+      await SunmiPrinterLibrary.prepare();
+      await SunmiPrinterLibrary.printText('OFFICIAL TICKET\n');
+      await SunmiPrinterLibrary.printText('----------------\n');
+      await SunmiPrinterLibrary.printText(`Document #: ${item.nroMulta}\n`);
+      await SunmiPrinterLibrary.printText(`Type: ${item.type}\n`);
+      if (item.type === "Automovil") {
+        await SunmiPrinterLibrary.printText(`License Plate: ${item.plateOrRut}\n`);
+      } else {
+        await SunmiPrinterLibrary.printText(`RUT: ${item.plateOrRut}\n`);
       }
-    }, 300);
-  }
-
+      await SunmiPrinterLibrary.printText(`Status: `);
+      await SunmiPrinterLibrary.printText(`${item.status.toUpperCase()}\n`);
+      await SunmiPrinterLibrary.printText('----------------\n');
+      await SunmiPrinterLibrary.printText('Thank you\n\n\n');
+      Alert.alert('Print Successful', 'Print Successful', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(), // Vuelve a InfoCard después de imprimir
+        },
+      ]);
+    } catch (err) {
+      let errorMessage = 'Failed to print';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      Alert.alert('Error', errorMessage, [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(), // Vuelve a InfoCard si falla
+        },
+      ]);
+    }
+  }, 300);
+}
   return (
     <View style={item.status == "synced" ? styles.container : styles.containerNotSync} >
       <View style={styles.infoContainer}>

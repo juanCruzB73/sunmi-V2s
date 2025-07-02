@@ -7,15 +7,17 @@ import { RootStackParamList } from '../../router/StackNavigator';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CommerceMenu'>;
 
-const CommerceScreen = ({navigation}:Props) => {
-  return (<> 
-  <TopBar navigation={navigation}/>
-    <View style={styles.container}>
-      <CommerceButton label="Datos del comercio" onPress={() => {}} />
-      <CommerceButton label="Generar Factura" onPress={() => {}} />
-    </View>
-  </>
-    
+const CommerceScreen = ({ navigation }: Props) => {
+  return (
+    <>
+      <TopBar navigation={navigation} />
+      <View style={styles.container}>
+        <CommerceButton
+          label="Datos del comercio"       />
+        <CommerceButton
+          label="Generar Factura"         />
+      </View>
+    </>
   );
 };
 
