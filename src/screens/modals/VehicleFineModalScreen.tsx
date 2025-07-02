@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput } from 'react-native';
 import VehicleInput from '../../components/fine/VehicleFineInput';
-import VehicleFooterButtons from '../../components/fine/VehicleFooterButtons';  
 import { TopBar } from '../../components/top-bar/TopBar';
+import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
+import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
 
 export const VehicleFineModalScreen: React.FC = () => {
   const [vehicle, setVehicle] = useState({
@@ -20,8 +21,8 @@ export const VehicleFineModalScreen: React.FC = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [gravedadModal, setGravedadModal] = useState(false);
-  // const [comunaModal, setComunaModal] = useState(false); // Quitado
   const [calleModal, setCalleModal] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   const handleChange = (field: keyof typeof vehicle, value: string) => {
     setVehicle({ ...vehicle, [field]: value });
@@ -42,6 +43,11 @@ export const VehicleFineModalScreen: React.FC = () => {
     });
   };
 
+  const handleSave = () => {
+    setShowSnackbar(true);
+    setTimeout(() => setShowSnackbar(false), 2000);
+  };
+
   const delitos = [
     'Tipo 1',
     'Tipo 2',
@@ -49,7 +55,6 @@ export const VehicleFineModalScreen: React.FC = () => {
   ];
 
   const gravedadOptions = ['Option1', 'Option2', 'Option3'];
-  // const comunaOptions = ['Comuna 1', 'Comuna 2', 'Comuna 3']; // Quitado
   const calleOptions = ['Calle 1', 'Calle 2', 'Calle 3'];
 
   return (
@@ -218,12 +223,11 @@ export const VehicleFineModalScreen: React.FC = () => {
           <VehicleCommerceFooterButtons
             onCancel={() => {}}
             onClear={handleClear}
-            onSave={() => {
-              // guardar info o continuar
-            }}
+            onSave={handleSave}
           />
         </View>
       </ScrollView>
+      <SaveSuccesSnackbar visible={showSnackbar} />
     </>
   );
 };
