@@ -5,7 +5,7 @@ import CommerceButton from '../../components/commerce/CommerceButton';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'CommerceMenu'>;
 
 const CommerceScreen = ({navigation}:Props) => {
   return (<> 

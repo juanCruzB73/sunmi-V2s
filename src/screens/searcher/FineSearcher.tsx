@@ -13,7 +13,7 @@ export interface ICardInfo {
     status:"synced"|"unsynced"
 }
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'FineSearcher'>;
 
 const cardInfoInitialState: ICardInfo[] = [
     {

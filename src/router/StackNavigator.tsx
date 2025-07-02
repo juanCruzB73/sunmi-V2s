@@ -18,12 +18,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const StackNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="Home">
-      <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="CommerceMenu" component={CommerceScreen} />
-      <Stack.Screen name="VehicleScreen" component={VehicleScreen} />
-      <Stack.Screen name="FineSearcher" component={FineSearcher} />
+      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="CommerceMenu" component={CommerceScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="VehicleScreen" component={VehicleScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="FineSearcher" component={FineSearcher} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 };
-
 export default StackNavigator;

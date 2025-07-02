@@ -5,7 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 type TopBarProps = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'|'CommerceMenu'|'VehicleScreen'|'FineSearcher'>;
 };
 export const TopBar = ({ navigation }: TopBarProps) => {
   
