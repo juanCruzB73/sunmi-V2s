@@ -1,73 +1,51 @@
-import React from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
-import FineSearcher from './src/screens/searcher/FineSearcher';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { View, Text, Button, Alert } from 'react-native';
+import * as SunmiPrinterLibrary from '@mitsuharu/react-native-sunmi-printer-library'
+
+const Stack = createNativeStackNavigator();
+
+function HomeScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Home Screen</Text>
+      <Button title="Go to Details" onPress={() => navigation.navigate('Details')} />
+    </View>
+  );
+}
+
+function DetailsScreen() {
+  const print=async()=>{
+    try {
+      await SunmiPrinterLibrary.prepare()
+      await SunmiPrinterLibrary.printText('Hello from Sunmi V2s!\n');
+      await SunmiPrinterLibrary.printText('This is a test receipt.\n\n\n');
+      Alert.alert('Success', 'Printed successfully');
+    } catch (err) {
+      let errorMessage = 'Failed to print';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      console.error(err);
+      Alert.alert('Error', errorMessage);
+    }
+  }
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Details Screen</Text>
+      <Button title="Print Hello World" onPress={print} />
+    </View>
+  );
+}
+
 export default function App() {
   return (
-    <View style={styles.container}>
-      {/*<TopBar/>*/}
-      <FineSearcher/>
-      {/*<View style={styles.container}>
-          <View style={styles.centerContent}>
-            <Image
-              source={require('./src/assets/logoNoLetter.jpeg')} // Asegúrate de tener el logo en esta ruta
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={styles.title}>LAS CONDES</Text>
-            <Text style={styles.subtitle}>MEJOR PARA TODOS</Text>
-          </View>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>INGRESA</Text>
-          </TouchableOpacity>
-        </View>*/}
-    </View>
-    );
-  };
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      backgroundColor:"white",
-    },
-    centerContent: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    logo: {
-      width: 90,
-      height: 90,
-      marginBottom: 24,
-    },
-    title: {
-      fontSize: 24,
-      color: '#1976D2',
-      fontWeight: 'bold',
-      letterSpacing: 2,
-      textAlign: 'center',
-    },
-    subtitle: {
-      fontSize: 14,
-      color: '#1976D2',
-      letterSpacing: 1,
-      textAlign: 'center',
-      marginTop: 4,
-    },
-    button: {
-      backgroundColor: '#1976D2',
-      borderRadius: 20,
-      paddingVertical: 12,
-      paddingHorizontal: 40,
-      alignSelf: 'center',
-      marginBottom: 20,
-      width: 180,
-    },
-    buttonText: {
-      color: '#fff',
-      fontSize: 16,
-      textAlign: 'center',
-      fontWeight: 'bold',
-      letterSpacing: 1,
-    },
-  });
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}

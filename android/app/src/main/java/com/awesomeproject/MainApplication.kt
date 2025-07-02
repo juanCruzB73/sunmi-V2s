@@ -1,4 +1,4 @@
-package com.plswork
+package com.awesomeproject
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -9,6 +9,9 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
+import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.ReactRootView
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
 
 class MainApplication : Application(), ReactApplication {
 
