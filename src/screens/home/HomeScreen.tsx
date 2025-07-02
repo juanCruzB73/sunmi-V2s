@@ -1,24 +1,28 @@
 import React from 'react'
 import { TouchableOpacity, View,Text,StyleSheet, Dimensions } from 'react-native'
 import { TopBar } from '../../components/top-bar/TopBar'
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator' // adjust path if needed
 
-const HomeScreen = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+const HomeScreen = ({navigation}: Props) => {
 
     const onPress=()=>{}
   return (
     <>
         <TopBar/>
         <View style={styles.container}>
-            <TouchableOpacity style={styles.button} onPress={onPress}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('VehicleScreen')}>
                 <Text style={styles.text}>Automoviles</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={onPress}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CommerceMenu')}>
                 <Text style={styles.text}>Comercio</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={onPress}>
-                <Text style={styles.text}>Documentos Generados</Text>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FineSearcher')}>
+                <Text style={styles.text}>Multas</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={onPress}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
                 <Text style={styles.text}>Otros</Text>
             </TouchableOpacity>
         </View>
