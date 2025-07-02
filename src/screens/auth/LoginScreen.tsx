@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { View, Alert, StyleSheet, Image, Text } from 'react-native';
+import { View, Alert, StyleSheet, Image } from 'react-native';
 import InputField from '../../components/login/InputField';
 import LoginButton from '../../components/login/LoginButton';
 import ForgetPassword from '../../components/login/ForgetPassword';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator';
 
+type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
-const LoginScreen = () => {
+const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -14,37 +17,21 @@ const LoginScreen = () => {
       Alert.alert('Campos incompletos', 'Por favor completa email y contraseña.');
       return;
     }
-
-    // Aquí podrías agregar lógica de autenticación real
-    Alert.alert('Inicio de sesión', `Email: ${email}\nContraseña: ${password}`);
+    navigation.navigate('Home');
   };
 
   const handleForgotPassword = () => {
-    Alert.alert('Recuperar contraseña', 'Función no implementada todavía 😅');
+navigation.navigate('ForgetPassword'); // Asegúrate que el nombre coincida con tu StackNavigator
   };
 
   return (
     <View style={styles.container}>
-      {/* Logo inline definido anteriormente */}
       <View style={styles.logoContainer}>
         <Image source={require('../../assets/logotopbar.jpeg')} style={styles.logo} />
       </View>
-
-      <InputField
-        placeholder="Usuario"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <InputField
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-
-      <LoginButton label="Ingresarr" onPress={handleLogin} />
-
+      <InputField placeholder="Usuario" value={email} onChangeText={setEmail} />
+      <InputField placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
+      <LoginButton label="Ingresar" onPress={handleLogin} />
       <ForgetPassword onPress={handleForgotPassword} />
     </View>
   );
@@ -66,11 +53,10 @@ const styles = StyleSheet.create({
     height: 150,
     resizeMode: 'contain',
   },
-   loginButton: {
+  loginButton: {
     width: '100%',
-    marginBottom: 8, // Espacio entre el botón y el enlace
+    marginBottom: 8,
   },
-
 });
 
 export default LoginScreen;

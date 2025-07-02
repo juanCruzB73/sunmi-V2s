@@ -3,10 +3,12 @@ import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, 
 import { TopBar } from '../../components/top-bar/TopBar';
 import CommerceFineInput from '../../components/fine/CommerceFineInput';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../router/StackNavigator';
+import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../router/StackNavigator';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'CommerceFineModal'>;
 
 
 export const CommerceFineModalScreen = ({navigation}:Props) => {
@@ -24,8 +26,11 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [gravedadModal, setGravedadModal] = useState(false);
-  // const [comunaModal, setComunaModal] = useState(false); // Quitado
   const [calleModal, setCalleModal] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
+
+  // Tipado correcto para navegación
+  //const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleChange = (field: keyof typeof commerce, value: string) => {
     setCommerce({ ...commerce, [field]: value });
@@ -45,6 +50,12 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
     });
   };
 
+  const handleSave = () => {
+    setShowSnackbar(true);
+    setTimeout(() => setShowSnackbar(false), 2000);
+    // Aquí puedes agregar lógica adicional de guardado si lo necesitas
+  };
+
   const delitos = [
     'Tipo 1',
     'Tipo 2',
@@ -52,7 +63,6 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
   ];
 
   const gravedadOptions = ['Option1', 'Option2', 'Option3'];
-  // const comunaOptions = ['Comuna 1', 'Comuna 2', 'Comuna 3']; // Quitado
   const calleOptions = ['Calle 1', 'Calle 2', 'Calle 3'];
 
   return (
@@ -220,12 +230,11 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
           <VehicleCommerceFooterButtons
             onCancel={() => {}}
             onClear={handleClear}
-            onSave={() => {
-              // guardar info o continuar
-            }}
+            onSave={handleSave}
           />
         </View>
       </ScrollView>
+      <SaveSuccesSnackbar visible={showSnackbar} />
     </>
   );
 };
@@ -290,5 +299,5 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     fontSize: 16,
     backgroundColor: '#f9f9f9',
-  },
+  },  
 });

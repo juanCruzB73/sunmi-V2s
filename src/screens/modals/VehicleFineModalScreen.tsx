@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput } from 'react-native';
 import VehicleInput from '../../components/fine/VehicleFineInput';
-import VehicleFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';  
 import { TopBar } from '../../components/top-bar/TopBar';
+import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
+import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'VehicleFineModal'>;
 
 
-export const VehicleFineModalScreen = ({navigate}:Props) => {
+export const VehicleFineModalScreen = ({navigation}:Props) => {
   const [vehicle, setVehicle] = useState({
     patente: '',
     marca: '',
@@ -26,8 +27,8 @@ export const VehicleFineModalScreen = ({navigate}:Props) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [gravedadModal, setGravedadModal] = useState(false);
-  // const [comunaModal, setComunaModal] = useState(false); // Quitado
   const [calleModal, setCalleModal] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false);
 
   const handleChange = (field: keyof typeof vehicle, value: string) => {
     setVehicle({ ...vehicle, [field]: value });
@@ -48,6 +49,11 @@ export const VehicleFineModalScreen = ({navigate}:Props) => {
     });
   };
 
+  const handleSave = () => {
+    setShowSnackbar(true);
+    setTimeout(() => setShowSnackbar(false), 2000);
+  };
+
   const delitos = [
     'Tipo 1',
     'Tipo 2',
@@ -55,12 +61,11 @@ export const VehicleFineModalScreen = ({navigate}:Props) => {
   ];
 
   const gravedadOptions = ['Option1', 'Option2', 'Option3'];
-  // const comunaOptions = ['Comuna 1', 'Comuna 2', 'Comuna 3']; // Quitado
   const calleOptions = ['Calle 1', 'Calle 2', 'Calle 3'];
 
   return (
     <> 
-      <TopBar navigation={navigate}/>
+      <TopBar navigation={navigation}/>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator>
         {/* Gravedad Dropdown */}
         <TouchableOpacity
@@ -221,15 +226,14 @@ export const VehicleFineModalScreen = ({navigate}:Props) => {
 
         {/* Botones de pie de página */}
         <View style={styles.footer}>
-          <VehicleFooterButtons
+          <VehicleCommerceFooterButtons
             onCancel={() => {}}
             onClear={handleClear}
-            onSave={() => {
-              // guardar info o continuar
-            }}
+            onSave={handleSave}
           />
         </View>
       </ScrollView>
+      <SaveSuccesSnackbar visible={showSnackbar} />
     </>
   );
 };
