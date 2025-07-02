@@ -1,13 +1,17 @@
 
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { TopBar } from '../../components/top-bar/TopBar'
+import { RootStackParamList } from '../../router/StackNavigator';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-const VehicleFineScreen = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+const VehicleFineScreen = ({navigation}:Props) => {
   const onPress=()=>{};
   
       return (
         <>
-            <TopBar/>
+            <TopBar navigation={navigation}/>
             <View style={styles.VehicleFineContainer}>
                 <Text style={styles.title}>Confirmar datos del Vehiculo</Text>
                 <View style={styles.container}>

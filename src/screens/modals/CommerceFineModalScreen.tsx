@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput } from 'react-native';
-
 import { TopBar } from '../../components/top-bar/TopBar';
 import CommerceFineInput from '../../components/fine/CommerceFineInput';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator';
 
-export const CommerceFineModalScreen: React.FC = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+
+export const CommerceFineModalScreen = ({navigation}:Props) => {
   const [commerce, setCommerce] = useState({
     rutcommerce: '',
     commerceregister: '',
@@ -53,7 +57,7 @@ export const CommerceFineModalScreen: React.FC = () => {
 
   return (
     <> 
-      <TopBar />
+      <TopBar navigation={navigation}/>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator>
         {/* Gravedad Dropdown */}
         <TouchableOpacity

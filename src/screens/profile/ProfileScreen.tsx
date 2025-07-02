@@ -4,11 +4,16 @@ import ProfileHeader from '../../components/profile/ProfileHeader';
 import ProfileOption from '../../components/profile/ProfileOption';
 import LogoutButton from '../../components/profile/LogoutButton';
 import { TopBar } from '../../components/top-bar/TopBar';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator';
 
-const ProfileScreen: React.FC = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+
+const ProfileScreen= ({navigation}:Props) => {
   return (
     <>
-    <TopBar/>
+    <TopBar navigation={navigation}/>
     <View style={styles.container}>
       <ProfileHeader
         name="Pepe Rosa"

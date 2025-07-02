@@ -6,11 +6,11 @@ import CommerceScreen from '../screens/Menu/CommerceScreen';
 import VehicleScreen from '../screens/Menu/VehicleScreen';
 
 export type RootStackParamList = {
-  Home: undefined;
-  Details: undefined; // Keep if you plan to use this
-  CommerceMenu: undefined;
-  VehicleScreen: undefined;
-  FineSearcher: undefined;
+    TopBar:undefined;
+    Home: undefined;
+    CommerceMenu: undefined;
+    VehicleScreen: undefined;
+    FineSearcher: undefined;
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

@@ -2,10 +2,14 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
 import CommerceButton from '../../components/commerce/CommerceButton';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator';
 
-const CommerceScreen: React.FC = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+const CommerceScreen = ({navigation}:Props) => {
   return (<> 
-  <TopBar />
+  <TopBar navigation={navigation}/>
     <View style={styles.container}>
       <CommerceButton label="Datos del comercio" onPress={() => {}} />
       <CommerceButton label="Generar Factura" onPress={() => {}} />

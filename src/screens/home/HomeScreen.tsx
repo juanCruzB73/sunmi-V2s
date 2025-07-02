@@ -8,26 +8,26 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: Props) => {
 
-    const onPress=()=>{}
-  return (
-    <>
-        <TopBar/>
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('VehicleScreen')}>
-                <Text style={styles.text}>Automoviles</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CommerceMenu')}>
-                <Text style={styles.text}>Comercio</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FineSearcher')}>
-                <Text style={styles.text}>Multas</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
-                <Text style={styles.text}>Otros</Text>
-            </TouchableOpacity>
-        </View>
-    </>
-  )
+    
+    return (
+      <>
+          <TopBar navigation={navigation}/>
+          <View style={styles.container}>
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('VehicleScreen')}>
+                  <Text style={styles.text}>Automoviles</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CommerceMenu')}>
+                  <Text style={styles.text}>Comercio</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FineSearcher')}>
+                  <Text style={styles.text}>Multas</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+                  <Text style={styles.text}>Otros</Text>
+              </TouchableOpacity>
+          </View>
+      </>
+    )
 }
 
 const { width } = Dimensions.get('window');

@@ -4,7 +4,10 @@ import EmailInput from '../../components/forgotPassword/EmailInput';
 import LoginButton from '../../components/login/LoginButton';
 import { TopBar } from '../../components/top-bar/TopBar';
 import { Dimensions } from 'react-native';
+import { RootStackParamList } from '../../router/StackNavigator';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const ForgetPasswordScreen: React.FC = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
@@ -17,13 +20,13 @@ const ForgetPasswordScreen: React.FC = ({ navigation }: any) => {
     Alert.alert('Recuperar contraseña', `Se enviará un correo a: ${email}`);
   };
 //A IMPLEMENTAR
-  const handleBack = () => {
+  const handleBack = ({navigation}:Props) => {
     navigation.goBack();
   };
 
   return (
     <>
-      <TopBar/>
+      <TopBar navigation={navigation}/>
       <View style={styles.container}>
        <View style={styles.textContainer}>
          <Text style={styles.title}>¿Olvidó su contraseña?</Text>

@@ -1,8 +1,13 @@
 import { View, Image, StyleSheet, Alert, Text, TouchableOpacity, Dimensions,TextInput  } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
 import { useState } from 'react';
+import { RootStackParamList } from '../../router/StackNavigator';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export const ComerceSearher = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+
+export const ComerceSearher = ({navigation}:Props) => {
     const [plateNumber,setPlateNumber]=useState('');
     const handlePlateChange = (text:string) => {
         // Allow only letters and numbers, remove other characters
@@ -11,7 +16,7 @@ export const ComerceSearher = () => {
     };
     return (
       <>
-          <TopBar/>
+          <TopBar navigation={navigation}/>
           <View style={styles.VehicleSearcherContainer}>
             <Text style={styles.title}>Buscador de Comercios</Text>
             <View style={styles.container}>

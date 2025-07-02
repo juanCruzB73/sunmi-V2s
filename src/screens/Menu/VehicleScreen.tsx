@@ -2,11 +2,17 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import VehicleButton from '../../components/vehicle/VehicleButton';
 import { TopBar } from '../../components/top-bar/TopBar';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator';
 
-const VehicleScreen: React.FC = () => {
-  return (<> 
-  <TopBar />
-  <View style={styles.container}>
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+
+const VehicleScreen = ({navigation}:Props) => {
+  return (
+  <> 
+    <TopBar navigation={navigation}/>
+    <View style={styles.container}>
       <VehicleButton label="Datos del vehículo" onPress={() => {}} />
       <VehicleButton label="Generar Multa" onPress={() => {}} />
     </View>

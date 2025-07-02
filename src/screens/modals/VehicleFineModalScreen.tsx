@@ -3,8 +3,14 @@ import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, 
 import VehicleInput from '../../components/fine/VehicleFineInput';
 import VehicleFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';  
 import { TopBar } from '../../components/top-bar/TopBar';
+import { RootStackParamList } from '../../router/StackNavigator';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export const VehicleFineModalScreen: React.FC = () => {
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+
+export const VehicleFineModalScreen = ({navigate}:Props) => {
   const [vehicle, setVehicle] = useState({
     patente: '',
     marca: '',
@@ -54,7 +60,7 @@ export const VehicleFineModalScreen: React.FC = () => {
 
   return (
     <> 
-      <TopBar />
+      <TopBar navigation={navigate}/>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator>
         {/* Gravedad Dropdown */}
         <TouchableOpacity

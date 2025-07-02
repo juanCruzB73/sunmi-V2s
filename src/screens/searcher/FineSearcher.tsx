@@ -3,6 +3,8 @@ import { TopBar } from "../../components/top-bar/TopBar";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useState } from "react";
 import InfoCard from "../cards/InfoCard";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../router/StackNavigator";
 
 export interface ICardInfo {
     nroMulta: number,
@@ -10,6 +12,8 @@ export interface ICardInfo {
     plateOrRut: string,
     status:"synced"|"unsynced"
 }
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const cardInfoInitialState: ICardInfo[] = [
     {
@@ -56,14 +60,14 @@ const cardInfoInitialState: ICardInfo[] = [
     }
 ];
 
-const FineSearcher = () => {
+const FineSearcher = ({navigation}: Props) => {
     const [searchInputs,setSearchInput]=useState("");
     const handleInput=(value:string)=>{
         setSearchInput(value);
     }
     return (
       <>
-          <TopBar/>
+          <TopBar navigation={navigation}/>
           <ScrollView contentContainerStyle={styles.container}>
               <View style={styles.searchContainer}>
                     <FontAwesome 

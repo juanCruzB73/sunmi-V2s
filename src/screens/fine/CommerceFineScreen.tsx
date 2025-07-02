@@ -1,12 +1,16 @@
 
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { TopBar } from '../../components/top-bar/TopBar'
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator';
 
-const CommerceFineScreen = () => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+const CommerceFineScreen = ({navigation}:Props) => {
         const onPress=()=>{};
         return (
         <>
-            <TopBar/>
+            <TopBar navigation={navigation}/>
             <View style={styles.VehicleFineContainer}>
                 <Text style={styles.title}>Confirmar datos del Comercio</Text>
                  <View style={styles.container}>

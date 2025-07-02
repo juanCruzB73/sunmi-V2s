@@ -1,16 +1,23 @@
 import React from 'react';
-import { View, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { RootStackParamList } from '../../router/StackNavigator';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-// Exportación nombrada y por defecto para máxima compatibilidad
-export const TopBar = () => {
+type TopBarProps = {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
+};
+export const TopBar = ({ navigation }: TopBarProps) => {
+  
   return (
     <View style={styles.container}>
       <FontAwesome name="bars" size={30} style={styles.icon} />
-      <Image
-        source={require('../../assets/logoOriginal.jpeg')}
-        style={{ width: 140, height: 50 }}
-      />
+      <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+        <Image
+          source={require('../../assets/logoOriginal.jpeg')}
+          style={{ width: 140, height: 50 }}
+        />
+      </TouchableOpacity>
     </View>
   );
 };
