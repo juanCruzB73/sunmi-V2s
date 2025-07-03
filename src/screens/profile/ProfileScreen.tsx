@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, Alert } from 'react-native';
 import ProfileHeader from '../../components/profile/ProfileHeader';
 import ProfileOption from '../../components/profile/ProfileOption';
 import LogoutButton from '../../components/profile/LogoutButton';
@@ -9,7 +9,6 @@ import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
 import { RootState } from '@reduxjs/toolkit/query';
-import { onLogin, onLogOut } from '../../redux/slices/authSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'profile'>;
 
@@ -17,26 +16,16 @@ type Props = NativeStackScreenProps<RootStackParamList, 'profile'>;
 const ProfileScreen= ({navigation}:Props) => {
     const dispatch = useDispatch<AppDispatch>();
 
-    const {user,status} = useSelector((state: RootState) => state.auth);
-
+    const {user} = useSelector((state: RootState) => state.auth);
     useEffect(()=>{
-      dispatch(onLogin({userId:1,email:"asdw@gmail.com",password:"asdw"}))
+      Alert.alert(user.email,user.name)
     },[])
-
-    const handleTest=()=>{
-     if(status=="authenticated"){
-       dispatch(onLogOut())
-     }else{
-       dispatch(onLogin({userId:1,email:"asdw@gmail.com",password:"asdw"}))
-     }
-    }
-
     return (
       <>
         <TopBar navigation={navigation} isProfileScreen />
         <View style={styles.container}>
           <ProfileHeader
-            name="Pepe Rosa"
+            name={user.name}
             email={user.email}
           />
           <View style={styles.optionContainer}>

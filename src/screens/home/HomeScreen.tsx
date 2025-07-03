@@ -8,7 +8,6 @@ import { RootStackParamList } from '../../router/StackNavigator' // adjust path 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: Props) => {
-
     return (
       <>
           <TopBar navigation={navigation}/>

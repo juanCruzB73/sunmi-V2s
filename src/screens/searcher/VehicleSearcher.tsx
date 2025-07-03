@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import React from 'react';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'VehicleSearcher'>;
 
 
 export const VehicleSearcher = ({navigation}:Props) => {

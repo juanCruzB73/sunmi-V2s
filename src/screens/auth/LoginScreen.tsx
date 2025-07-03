@@ -5,9 +5,10 @@ import LoginButton from '../../components/login/LoginButton';
 import ForgetPassword from '../../components/login/ForgetPassword';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
-//import { useDispatch, useSelector } from 'react-redux';
-//import { AppDispatch } from '../../redux/store';
-//import { RootState } from '@reduxjs/toolkit/query';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../redux/store';
+import { startLogIn } from '../../redux/slices/authThunk';
+import { IUser } from '../../types/IUser';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -17,18 +18,21 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  
+  const dispatch = useDispatch<AppDispatch>();
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('Campos incompletos', 'Por favor completa email y contraseña.');
-      return;
-    }
-    navigation.navigate('Home');
-  };
+  const handleLogin = async () => {
+  if (!email || !password) {
+    Alert.alert('Campos incompletos', 'Por favor completa email y contraseña.');
+    return;
+  }
+  await dispatch(startLogIn(email, password));
+  navigation.navigate("Home")
+  
+};
+
 
   const handleForgotPassword = () => {
-navigation.navigate('ForgetPassword'); // Asegúrate que el nombre coincida con tu StackNavigator
+    navigation.navigate('ForgetPassword');
   };
 
   return (
@@ -38,7 +42,7 @@ navigation.navigate('ForgetPassword'); // Asegúrate que el nombre coincida con 
       </View>
       <InputField placeholder="Usuario" value={email} onChangeText={setEmail} />
       <InputField placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
-      <LoginButton label="Ingresar" onPress={handleLogin} />
+      <LoginButton label="Ingresar" onPress={()=>{handleLogin()}} />
       <ForgetPassword onPress={handleForgotPassword} />
     </View>
   );
