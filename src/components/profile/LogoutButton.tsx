@@ -3,14 +3,19 @@ import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../router/StackNavigator';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../redux/store';
+import { onLogOut } from '../../redux/slices/authSlice';
 
 const { width } = Dimensions.get('window');
 
 const LogoutButton: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogout = () => {
-    navigation.navigate('Login');
+    dispatch(onLogOut())
   };
 
   return (
