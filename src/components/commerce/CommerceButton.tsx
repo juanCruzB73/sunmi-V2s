@@ -31,7 +31,7 @@ const CommerceButton: React.FC<CommerceButtonProps> = ({ label }) => {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#004d9a',
+    backgroundColor: '#007bff',
     paddingVertical: 26,
     borderRadius: 15,
     alignItems: 'center',

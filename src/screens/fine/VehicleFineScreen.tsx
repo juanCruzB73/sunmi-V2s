@@ -1,107 +1,133 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { TopBar } from '../../components/top-bar/TopBar'
-import { RootStackParamList } from '../../router/StackNavigator';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  Pressable
+} from 'react-native';
+import { TopBar } from '../../components/top-bar/TopBar';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator';
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VehicleFineScreen'>;
 
 const VehicleFineScreen = ({ navigation }: Props) => {
   return (
     <>
-      <TopBar navigation={navigation as any} />
-      <View style={styles.VehicleFineContainer}>
-        <Text style={styles.title}>Confirmar datos del Vehiculo</Text>
-        <View style={styles.container}>
-          <View style={styles.textFieldsContainer}>
-            <Text style={styles.plate}>asdw0000</Text>
-            <Text style={styles.textField}>Propietario: travis blicke</Text>
-            <Text style={styles.textField}>RUT propietario: 46542812</Text>
-            <Text style={styles.textField}>Tipo de vehiculo: Auto</Text>
-            <Text style={styles.textField}>Marca: Chebrolet</Text>
-            <Text style={styles.textField}>Modelo: Corsa 2003</Text>
-            <Text style={styles.textField}>Color: Rojo</Text>
+      <TopBar navigation={navigation} />
+      <LinearGradient colors={['#f0f4fa', '#d5e3f2']} style={styles.gradient}>
+        <View style={styles.wrapper}>
+          <Text style={styles.title}>Confirmar datos del vehículo</Text>
+
+          <View style={styles.card}>
+            <Text style={styles.plate}>ASDW0000</Text>
+            {[
+              'Propietario: Travis Blicke',
+              'RUT propietario: 46542812',
+              'Tipo de vehículo: Auto',
+              'Marca: Chevrolet',
+              'Modelo: Corsa 2003',
+              'Color: Rojo',
+            ].map((text, index) => (
+              <Text key={index} style={styles.field}>
+                {text}
+              </Text>
+            ))}
           </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.buttonGoBack}
+
+          <View style={styles.buttonRow}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.buttonBack,
+                pressed && styles.buttonPressed
+              ]}
               onPress={() => navigation.navigate('VehicleSearcher')}
             >
-              <Text style={styles.text}>Volver</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
+              <Text style={styles.buttonText}>Volver</Text>
+            </Pressable>
+
+            <Pressable
+              style={({ pressed }) => [
+                styles.buttonConfirm,
+                pressed && styles.buttonPressed
+              ]}
               onPress={() => navigation.navigate('FineSearcher')}
             >
-              <Text style={styles.text}>Confirmar</Text>
-            </TouchableOpacity>
+              <Text style={styles.buttonText}>Confirmar</Text>
+            </Pressable>
           </View>
         </View>
-      </View>
+      </LinearGradient>
     </>
-  )
-}
-const { width, height } = Dimensions.get('window')
+  );
+};
+
+const { width } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
+  gradient: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  wrapper: {
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    gap: 20,
+  },
   title: {
-    fontSize: 25,
-    alignSelf: "baseline"
-  },
-  VehicleFineContainer: {
-    padding: 20,
-    display: "flex",
-    justifyContent: "center",
-    alignContent: "center",
-    width: width,
-    maxHeight: height * 0.9,
-  },
-  container: {
-    minHeight: height * 0.7,
-    display: "flex",
-    justifyContent: "space-around",
-    alignItems: "center"
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#333',
+    alignSelf: 'center',
   },
   plate: {
-    fontSize: 40
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#007bff',
+    marginBottom: 10,
+    alignSelf: 'center',
   },
-  textFieldsContainer: {
-    backgroundColor: "#F2F3F2",
+  card: {
+    backgroundColor: '#f5f7fa',
     padding: 20,
-    display: "flex",
-    justifyContent: "space-around",
-    alignItems: "baseline",
+    borderRadius: 12,
     width: width * 0.9,
-    borderRadius: 15,
-    height: height * 0.5,
+    gap: 10,
+    elevation: 2,
   },
-  textField: {
-    fontSize: 20
+  field: {
+    fontSize: 18,
+    color: '#444',
   },
-  buttonContainer: {
-    display: "flex",
-    width: width,
-    flexDirection: "row",
-    justifyContent: "space-around"
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 20,
+    marginTop: 24,
   },
-  buttonGoBack: {
-    backgroundColor: '#ff0000',
+  buttonBack: {
+    backgroundColor: '#e74c3c',
+    paddingVertical: 14,
+    borderRadius: 10,
     width: width * 0.4,
-    padding: 15,
-    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
   },
-  button: {
-    backgroundColor: '#007bff',
+  buttonConfirm: {
+    backgroundColor: '#3498db',
+    paddingVertical: 14,
+    borderRadius: 10,
     width: width * 0.4,
-    padding: 15,
-    borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
   },
-  text: {
-    color: "white",
-    fontSize: 20
+  buttonPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.97 }],
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '500',
   },
 });
 
