@@ -1,92 +1,98 @@
-import { View, StyleSheet, Text, TouchableOpacity, Dimensions, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, Pressable, Dimensions, TextInput } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
-import { useState } from 'react';
-import { RootStackParamList } from '../../router/StackNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React from 'react';
+import { RootStackParamList } from '../../router/StackNavigator';
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CommerceSearcher'>;
 
 export const CommerceSearcher = ({ navigation }: Props) => {
   const [plateNumber, setPlateNumber] = useState('');
   const handlePlateChange = (text: string) => {
-    // Allow only letters and numbers, remove other characters
     const filteredText = text.replace(/[^a-zA-Z0-9]/g, '');
     setPlateNumber(filteredText);
   };
+
   return (
     <>
       <TopBar navigation={navigation} />
-      <View style={styles.VehicleSearcherContainer}>
-        <Text style={styles.title}>Buscador de Comercios</Text>
-        <View style={styles.container}>
-          <Text style={styles.description}>Ingrese El RUT del Comercio</Text>
+      <LinearGradient colors={['#f2f6fc', '#d7e3f4']} style={styles.gradient}>
+        <View style={styles.wrapper}>
+          <Text style={styles.title}>Buscador de Comercios</Text>
+          <Text style={styles.description}>Ingrese el RUT del comercio</Text>
           <TextInput
             style={styles.input}
-            onChangeText={handlePlateChange}
             value={plateNumber}
-            placeholder="Ingrse RUT"
-            keyboardType="default"
+            onChangeText={handlePlateChange}
+            placeholder="Ingrese RUT"
+            placeholderTextColor="#777"
           />
-          <TouchableOpacity
-            style={styles.button}
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && styles.buttonPressed
+            ]}
             onPress={() => navigation.navigate('CommerceFineScreen')}
           >
-            <Text style={styles.vehicleSearchButton}>Buscar</Text>
-          </TouchableOpacity>
+            <Text style={styles.buttonText}>Buscar</Text>
+          </Pressable>
         </View>
-      </View>
+      </LinearGradient>
     </>
   );
 };
-const { width } = Dimensions.get('window');
-const { height } = Dimensions.get('window');
+
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    justifyContent: "space-around",
-    backgroundColor: "white",
-    padding: 10,
-    minHeight: height * 0.3,
-    width: width
+  gradient: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  wrapper: {
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    gap: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    alignSelf: 'center',
+    color: '#333',
+  },
+  description: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 8,
   },
   input: {
     height: 50,
-    fontSize: 18,
-    paddingHorizontal: 10,
-    borderColor: '#ccc',
-    backgroundColor: "white",
+    fontSize: 16,
+    paddingHorizontal: 16,
     borderWidth: 1,
-    borderRadius: 8,
-    color: "black",
+    borderColor: '#bbb',
+    backgroundColor: '#fff',
+    borderRadius: 10,
     width: width * 0.9,
-    alignSelf: "center",
-    maxHeight: height * 0.9
+    color: '#000',
   },
-  description: {},
-  title: {
-    fontSize: 20,
-    alignSelf: "baseline"
-  },
-  VehicleSearcherContainer: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: "center",
-    backgroundColor: "white",
-    padding: 10,
-    alignSelf: 'stretch',
-    maxHeight: height * 0.8
-  },
-  button: {},
-  vehicleSearchButton: {
-    backgroundColor: "#1664C0",
-    padding: 15,
-    textAlign: "center",
-    alignSelf: "center",
+  button: {
+    backgroundColor: '#3498db',
+    paddingVertical: 14,
+    borderRadius: 12,
     width: width * 0.9,
-    borderRadius: 15,
-    borderWidth: 0,
-    color: "white"
-  }
+    alignItems: 'center',
+    elevation: 3,
+  },
+  buttonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '500',
+  },
 });

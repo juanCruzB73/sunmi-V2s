@@ -1,89 +1,103 @@
-import { View, Image, StyleSheet, Alert, Text, TouchableOpacity, Dimensions,TextInput  } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  Text,
+  Dimensions,
+  TextInput,
+  Pressable
+} from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
-import { useState } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
-import React from 'react';
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VehicleSearcher'>;
 
+export const VehicleSearcher = ({ navigation }: Props) => {
+  const [plateNumber, setPlateNumber] = useState('');
+  const handlePlateChange = (text: string) => {
+    const filteredText = text.replace(/[^a-zA-Z0-9]/g, '');
+    setPlateNumber(filteredText);
+  };
 
-export const VehicleSearcher = ({navigation}:Props) => {
-    const [plateNumber,setPlateNumber]=useState('');
-    const handlePlateChange = (text:string) => {
-        // Allow only letters and numbers, remove other characters
-        const filteredText = text.replace(/[^a-zA-Z0-9]/g, '');
-        setPlateNumber(filteredText);
-    };
-    return (
-      <>
-          <TopBar navigation={navigation}/>
-          <View style={styles.VehicleSearcherContainer}>
-                <Text style={styles.title}>Buscador de vehiculos</Text>
-                <View style={styles.container}>
-                    <Text style={styles.description}>Ingrese la patente del vehiculo</Text>
-                    <TextInput
-                      style={styles.input}
-                      onChangeText={handlePlateChange}
-                      value={plateNumber}
-                      placeholder="Ingrese Matricula"
-                      keyboardType="default"
-                   />
-                            <TouchableOpacity
-                              style={styles.button}
-                              onPress={() => navigation.navigate('VehicleFineScreen')}
-                            >
-                              <Text style={styles.vehicleSearchButton}>Buscar</Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </>
-    )
-}
+  return (
+    <>
+      <TopBar navigation={navigation} />
+      <LinearGradient colors={['#f1f5fa', '#d8e4f4']} style={styles.gradient}>
+        <View style={styles.wrapper}>
+          <Text style={styles.title}>Buscador de vehículos</Text>
+          <Text style={styles.description}>Ingrese la patente del vehículo</Text>
+          <TextInput
+            style={styles.input}
+            value={plateNumber}
+            onChangeText={handlePlateChange}
+            placeholder="Ingrese matrícula"
+            placeholderTextColor="#777"
+          />
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              pressed && styles.buttonPressed
+            ]}
+            onPress={() => navigation.navigate('VehicleFineScreen')}
+          >
+            <Text style={styles.buttonText}>Buscar</Text>
+          </Pressable>
+        </View>
+      </LinearGradient>
+    </>
+  );
+};
+
 const { width } = Dimensions.get('window');
-const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-    container:{
-        display: 'flex',
-        justifyContent:"space-around",
-        backgroundColor:"white",
-        padding: 10,
-        minHeight:height * 0.3,
-        width:width
-    },
-    description:{},
-    input:{
-        height: 50,     
-        fontSize: 18,     
-        paddingHorizontal: 10,
-        borderColor: '#ccc',
-        backgroundColor:"white",
-        borderWidth: 1,
-        borderRadius: 8,
-        color:"black",
-        maxHeight:height * 0.9
-    },
-    title:{
-        fontSize:20,
-        alignSelf:"baseline"
-    },
-    VehicleSearcherContainer: {
-        display: 'flex',
-        justifyContent: 'space-around',
-        alignItems:"center",
-        backgroundColor:"white",
-        padding: 10,
-        alignSelf: 'stretch',
-        maxHeight:height * 0.8
-    },
-    button:{},
-    vehicleSearchButton:{
-        backgroundColor:"#1664C0",
-        padding:15,
-        textAlign:"center",
-        borderRadius: 15,
-        borderWidth: 0,
-        color: "white"
-    }
+  gradient: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  wrapper: {
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    gap: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#333',
+  },
+  description: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+  },
+  input: {
+    height: 50,
+    fontSize: 16,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: '#bbb',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    width: width * 0.9,
+    color: '#000',
+  },
+  button: {
+    backgroundColor: '#3498db',
+    paddingVertical: 14,
+    borderRadius: 12,
+    width: width * 0.9,
+    alignItems: 'center',
+    elevation: 3,
+  },
+  buttonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '500',
+  },
 });

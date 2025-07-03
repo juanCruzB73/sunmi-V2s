@@ -1,5 +1,10 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Alert } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions, Alert,
+  ScrollView
+} from 'react-native';
 import ProfileHeader from '../../components/profile/ProfileHeader';
 import ProfileOption from '../../components/profile/ProfileOption';
 import LogoutButton from '../../components/profile/LogoutButton';
@@ -7,14 +12,19 @@ import { TopBar } from '../../components/top-bar/TopBar';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
-import { RootState } from '@reduxjs/toolkit/query';
+import { AppDispatch, RootState } from '../../redux/store';
+import { onLogin, onLogOut } from '../../redux/slices/authSlice';
+import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'profile'>;
 
+const ProfileScreen = ({ navigation }: Props) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { user, status } = useSelector((state: RootState) => state.auth);
 
-const ProfileScreen= ({navigation}:Props) => {
-    const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(onLogin({ userId: 1, email: 'asdw@gmail.com', password: 'asdw' }));
+  }, []);
 
     const {user} = useSelector((state: RootState) => state.auth);
     useEffect(()=>{
@@ -34,29 +44,32 @@ const ProfileScreen= ({navigation}:Props) => {
             <ProfileOption icon="cog" label="Configuraciones" onPress={() => {}} />
           </View>
           <LogoutButton />
-        </View>
+        </ScrollView>
+      </LinearGradient>
     </>
   );
 };
 
 const { width } = Dimensions.get('window');
-const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  container: {
-    display:"flex",
-    justifyContent:"center",
-    alignItems:"center",
+  gradient: {
     flex: 1,
-    backgroundColor: '#fff',
-    width:width,
-    height:height * 0.8
   },
-  optionContainer:{
-    width:width * 0.7,
-    display:"flex",
-   
-  }
+  container: {
+    alignItems: 'center',
+    paddingVertical: 32,
+    gap: 20,
+  },
+  optionBox: {
+    backgroundColor: '#fff',
+    width: width * 0.9,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    borderRadius: 16,
+    elevation: 3,
+    gap: 12,
+  },
 });
 
 export default ProfileScreen;
