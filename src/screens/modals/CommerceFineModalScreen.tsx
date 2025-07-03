@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput } from 'react-native';
+import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput, Image, Alert } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
 import CommerceFineInput from '../../components/fine/CommerceFineInput';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
 import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../router/StackNavigator';
+import pickMedia from '../../utlis/ImagePickerService';
+import Video from 'react-native-video';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CommerceFineModal'>;
 
@@ -27,6 +29,8 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
   const [gravedadModal, setGravedadModal] = useState(false);
   const [calleModal, setCalleModal] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
+   const [mediaViewer, setMediaViewer] = useState<{ uri: string; type: string } | null>(null);
+    const [mediaPreviewList, setMediaPreviewList] = useState<{ uri: string; type: string }[]>([]);
 
   // Tipado correcto para navegación
   //const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -47,13 +51,36 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
       numeracion: '',
       descripcion: '',
     });
+      setMediaPreviewList([]);
+
   };
+const handleRemoveMediaItem = (index: number) => {
+  setMediaPreviewList(prev => prev.filter((_, i) => i !== index));
+};
+const handleOpenMedia = (item: { uri: string; type: string }) => {
+  setMediaViewer(item);
+};
+const closeMediaViewer = () => {
+  setMediaViewer(null);
+};
 
   const handleSave = () => {
     setShowSnackbar(true);
     setTimeout(() => setShowSnackbar(false), 2000);
     // Aquí puedes agregar lógica adicional de guardado si lo necesitas
   };
+const handleRemoveMedia = () => {
+  setMediaPreviewList([]);
+};
+
+const handleMediaSource = async (source: 'camera' | 'gallery', type: 'photo' | 'video') => {
+  const media = await pickMedia(source, type);
+  // Si el usuario cancela, simplemente salimos silenciosamente:
+  if (!media) return;
+
+  // Si llega hasta acá, entonces sí es válido:
+  setMediaPreviewList(prev => [...prev, { uri: media.uri!, type: media.type! }]);
+};
 
   const delitos = [
     'Tipo 1',
@@ -205,10 +232,74 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
         <CommerceFineInput label="Numeración" value={commerce.numeracion} onChangeText={(v) => handleChange('numeracion', v)} />
 
         {/* Imagen/Video (solo icono, funcionalidad aparte) */}
-        <TouchableOpacity style={styles.selectButton}>
-          <Text style={styles.selectButtonText}>Imagen/Video 📷</Text>
-        </TouchableOpacity>
+       <View>
+  {/* Botón principal con menú de opciones */}
+  <TouchableOpacity
+    style={styles.selectButton}
+    onPress={() => {
+      Alert.alert('Origen', '¿Qué querés hacer?', [
+        { text: 'Tomar foto', onPress: () => handleMediaSource('camera', 'photo') },
+        { text: 'Grabar video', onPress: () => handleMediaSource('camera', 'video') },
+        { text: 'Galería', onPress: () => handleMediaSource('gallery', 'photo') },
+        { text: 'Cancelar', style: 'cancel' },
+      ]);
+    }}
+  >
+    <Text style={styles.selectButtonText}>Imagen/Video 📷</Text>
+  </TouchableOpacity>
 
+  {/* Previews horizontales */}
+  {mediaPreviewList.length > 0 && (
+    <ScrollView horizontal style={styles.previewScroll} showsHorizontalScrollIndicator={false}>
+      {mediaPreviewList.map((item, index) => (
+        <View key={index} style={styles.previewContainer}>
+          <TouchableOpacity onPress={() => handleOpenMedia(item)}>
+            {item.type.startsWith('image') ? (
+              <Image source={{ uri: item.uri }} style={styles.previewImage} />
+            ) : (
+              <Video
+                source={{ uri: item.uri }}
+                style={styles.previewVideo}
+                resizeMode="cover"
+                paused={true}
+              />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.removeIcon} onPress={() => handleRemoveMediaItem(index)}>
+            <Text style={styles.removeIconText}>❌</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+    </ScrollView>
+  )}
+
+  {/* Visualizador modal en pantalla completa */}
+  {mediaViewer && (
+    <Modal visible transparent animationType="fade" onRequestClose={closeMediaViewer}>
+      <View style={styles.viewerOverlay}>
+        <TouchableOpacity style={styles.viewerClose} onPress={closeMediaViewer}>
+          <Text style={styles.viewerCloseText}>Cerrar ✖️</Text>
+        </TouchableOpacity>
+        {mediaViewer.type.startsWith('image') ? (
+          <Image
+            source={{ uri: mediaViewer.uri }}
+            style={styles.viewerImage}
+            resizeMode="contain"
+          />
+        ) : (
+          <Video
+          source={{ uri: mediaViewer.uri }}
+          style={styles.viewerVideo}
+          controls
+          resizeMode="contain"
+          paused={false}
+          onError={(e) => console.log('Error al reproducir video:', e)}
+        />
+        )}
+      </View>
+    </Modal>
+  )}
+</View>
         {/* Botón para grabar audio */}
         <TouchableOpacity style={styles.selectButton}>
           <Text style={styles.selectButtonText}>Grabar audio 🎤</Text>
@@ -298,5 +389,71 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     fontSize: 16,
     backgroundColor: '#f9f9f9',
-  },  
+  },
+  previewScroll: {
+    marginBottom: 16,
+  },
+  previewContainer: {
+    position: 'relative',
+    marginRight: 12,
+  },
+  previewImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    backgroundColor: '#eee',
+  },
+  previewVideo: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    backgroundColor: '#000',
+  },
+  removeIcon: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 10,
+    padding: 2,
+    zIndex: 2,
+  },
+  removeIconText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  viewerVideo: {
+    width: '100%',
+    height: 300,
+    backgroundColor: '#000',
+    borderRadius: 8,
+  },
+  viewerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewerImage: {
+    width: '100%',
+    height: 300,
+    resizeMode: 'contain',
+    borderRadius: 8,
+    backgroundColor: '#000',
+  },
+  viewerClose: {
+    alignSelf: 'flex-end',
+    margin: 16,
+    zIndex: 2,
+  },
+  viewerCloseText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    padding: 12,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 8,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
 });
