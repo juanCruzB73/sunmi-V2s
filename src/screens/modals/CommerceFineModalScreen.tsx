@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput, Alert } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
 import CommerceFineInput from '../../components/fine/CommerceFineInput';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
 import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../router/StackNavigator';
+import { fetchLocation } from '../../utlis/getLocatiom';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CommerceFineModal'>;
 
@@ -22,6 +23,11 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
     numeracion: '',
     descripcion: '',
   });
+
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  } | null>(null);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [gravedadModal, setGravedadModal] = useState(false);
@@ -52,8 +58,11 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
   const handleSave = () => {
     setShowSnackbar(true);
     setTimeout(() => setShowSnackbar(false), 2000);
-    // Aquí puedes agregar lógica adicional de guardado si lo necesitas
   };
+
+  const handleGetLocation=async()=>{
+    await fetchLocation(location,setLocation);
+  }
 
   const delitos = [
     'Tipo 1',
@@ -210,9 +219,19 @@ export const CommerceFineModalScreen = ({navigation}:Props) => {
         </TouchableOpacity>
 
         {/* Botón para grabar audio */}
-        <TouchableOpacity style={styles.selectButton}>
-          <Text style={styles.selectButtonText}>Grabar audio 🎤</Text>
+        <TouchableOpacity style={styles.selectButton} onPress={handleGetLocation}>
+          <Text style={styles.selectButtonText}>Obtener Ubicación</Text>
         </TouchableOpacity>
+
+        {
+            location!==null?(
+            <>
+              <Text >latitud: {location.latitude}</Text>
+              <Text >longitud: {location.longitude}</Text>
+            </>
+          ):
+          (<></>)
+        }
 
         {/* Editor de texto enriquecido (solo textarea simple aquí) */}
         <TextInput
