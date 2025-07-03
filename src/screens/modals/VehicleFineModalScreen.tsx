@@ -20,6 +20,7 @@ import { RootStackParamList } from '../../router/StackNavigator';
 import pickMedia from '../../utlis/ImagePickerService';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
+import { fetchLocation } from '../../utlis/getLocatiom';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VehicleFineModal'>;
 
@@ -160,6 +161,8 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
     numeracion: '',
     descripcion: '',
   });
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  
 
   const [modalVisible, setModalVisible] = useState(false);
   const [gravedadModal, setGravedadModal] = useState(false);
@@ -206,6 +209,10 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
   const handleOpenMedia = (item: { uri: string; type: string }) => {
     setMediaViewer(item);
   };
+
+  const handleGetLocation = async () => {
+      await fetchLocation(location, setLocation);
+    };
 
   const closeMediaViewer = () => {
     setMediaViewer(null);
@@ -378,7 +385,17 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
             </View>
           </Modal>
         )}
-
+        {/* Ubicación */}
+              <Pressable style={styles.selectButton} onPress={handleGetLocation}>
+                <Text style={styles.selectButtonText}>Obtener Ubicación 📍</Text>
+              </Pressable>
+      
+              {location && (
+                <View style={{ marginBottom: 16 }}>
+                  <Text style={{ fontSize: 16 }}>Latitud: {location.latitude}</Text>
+                  <Text style={{ fontSize: 16 }}>Longitud: {location.longitude}</Text>
+                </View>
+              )}
         {/* Descripción */}
         <TextInput
           style={styles.textArea}

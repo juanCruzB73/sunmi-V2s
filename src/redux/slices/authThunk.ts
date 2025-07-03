@@ -1,4 +1,4 @@
-import { loginController } from "../../controllers/loginController";
+/*import { loginController } from "../../controllers/loginController";
 import { AppDispatch } from "../store";
 import { onChecking, onLogin, onLogOut } from "./authSlice";
 
@@ -35,4 +35,4 @@ export const startLogOut=()=>{
         dispatch(startCheckingAuth());
         dispatch(onLogOut());
     }
-};
+};*/

@@ -13,7 +13,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
-import { onLogin, onLogOut } from '../../redux/slices/authSlice';
+//import { onLogin, onLogOut } from '../../redux/slices/authSlice';
 import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'profile'>;
@@ -21,15 +21,6 @@ type Props = NativeStackScreenProps<RootStackParamList, 'profile'>;
 const ProfileScreen = ({ navigation }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const { user, status } = useSelector((state: RootState) => state.auth);
-
-  useEffect(() => {
-    dispatch(onLogin({ userId: 1, email: 'asdw@gmail.com', password: 'asdw' }));
-  }, []);
-
-    const {user} = useSelector((state: RootState) => state.auth);
-    useEffect(()=>{
-      Alert.alert(user.email,user.name)
-    },[])
     return (
       <>
         <TopBar navigation={navigation} isProfileScreen />
@@ -43,9 +34,8 @@ const ProfileScreen = ({ navigation }: Props) => {
             <ProfileOption icon="question-circle" label="Ayuda" onPress={() => {}} />
             <ProfileOption icon="cog" label="Configuraciones" onPress={() => {}} />
           </View>
+        </View>
           <LogoutButton />
-        </ScrollView>
-      </LinearGradient>
     </>
   );
 };

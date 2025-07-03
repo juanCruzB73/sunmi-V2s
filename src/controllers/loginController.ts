@@ -1,4 +1,4 @@
-export const loginController=async(email:string,passwod:string)=>{
+/*export const loginController=async(email:string,passwod:string)=>{
     try{
         const response = await fetch('http://192.168.100.242:3000/users');
         const users=await response.json();
@@ -15,4 +15,4 @@ export const loginController=async(email:string,passwod:string)=>{
         throw err;
     }
 
-};
+};*/

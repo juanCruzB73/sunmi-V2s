@@ -25,7 +25,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     Alert.alert('Campos incompletos', 'Por favor completa email y contraseña.');
     return;
   }
-  await dispatch(startLogIn(email, password));
+  //await dispatch(startLogIn(email, password));
   navigation.navigate("Home")
   
 };
