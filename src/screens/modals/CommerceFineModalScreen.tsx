@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput, Image, Alert, Alert } from 'react-native';
+import { ScrollView, StyleSheet, View, TouchableOpacity, Text, Modal, FlatList, TextInput, Image, Alert, GestureResponderEvent } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
 import CommerceFineInput from '../../components/fine/CommerceFineInput';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
 import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../router/StackNavigator';
+import Video from 'react-native-video';
+import { fetchLocation } from '../../utlis/getLocatiom';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CommerceFineModal'>;
 
@@ -81,6 +83,14 @@ const closeMediaViewer = () => {
 
   const gravedadOptions = ['Option1', 'Option2', 'Option3'];
   const calleOptions = ['Calle 1', 'Calle 2', 'Calle 3'];
+
+  function handleMediaSource(arg0: string, arg1: string) {
+    throw new Error('Function not implemented.');
+  }
+
+ const handleGetLocation=async()=>{
+    await fetchLocation(location,setLocation);
+  }
 
   return (
     <> 
