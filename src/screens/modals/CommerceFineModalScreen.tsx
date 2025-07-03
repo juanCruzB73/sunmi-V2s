@@ -48,6 +48,138 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
   const handleChange = (field: keyof typeof commerce, value: string) => {
     setCommerce({ ...commerce, [field]: value });
   };
+  
+  // Estilos para el componente
+  const styles = StyleSheet.create({
+    container: {
+      padding: 16,
+      paddingBottom: 32,
+    },
+    selectButton: {
+      backgroundColor: '#fff',
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 12,
+      borderWidth: 1,
+      borderColor: '#cfd8dc',
+      alignItems: 'center',
+    },
+    selectButtonText: {
+      fontSize: 16,
+      color: '#333',
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      padding: 20,
+      width: '80%',
+      maxHeight: '60%',
+      alignItems: 'stretch',
+    },
+    modalItem: {
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: '#eee',
+    },
+    modalItemText: {
+      fontSize: 16,
+      color: '#333',
+    },
+    modalCancel: {
+      marginTop: 16,
+      alignItems: 'center',
+    },
+    modalCancelText: {
+      color: '#1976d2',
+      fontWeight: 'bold',
+      fontSize: 16,
+    },
+    previewScroll: {
+      flexDirection: 'row',
+      marginBottom: 12,
+    },
+    previewContainer: {
+      marginRight: 12,
+      alignItems: 'center',
+      position: 'relative',
+    },
+    previewImage: {
+      width: 80,
+      height: 80,
+      borderRadius: 8,
+      backgroundColor: '#eee',
+    },
+    previewVideo: {
+      width: 80,
+      height: 80,
+      borderRadius: 8,
+      backgroundColor: '#eee',
+    },
+    removeIcon: {
+      position: 'absolute',
+      top: -8,
+      right: -8,
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      padding: 2,
+      elevation: 2,
+    },
+    removeIconText: {
+      fontSize: 16,
+      color: '#e53935',
+    },
+    viewerOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.9)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    viewerClose: {
+      position: 'absolute',
+      top: 40,
+      right: 20,
+      zIndex: 2,
+      backgroundColor: '#fff',
+      borderRadius: 16,
+      padding: 8,
+    },
+    viewerCloseText: {
+      fontSize: 16,
+      color: '#333',
+    },
+    viewerImage: {
+      width: 320,
+      height: 320,
+      borderRadius: 8,
+    },
+    viewerVideo: {
+      width: 320,
+      height: 320,
+      borderRadius: 8,
+      backgroundColor: '#000',
+    },
+    textArea: {
+      backgroundColor: '#fff',
+      borderRadius: 8,
+      padding: 12,
+      minHeight: 80,
+      textAlignVertical: 'top',
+      borderWidth: 1,
+      borderColor: '#cfd8dc',
+      marginBottom: 16,
+      fontSize: 16,
+    },
+    footer: {
+      marginTop: 16,
+      marginBottom: 32,
+    },
+  });
 
   const handleClear = () => {
     setCommerce({
@@ -94,11 +226,11 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
   const delitos = ['Tipo 1', 'Tipo 2', 'Tipo 3'];
 
   return (
-    <>
+    <React.Fragment>
       <TopBar navigation={navigation} />
       <LinearGradient colors={['#f1f5fa', '#d8e4f4']} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container}>
-                {/* Selector gravedad */}
+                      {/* Selector gravedad */}
         <Pressable style={styles.selectButton} onPress={() => setGravedadModal(true)}>
           <Text style={styles.selectButtonText}>
             {commerce.gravedad || 'Gravedad'}
@@ -284,132 +416,9 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
             onSave={handleSave}
           />
         </View>
-        <SaveSuccesSnackbar visible={showSnackbar} />
       </ScrollView>
-      </LinearGradient>
-    </>
+      <SaveSuccesSnackbar visible={showSnackbar} />
+        </LinearGradient>
+    </React.Fragment>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  selectButton: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    alignItems: 'center',
-  },
-  selectButtonText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    width: '80%',
-    maxHeight: '60%',
-  },
-  modalItem: {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  modalItemText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  modalCancel: {
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  modalCancelText: {
-    color: '#007bff',
-    fontSize: 16,
-  },
-  previewScroll: {
-    marginBottom: 12,
-    marginTop: 4,
-  },
-  previewContainer: {
-    marginRight: 10,
-    position: 'relative',
-  },
-  previewImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-  },
-  previewVideo: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-    backgroundColor: '#000',
-  },
-  removeIcon: {
-    position: 'absolute',
-    top: -8,
-    right: -8,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 2,
-    elevation: 2,
-  },
-  removeIconText: {
-    fontSize: 16,
-    color: '#f00',
-  },
-  viewerOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  viewerClose: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    zIndex: 2,
-  },
-  viewerCloseText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  viewerImage: {
-    width: '90%',
-    height: '70%',
-  },
-  viewerVideo: {
-    width: '90%',
-    height: '70%',
-    backgroundColor: '#000',
-  },
-  textArea: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    minHeight: 80,
-    textAlignVertical: 'top',
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  footer: {
-    marginTop: 16,
-    marginBottom: 32,
-  },
-});

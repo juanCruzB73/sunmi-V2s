@@ -12,6 +12,8 @@ import {
   Image,
 } from 'react-native';
 import VehicleInput from '../../components/fine/VehicleFineInput';
+import { fetchLocation } from '../../utlis/getLocatiom';
+
 import { TopBar } from '../../components/top-bar/TopBar';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
 import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
@@ -167,6 +169,7 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [mediaViewer, setMediaViewer] = useState<{ uri: string; type: string } | null>(null);
   const [mediaPreviewList, setMediaPreviewList] = useState<{ uri: string; type: string }[]>([]);
+  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   const handleChange = (field: keyof typeof vehicle, value: string) => {
     setVehicle({ ...vehicle, [field]: value });
@@ -210,6 +213,9 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
   const closeMediaViewer = () => {
     setMediaViewer(null);
   };
+  const handleGetLocation = async () => {
+    await fetchLocation(location, setLocation);
+  };
 
   const gravedadOptions = ['Grave', 'Moderado', 'Leve'];
   const calleOptions = ['Avenida Libertador', 'Calle San Martín', 'Boulevard Roca'];
@@ -220,183 +226,188 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
       <TopBar navigation={navigation} />
       <LinearGradient colors={['#f1f5fa', '#d8e4f4']} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container}>
-                {/* Selector gravedad */}
-        <Pressable style={styles.selectButton} onPress={() => setGravedadModal(true)}>
-          <Text style={styles.selectButtonText}>
-            {vehicle.gravedad || 'Gravedad'}
-          </Text>
-        </Pressable>
-        <Modal visible={gravedadModal} transparent animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <FlatList
-                data={gravedadOptions}
-                keyExtractor={item => item}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={styles.modalItem}
-                    onPress={() => {
-                      handleChange('gravedad', item);
-                      setGravedadModal(false);
-                    }}
-                  >
-                    <Text style={styles.modalItemText}>{item}</Text>
-                  </Pressable>
-                )}
-              />
-              <Pressable style={styles.modalCancel} onPress={() => setGravedadModal(false)}>
-                <Text style={styles.modalCancelText}>Cancelar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Selector calle */}
-        <Pressable style={styles.selectButton} onPress={() => setCalleModal(true)}>
-          <Text style={styles.selectButtonText}>
-            {vehicle.calle || 'Calle'}
-          </Text>
-        </Pressable>
-        <Modal visible={calleModal} transparent animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <FlatList
-                data={calleOptions}
-                keyExtractor={item => item}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={styles.modalItem}
-                    onPress={() => {
-                      handleChange('calle', item);
-                      setCalleModal(false);
-                    }}
-                  >
-                    <Text style={styles.modalItemText}>{item}</Text>
-                  </Pressable>
-                )}
-              />
-              <Pressable style={styles.modalCancel} onPress={() => setCalleModal(false)}>
-                <Text style={styles.modalCancelText}>Cancelar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Inputs personalizados */}
-        <VehicleInput label="Patente" value={vehicle.patente} onChangeText={v => handleChange('patente', v)} />
-        <VehicleInput label="Marca" value={vehicle.marca} onChangeText={v => handleChange('marca', v)} />
-        <VehicleInput label="Modelo" value={vehicle.modelo} onChangeText={v => handleChange('modelo', v)} />
-        <VehicleInput label="Color" value={vehicle.color} onChangeText={v => handleChange('color', v)} />
-
-        {/* Selector de tipo de delito */}
-        <Pressable style={styles.selectButton} onPress={() => setModalVisible(true)}>
-          <Text style={styles.selectButtonText}>
-            {vehicle.tipo || 'Tipo de delito'}
-          </Text>
-        </Pressable>
-        <Modal visible={modalVisible} transparent animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <FlatList
-                data={delitos}
-                keyExtractor={item => item}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={styles.modalItem}
-                    onPress={() => {
-                      handleChange('tipo', item);
-                      setModalVisible(false);
-                    }}
-                  >
-                    <Text style={styles.modalItemText}>{item}</Text>
-                  </Pressable>
-                )}
-              />
-              <Pressable style={styles.modalCancel} onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalCancelText}>Cancelar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Numeración */}
-        <VehicleInput label="Numeración" value={vehicle.numeracion} onChangeText={v => handleChange('numeracion', v)} />
-
-        {/* Multimedia */}
-        <Pressable
-          style={styles.selectButton}
-          onPress={() => {
-            Alert.alert('Origen', '¿Qué querés hacer?', [
-              { text: 'Tomar foto', onPress: () => handleMediaSource('camera', 'photo') },
-              { text: 'Grabar video', onPress: () => handleMediaSource('camera', 'video') },
-              { text: 'Galería', onPress: () => handleMediaSource('gallery', 'photo') },
-              { text: 'Cancelar', style: 'cancel' },
-            ]);
-          }}
-        >
-          <Text style={styles.selectButtonText}>Imagen/Video 📷</Text>
-        </Pressable>
-
-        {/* Galería horizontal */}
-        {mediaPreviewList.length > 0 && (
-          <ScrollView horizontal style={styles.previewScroll} showsHorizontalScrollIndicator={false}>
-            {mediaPreviewList.map((item, index) => (
-              <View key={index} style={styles.previewContainer}>
-                <Pressable onPress={() => handleOpenMedia(item)}>
-                  {item.type.startsWith('image') ? (
-                    <Image source={{ uri: item.uri }} style={styles.previewImage} />
-                  ) : (
-                    <Video source={{ uri: item.uri }} style={styles.previewVideo} paused resizeMode="cover" />
+          {/* Selector gravedad */}
+          <Pressable style={styles.selectButton} onPress={() => setGravedadModal(true)}>
+            <Text style={styles.selectButtonText}>
+              {vehicle.gravedad || 'Gravedad'}
+            </Text>
+          </Pressable>
+          <Modal visible={gravedadModal} transparent animationType="slide">
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <FlatList
+                  data={gravedadOptions}
+                  keyExtractor={item => item}
+                  renderItem={({ item }) => (
+                    <Pressable
+                      style={styles.modalItem}
+                      onPress={() => {
+                        handleChange('gravedad', item);
+                        setGravedadModal(false);
+                      }}
+                    >
+                      <Text style={styles.modalItemText}>{item}</Text>
+                    </Pressable>
                   )}
-                </Pressable>
-                <Pressable style={styles.removeIcon} onPress={() => handleRemoveMediaItem(index)}>
-                  <Text style={styles.removeIconText}>❌</Text>
+                />
+                <Pressable style={styles.modalCancel} onPress={() => setGravedadModal(false)}>
+                  <Text style={styles.modalCancelText}>Cancelar</Text>
                 </Pressable>
               </View>
-            ))}
-          </ScrollView>
-        )}
-
-        {/* Viewer modal pantalla completa */}
-        {mediaViewer && (
-          <Modal visible transparent animationType="fade" onRequestClose={closeMediaViewer}>
-            <View style={styles.viewerOverlay}>
-              <Pressable style={styles.viewerClose} onPress={closeMediaViewer}>
-                <Text style={styles.viewerCloseText}>Cerrar ✖️</Text>
-              </Pressable>
-              {mediaViewer.type.startsWith('image') ? (
-                <Image source={{ uri: mediaViewer.uri }} style={styles.viewerImage} resizeMode="contain" />
-              ) : (
-                <Video
-                  source={{ uri: mediaViewer.uri }}
-                  style={styles.viewerVideo}
-                  controls
-                  paused={false}
-                  resizeMode="contain"
-                />
-              )}
             </View>
           </Modal>
-        )}
 
-        {/* Descripción */}
-        <TextInput
-          style={styles.textArea}
-          placeholder="Descripción del hecho"
-          value={vehicle.descripcion}
-          onChangeText={v => handleChange('descripcion', v)}
-          multiline
-        />
+          {/* Selector calle */}
+          <Pressable style={styles.selectButton} onPress={() => setCalleModal(true)}>
+            <Text style={styles.selectButtonText}>
+              {vehicle.calle || 'Calle'}
+            </Text>
+          </Pressable>
+          <Modal visible={calleModal} transparent animationType="slide">
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <FlatList
+                  data={calleOptions}
+                  keyExtractor={item => item}
+                  renderItem={({ item }) => (
+                    <Pressable
+                      style={styles.modalItem}
+                      onPress={() => {
+                        handleChange('calle', item);
+                        setCalleModal(false);
+                      }}
+                    >
+                      <Text style={styles.modalItemText}>{item}</Text>
+                    </Pressable>
+                  )}
+                />
+                <Pressable style={styles.modalCancel} onPress={() => setCalleModal(false)}>
+                  <Text style={styles.modalCancelText}>Cancelar</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <VehicleCommerceFooterButtons
-            onCancel={() => {}}
-            onClear={handleClear}
-            onSave={handleSave}
+          {/* Inputs personalizados */}
+          <VehicleInput label="Patente" value={vehicle.patente} onChangeText={v => handleChange('patente', v)} />
+          <VehicleInput label="Marca" value={vehicle.marca} onChangeText={v => handleChange('marca', v)} />
+          <VehicleInput label="Modelo" value={vehicle.modelo} onChangeText={v => handleChange('modelo', v)} />
+          <VehicleInput label="Color" value={vehicle.color} onChangeText={v => handleChange('color', v)} />
+
+          {/* Selector de tipo de delito */}
+          <Pressable style={styles.selectButton} onPress={() => setModalVisible(true)}>
+            <Text style={styles.selectButtonText}>
+              {vehicle.tipo || 'Tipo de delito'}
+            </Text>
+          </Pressable>
+          <Modal visible={modalVisible} transparent animationType="slide">
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <FlatList
+                  data={delitos}
+                  keyExtractor={item => item}
+                  renderItem={({ item }) => (
+                    <Pressable
+                      style={styles.modalItem}
+                      onPress={() => {
+                        handleChange('tipo', item);
+                        setModalVisible(false);
+                      }}
+                    >
+                      <Text style={styles.modalItemText}>{item}</Text>
+                    </Pressable>
+                  )}
+                />
+                <Pressable style={styles.modalCancel} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.modalCancelText}>Cancelar</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+
+          {/* Numeración */}
+          <VehicleInput label="Numeración" value={vehicle.numeracion} onChangeText={v => handleChange('numeracion', v)} />
+
+          {/* Multimedia */}
+          <Pressable
+            style={styles.selectButton}
+            onPress={() => {
+              Alert.alert('Origen', '¿Qué querés hacer?', [
+                { text: 'Tomar foto', onPress: () => handleMediaSource('camera', 'photo') },
+                { text: 'Grabar video', onPress: () => handleMediaSource('camera', 'video') },
+                { text: 'Galería', onPress: () => handleMediaSource('gallery', 'photo') },
+                { text: 'Cancelar', style: 'cancel' },
+              ]);
+            }}
+          >
+            <Text style={styles.selectButtonText}>Imagen/Video 📷</Text>
+          </Pressable>
+
+          {/* Galería horizontal */}
+          {mediaPreviewList.length > 0 && (
+            <ScrollView horizontal style={styles.previewScroll} showsHorizontalScrollIndicator={false}>
+              {mediaPreviewList.map((item, index) => (
+                <View key={index} style={styles.previewContainer}>
+                  <Pressable onPress={() => handleOpenMedia(item)}>
+                    {item.type.startsWith('image') ? (
+                      <Image source={{ uri: item.uri }} style={styles.previewImage} />
+                    ) : (
+                      <Video source={{ uri: item.uri }} style={styles.previewVideo} paused resizeMode="cover" />
+                    )}
+                  </Pressable>
+                  <Pressable style={styles.removeIcon} onPress={() => handleRemoveMediaItem(index)}>
+                    <Text style={styles.removeIconText}>❌</Text>
+                  </Pressable>
+                </View>
+              ))}
+            </ScrollView>
+          )}
+
+          {/* Viewer modal pantalla completa */}
+          {mediaViewer && (
+            <Modal visible transparent animationType="fade" onRequestClose={closeMediaViewer}>
+              <View style={styles.viewerOverlay}>
+                <Pressable style={styles.viewerClose} onPress={closeMediaViewer}>
+                  <Text style={styles.viewerCloseText}>Cerrar ✖️</Text>
+                </Pressable>
+                {mediaViewer.type.startsWith('image') ? (
+                  <Image source={{ uri: mediaViewer.uri }} style={styles.viewerImage} resizeMode="contain" />
+                ) : (
+                  <Video
+                    source={{ uri: mediaViewer.uri }}
+                    style={styles.viewerVideo}
+                    controls
+                    paused={false}
+                    resizeMode="contain"
+                  />
+                )}
+              </View>
+            </Modal>
+          )}
+          {/* Ubicación */}
+                  <Pressable style={styles.selectButton} onPress={handleGetLocation}>
+                    <Text style={styles.selectButtonText}>Obtener Ubicación 📍</Text>
+                  </Pressable>
+          
+
+          {/* Descripción */}
+          <TextInput
+            style={styles.textArea}
+            placeholder="Descripción del hecho"
+            value={vehicle.descripcion}
+            onChangeText={v => handleChange('descripcion', v)}
+            multiline
           />
-        </View>
-      </ScrollView>
+
+          {/* Footer */}
+          <View style={styles.footer}>
+            <VehicleCommerceFooterButtons
+              onCancel={() => {}}
+              onClear={handleClear}
+              onSave={handleSave}
+            />
+          </View>
+        </ScrollView>
       </LinearGradient>
       <SaveSuccesSnackbar visible={showSnackbar} />
     </>
