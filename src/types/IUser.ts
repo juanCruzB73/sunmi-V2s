@@ -1,7 +1,7 @@
 export interface IUser{
     userId:number|null,
     email:string
-    password:string
+    name:string
 }
 
 export type AuthAction =

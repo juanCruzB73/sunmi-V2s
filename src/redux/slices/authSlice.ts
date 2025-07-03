@@ -16,7 +16,7 @@ export interface IPayloadResgister {
 const initialState: IAuthState = {
     status:"non-authenticated",
     user:{
-        password:"",
+        name:"",
         email: "",
         userId:null,
     },
@@ -30,7 +30,7 @@ const authSlice = createSlice({
     onChecking:(state)=>{
         state.status="checking",
         state.user={
-            password:"",
+            name:"",
             email: "",
             userId:null,
         },
@@ -44,7 +44,7 @@ const authSlice = createSlice({
     onLogOut:(state)=>{
         state.status="non-authenticated",
         state.user={
-            password:"",
+            name:"",
             email: "",
             userId:null,
         },

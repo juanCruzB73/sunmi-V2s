@@ -12,7 +12,6 @@ import {
   Image,
 } from 'react-native';
 import VehicleInput from '../../components/fine/VehicleFineInput';
-import { fetchLocation } from '../../utlis/getLocatiom';
 
 import { TopBar } from '../../components/top-bar/TopBar';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
@@ -22,6 +21,7 @@ import { RootStackParamList } from '../../router/StackNavigator';
 import pickMedia from '../../utlis/ImagePickerService';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
+import { fetchLocation } from '../../utlis/getLocatiom';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VehicleFineModal'>;
 
@@ -162,6 +162,7 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
     numeracion: '',
     descripcion: '',
   });
+  
 
   const [modalVisible, setModalVisible] = useState(false);
   const [gravedadModal, setGravedadModal] = useState(false);
@@ -210,6 +211,7 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
     setMediaViewer(item);
   };
 
+
   const closeMediaViewer = () => {
     setMediaViewer(null);
   };
@@ -256,37 +258,17 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
               </View>
             </View>
           </Modal>
-
-          {/* Selector calle */}
-          <Pressable style={styles.selectButton} onPress={() => setCalleModal(true)}>
-            <Text style={styles.selectButtonText}>
-              {vehicle.calle || 'Calle'}
-            </Text>
-          </Pressable>
-          <Modal visible={calleModal} transparent animationType="slide">
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContent}>
-                <FlatList
-                  data={calleOptions}
-                  keyExtractor={item => item}
-                  renderItem={({ item }) => (
-                    <Pressable
-                      style={styles.modalItem}
-                      onPress={() => {
-                        handleChange('calle', item);
-                        setCalleModal(false);
-                      }}
-                    >
-                      <Text style={styles.modalItemText}>{item}</Text>
-                    </Pressable>
-                  )}
-                />
-                <Pressable style={styles.modalCancel} onPress={() => setCalleModal(false)}>
-                  <Text style={styles.modalCancelText}>Cancelar</Text>
-                </Pressable>
-              </View>
-            </View>
-          </Modal>
+        
+     
+             
+        {/* Descripción */}
+        <TextInput
+          style={styles.textArea}
+          placeholder="Descripción del hecho"
+          value={vehicle.descripcion}
+          onChangeText={v => handleChange('descripcion', v)}
+          multiline
+        />
 
           {/* Inputs personalizados */}
           <VehicleInput label="Patente" value={vehicle.patente} onChangeText={v => handleChange('patente', v)} />
@@ -388,6 +370,12 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
                   <Pressable style={styles.selectButton} onPress={handleGetLocation}>
                     <Text style={styles.selectButtonText}>Obtener Ubicación 📍</Text>
                   </Pressable>
+                   {location && (
+                <View style={{ marginBottom: 16 }}>
+                  <Text style={{ fontSize: 16 }}>Latitud: {location.latitude}</Text>
+                  <Text style={{ fontSize: 16 }}>Longitud: {location.longitude}</Text>
+                </View>
+              )}
           
 
           {/* Descripción */}

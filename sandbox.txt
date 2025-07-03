@@ -1,0 +1,49 @@
+s3 method to upoad images
+
+import DocumentPicker from 'react-native-document-picker';
+
+const uploadImage = async () => {
+  const file = await DocumentPicker.pickSingle();
+  const { name, uri, type } = file;
+
+  // Get pre-signed URL
+  const res = await fetch(
+    `https://your-backend.com/presign?filename=${encodeURIComponent(name)}&contentType=${encodeURIComponent(type)}`
+  );
+  const { url } = await res.json();
+
+  // Upload file directly to S3
+  const fileBlob = await fetch(uri).then(r => r.blob());
+
+  const upload = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': type,
+    },
+    body: fileBlob,
+  });
+
+  if (upload.ok) {
+    console.log('Uploaded successfully!');
+    const publicUrl = url.split('?')[0]; // This is the S3 object URL
+    console.log('File URL:', publicUrl);
+  } else {
+    console.error('Upload failed');
+  }
+};
+
+
+
+Why Not Use AWS SDK Directly in React Native?
+
+❌ If you try to use aws-sdk or @aws-sdk/client-s3 directly in React Native:
+
+  You'll need to bundle AWS credentials (security risk!)
+  The SDK is large and often incompatible with React Native
+  You're vulnerable to abuse (your S3 bucket could be wiped if exposed)
+
+| Method     | Secure? | Backend Needed?   | Upload Path   |
+| ---------------------------- | ------- | ----------------- | ---------------------------    |
+| AWS SDK in React Native      | ❌ No    | ❌ No              | React Native → S3           |
+| Pre-Signed URL (recommended) | ✅ Yes   | ✅ Yes (sign only) | React Native → S3           |
+| Backend handles upload       | ✅ Yes   | ✅ Yes (upload)    | React Native → Backend → S3 |

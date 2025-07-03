@@ -6,20 +6,20 @@ import type { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
 import { onLogOut } from '../../redux/slices/authSlice';
+import { startLogOut } from '../../redux/slices/authThunk';
 
 const { width } = Dimensions.get('window');
 
 const LogoutButton: React.FC = () => {
+  
   const dispatch = useDispatch<AppDispatch>();
 
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  const handleLogout = () => {
-    dispatch(onLogOut())
-  };
+  const handleLogOut=()=>{
+       dispatch(startLogOut())
+    }
 
   return (
-    <TouchableOpacity style={styles.button} onPress={handleLogout}>
+    <TouchableOpacity style={styles.button} onPress={handleLogOut}>
       <Text style={styles.text}>Cerrar sesion</Text>
     </TouchableOpacity>
   );
