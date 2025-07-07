@@ -178,15 +178,23 @@ const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const handleChange = (field: keyof typeof vehicle, value: string) => {
     setVehicle({ ...vehicle, [field]: value });
   };
-const showDatePicker = () => setDatePickerVisibility(true);
-const hideDatePicker = () => setDatePickerVisibility(false);
-const handleConfirmDate = (date: Date) => {
-  const formatted = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}/${date.getFullYear()}`; // formato DD/MM/YYYY
-  handleChange('fecha', formatted);
-  hideDatePicker();
-};
+
+  const [showDate,setShowDate]=useState(false);
+    const handleShowDate=(date: Date)=>{
+      setShowDate(!showDate);
+      const formatted = date.toLocaleDateString('es-ES');
+      handleChange('fecha', formatted);
+    }
+
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+  const handleConfirmDate = (date: Date) => {
+    const formatted = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}/${date.getFullYear()}`; // formato DD/MM/YYYY
+    handleChange('fecha', formatted);
+    hideDatePicker();
+  };
 
   const handleClear = () => {
     setVehicle({
@@ -277,7 +285,20 @@ const handleConfirmDate = (date: Date) => {
           <VehicleInput label="Marca" value={vehicle.marca} onChangeText={v => handleChange('marca', v)} />
           <VehicleInput label="Modelo" value={vehicle.modelo} onChangeText={v => handleChange('modelo', v)} />
           <VehicleInput label="Color" value={vehicle.color} onChangeText={v => handleChange('color', v)} />
-
+          {/*Handle Date*/}
+          <Pressable style={styles.selectButton} onPress={()=>handleShowDate(new Date)}>
+                    {
+                      showDate?(
+                        <Text style={styles.selectButtonText}>
+                          {vehicle.fecha}
+                        </Text>
+                      ):(
+                        <Text>
+                          'Ingresar Fecha 📅'
+                        </Text>
+                      )
+                    }
+                  </Pressable>
           {/* Selector de tipo de delito */}
           <Pressable style={styles.selectButton} onPress={() => setModalVisible(true)}>
             <Text style={styles.selectButtonText}>

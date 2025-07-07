@@ -7,14 +7,8 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
-<<<<<<< HEAD
-import { startLogIn } from '../../redux/slices/authThunk';
-import { IUser } from '../../types/auth/IUser';
-=======
 import { useNetworkStatus } from '../../utlis/useNetworkStatus';
 // import { startLogIn } from '../../redux/slices/authThunk';
-import { IUser } from '../../types/IUser';
->>>>>>> e5a2f50be835b9927c59737be87e9ae62555ca2e
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 

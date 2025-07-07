@@ -58,23 +58,19 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
   const [mediaViewer, setMediaViewer] = useState<{ uri: string; type: string } | null>(null);
   const [mediaPreviewList, setMediaPreviewList] = useState<{ uri: string; type: string }[]>([]);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
+  const [showDate,setShowDate]=useState(false);
+  
 
   const handleChange = (field: keyof typeof commerce, value: string) => {
     setCommerce({ ...commerce, [field]: value });
   };
   
 
-const showDatePicker = () => setDatePickerVisibility(true);
-const hideDatePicker = () => setDatePickerVisibility(false);
-const handleConfirmDate = (date: Date) => {
-  // If you want to use moment.js, uncomment the next line and make sure moment is installed and imported
-  // const formatted = moment(date).format('DD/MM/YYYY');
-  // Otherwise, use toLocaleDateString for formatting:
-  const formatted = date.toLocaleDateString('es-ES'); // Format as DD/MM/YYYY in Spanish locale
-  handleChange('fecha', formatted);
-  hideDatePicker();
-};
+  const handleShowDate=(date: Date)=>{
+    setShowDate(!showDate);
+    const formatted = date.toLocaleDateString('es-ES');
+    handleChange('fecha', formatted);
+  }
 
   
   // Estilos para el componente
@@ -322,11 +318,19 @@ const handleConfirmDate = (date: Date) => {
         {/* Campos base */}
         <CommerceFineInput label="RUT Comercio" value={commerce.rutcommerce} onChangeText={(v) => handleChange('rutcommerce', v)} />
         <CommerceFineInput label="Registro Comercial" value={commerce.commerceregister} onChangeText={(v) => handleChange('commerceregister', v)} />
-        <CommerceFineInput
-          label="Ingresar Fecha"
-          value={commerce.fecha}
-          onChangeText={(v) => handleChange('fecha', v)}
-        />
+        <Pressable style={styles.selectButton} onPress={()=>handleShowDate(new Date)}>
+          {
+            showDate?(
+              <Text style={styles.selectButtonText}>
+                {commerce.fecha}
+              </Text>
+            ):(
+              <Text>
+                'Ingresar Fecha 📅'
+              </Text>
+            )
+          }
+        </Pressable>
 
         {/* Tipo de delito */}
         <Pressable style={styles.selectButton} onPress={() => setModalVisible(true)}>
