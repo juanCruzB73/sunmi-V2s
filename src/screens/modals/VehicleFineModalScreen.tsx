@@ -271,10 +271,6 @@ const handleConfirmDate = (date: Date) => {
               </View>
             </View>
           </Modal>
-        
-     
-             
-        {/* Descripción duplicada eliminada porque ya existe arriba */}
 
           {/* Inputs personalizados */}
           <VehicleInput label="Patente" value={vehicle.patente} onChangeText={v => handleChange('patente', v)} />
