@@ -2,5 +2,6 @@
   "compilerOptions": {
     "jsx": "react"
   },
-  "extends": "@react-native/typescript-config"
+  "extends": "@react-native/typescript-config",
+  "include": ["src", "src/types"]
 }
