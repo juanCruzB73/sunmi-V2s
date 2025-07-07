@@ -11,7 +11,7 @@ export interface IVehicle{
     brand: IVehicleBrand;
     model: IVehicleModel;
     color: IColor;
-    FineType: IFineType;
+    fineType: IFineType;
     date: Date;
     severity: ISeverity;
     address: IAddress;
