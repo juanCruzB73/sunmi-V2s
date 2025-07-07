@@ -8,7 +8,7 @@ import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
 import { startLogIn } from '../../redux/slices/authThunk';
-import { IUser } from '../../types/IUser';
+import { IUser } from '../../types/auth/IUser';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 

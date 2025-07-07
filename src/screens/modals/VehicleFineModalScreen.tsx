@@ -258,17 +258,6 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
               </View>
             </View>
           </Modal>
-        
-     
-             
-        {/* Descripción */}
-        <TextInput
-          style={styles.textArea}
-          placeholder="Descripción del hecho"
-          value={vehicle.descripcion}
-          onChangeText={v => handleChange('descripcion', v)}
-          multiline
-        />
 
           {/* Inputs personalizados */}
           <VehicleInput label="Patente" value={vehicle.patente} onChangeText={v => handleChange('patente', v)} />
