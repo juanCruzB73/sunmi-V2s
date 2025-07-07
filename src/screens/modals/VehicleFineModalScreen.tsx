@@ -161,8 +161,11 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
     calle: '',
     numeracion: '',
     descripcion: '',
+    fecha: '', // Added fecha property
   });
   
+const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
 
   const [modalVisible, setModalVisible] = useState(false);
   const [gravedadModal, setGravedadModal] = useState(false);
@@ -175,6 +178,15 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
   const handleChange = (field: keyof typeof vehicle, value: string) => {
     setVehicle({ ...vehicle, [field]: value });
   };
+const showDatePicker = () => setDatePickerVisibility(true);
+const hideDatePicker = () => setDatePickerVisibility(false);
+const handleConfirmDate = (date: Date) => {
+  const formatted = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}/${date.getFullYear()}`; // formato DD/MM/YYYY
+  handleChange('fecha', formatted);
+  hideDatePicker();
+};
 
   const handleClear = () => {
     setVehicle({
@@ -188,6 +200,7 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
       calle: '',
       numeracion: '',
       descripcion: '',
+      fecha: '', // Reset fecha as well
     });
     setMediaPreviewList([]);
   };
@@ -261,14 +274,7 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
         
      
              
-        {/* Descripción */}
-        <TextInput
-          style={styles.textArea}
-          placeholder="Descripción del hecho"
-          value={vehicle.descripcion}
-          onChangeText={v => handleChange('descripcion', v)}
-          multiline
-        />
+        {/* Descripción duplicada eliminada porque ya existe arriba */}
 
           {/* Inputs personalizados */}
           <VehicleInput label="Patente" value={vehicle.patente} onChangeText={v => handleChange('patente', v)} />
@@ -400,4 +406,7 @@ export const VehicleFineModalScreen = ({ navigation }: Props) => {
       <SaveSuccesSnackbar visible={showSnackbar} />
     </>
   );
+
 };
+
+

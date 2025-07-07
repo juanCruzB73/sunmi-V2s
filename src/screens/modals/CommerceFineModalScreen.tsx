@@ -21,20 +21,33 @@ import { fetchLocation } from '../../utlis/getLocatiom';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import LinearGradient from 'react-native-linear-gradient';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+// import moment from 'moment'; // Uncomment if you want to use moment.js
+
+
+interface ICommerce {
+  rutcommerce: string;
+  commerceregister: string;
+  tipo: string;
+  gravedad: string;
+  calle: string;
+  numeracion: string;
+  descripcion: string;
+  fecha: string;
+}
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CommerceFineModal'>;
 
 export const CommerceFineModalScreen = ({ navigation }: Props) => {
-  const [commerce, setCommerce] = useState({
+  const [commerce, setCommerce] = useState<ICommerce>({
     rutcommerce: '',
     commerceregister: '',
-    modelo: '',
     tipo: '',
-    anio: '',
     gravedad: '',
     calle: '',
     numeracion: '',
     descripcion: '',
+    fecha: '',
   });
 
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -44,10 +57,25 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [mediaViewer, setMediaViewer] = useState<{ uri: string; type: string } | null>(null);
   const [mediaPreviewList, setMediaPreviewList] = useState<{ uri: string; type: string }[]>([]);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
 
   const handleChange = (field: keyof typeof commerce, value: string) => {
     setCommerce({ ...commerce, [field]: value });
   };
+  
+
+const showDatePicker = () => setDatePickerVisibility(true);
+const hideDatePicker = () => setDatePickerVisibility(false);
+const handleConfirmDate = (date: Date) => {
+  // If you want to use moment.js, uncomment the next line and make sure moment is installed and imported
+  // const formatted = moment(date).format('DD/MM/YYYY');
+  // Otherwise, use toLocaleDateString for formatting:
+  const formatted = date.toLocaleDateString('es-ES'); // Format as DD/MM/YYYY in Spanish locale
+  handleChange('fecha', formatted);
+  hideDatePicker();
+};
+
   
   // Estilos para el componente
   const styles = StyleSheet.create({
@@ -185,13 +213,12 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
     setCommerce({
       rutcommerce: '',
       commerceregister: '',
-      modelo: '',
       tipo: '',
-      anio: '',
       gravedad: '',
       calle: '',
       numeracion: '',
       descripcion: '',
+      fecha: '',
     });
     setMediaPreviewList([]);
   };
@@ -202,7 +229,7 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
   };
 
   const handleMediaSource = async (source: 'camera' | 'gallery', type: 'photo' | 'video') => {
-    console.warn('Integrar lógica real con pickMedia');
+   
   };
 
   const handleRemoveMediaItem = (index: number) => {
@@ -226,7 +253,7 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
   const delitos = ['Tipo 1', 'Tipo 2', 'Tipo 3'];
 
   return (
-    <React.Fragment>
+    <>
       <TopBar navigation={navigation} />
       <LinearGradient colors={['#f1f5fa', '#d8e4f4']} style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container}>
@@ -294,8 +321,12 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
 
         {/* Campos base */}
         <CommerceFineInput label="RUT Comercio" value={commerce.rutcommerce} onChangeText={(v) => handleChange('rutcommerce', v)} />
-        <CommerceFineInput label="Registro" value={commerce.commerceregister} onChangeText={(v) => handleChange('commerceregister', v)} />
-        <CommerceFineInput label="Modelo" value={commerce.modelo} onChangeText={(v) => handleChange('modelo', v)} />
+        <CommerceFineInput label="Registro Comercial" value={commerce.commerceregister} onChangeText={(v) => handleChange('commerceregister', v)} />
+        <CommerceFineInput
+          label="Ingresar Fecha"
+          value={commerce.fecha}
+          onChangeText={(v) => handleChange('fecha', v)}
+        />
 
         {/* Tipo de delito */}
         <Pressable style={styles.selectButton} onPress={() => setModalVisible(true)}>
@@ -419,6 +450,6 @@ export const CommerceFineModalScreen = ({ navigation }: Props) => {
       </ScrollView>
       <SaveSuccesSnackbar visible={showSnackbar} />
         </LinearGradient>
-    </React.Fragment>
-  );
-};
+    </>
+  ); 
+}

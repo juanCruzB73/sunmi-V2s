@@ -15,7 +15,7 @@ declare module 'react-native-sqlite-storage' {
   }
 
   const SQLite: {
-    enablePromise: (enable: boolean): void;
+    enablePromise: (enable: boolean) => void;
     openDatabase: (config: { name: string; location: string }) => Promise<SQLiteDatabase>;
   };
 
