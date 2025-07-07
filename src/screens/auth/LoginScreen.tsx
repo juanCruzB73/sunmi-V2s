@@ -7,29 +7,37 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
+<<<<<<< HEAD
 import { startLogIn } from '../../redux/slices/authThunk';
 import { IUser } from '../../types/auth/IUser';
+=======
+import { useNetworkStatus } from '../../utlis/useNetworkStatus';
+// import { startLogIn } from '../../redux/slices/authThunk';
+import { IUser } from '../../types/IUser';
+>>>>>>> e5a2f50be835b9927c59737be87e9ae62555ca2e
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-
-  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const dispatch = useDispatch<AppDispatch>();
+  const isOnline = useNetworkStatus();
 
   const handleLogin = async () => {
-  if (!email || !password) {
-    Alert.alert('Campos incompletos', 'Por favor completa email y contraseña.');
-    return;
-  }
-  //await dispatch(startLogIn(email, password));
-  navigation.navigate("Home")
-  
-};
+    if (!email || !password) {
+      Alert.alert('Campos incompletos', 'Por favor completa email y contraseña.');
+      return;
+    }
 
+    if (!isOnline) {
+      Alert.alert('Sin conexión', 'Necesitas conexión a Internet para iniciar sesión.');
+      return;
+    }
+
+    // await dispatch(startLogIn(email, password));
+    navigation.navigate('Home');
+  };
 
   const handleForgotPassword = () => {
     navigation.navigate('ForgetPassword');
@@ -42,7 +50,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       </View>
       <InputField placeholder="Usuario" value={email} onChangeText={setEmail} />
       <InputField placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
-      <LoginButton label="Ingresar" onPress={()=>{handleLogin()}} />
+      <LoginButton label="Ingresar" onPress={handleLogin} />
       <ForgetPassword onPress={handleForgotPassword} />
     </View>
   );
