@@ -7,7 +7,7 @@ import { RootStackParamList } from '../../router/StackNavigator';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNetworkStatus } from '../../utlis/useNetworkStatus';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'CommerceMenu'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'VehicleScreen'>;
 
 const VehicleScreen = ({ navigation }: Props) => {
   const isOnline = useNetworkStatus();

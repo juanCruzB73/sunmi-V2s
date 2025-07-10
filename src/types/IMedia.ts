@@ -1,4 +1,4 @@
 export interface IMedia{
-    imgId:number;
+    mediaId:number;
     location:string;
 }

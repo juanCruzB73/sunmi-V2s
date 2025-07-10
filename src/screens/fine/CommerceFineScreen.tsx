@@ -13,7 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CommerceFineScreen'>;
 
-const CommerceFineScreen = ({ navigation }: Props) => {
+export const CommerceFineModalScreen = ({ navigation }: Props) => {
   return (
     <>
       <TopBar navigation={navigation} />
@@ -129,5 +129,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-
-export default CommerceFineScreen;
