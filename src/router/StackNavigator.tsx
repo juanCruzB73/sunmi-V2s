@@ -13,6 +13,7 @@ import { CommerceSearcher } from '../screens/searcher/CommerceSearcher';
 import { CommerceFineModalScreen } from '../screens/fine/CommerceFineScreen';
 import VehicleFineScreen from '../screens/fine/VehicleFineScreen';
 import { VehicleSearcher } from '../screens/searcher/VehicleSearcher';
+import TestDbScreen from '../localDB/testDb';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -32,15 +33,15 @@ export type RootStackParamList = {
   CommerceFineScreen: undefined;
   VehicleFineScreen: undefined;
   VehicleSearcher: undefined;
-  TestDb:undefined;
+  TestDbScreen:undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="Home">
-
+    <Stack.Navigator initialRouteName="TestDbScreen">
+      <Stack.Screen name="TestDbScreen" component={TestDbScreen} options={{ headerShown: false }} />
       <Stack.Screen name="VehicleSearcher" component={VehicleSearcher} options={{ headerShown: false }} />
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
