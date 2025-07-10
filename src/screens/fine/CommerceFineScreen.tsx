@@ -44,7 +44,7 @@ const CommerceFineScreen = ({ navigation }: Props) => {
                 styles.buttonGoBack,
                 pressed && styles.buttonPressed
               ]}
-              onPress={() => navigation.navigate('CommerceSearcher')}
+              onPress={() => navigation.navigate('VehicleSearcher')}
             >
               <Text style={styles.buttonText}>Volver</Text>
             </Pressable>

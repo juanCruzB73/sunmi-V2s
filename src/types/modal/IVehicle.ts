@@ -3,7 +3,7 @@ import { IFineType } from "../fine/IFineType";
 import { IColor } from "../IColor";
 import { IMedia } from "../IMedia";
 import { IVehicleBrand } from "../vehicle-brand/IVehicleBrand";
-import { IVehicleModel } from "../vehicle-brand/IVheicleModel";
+import { IVehicleModel } from "../vehicle-brand/IVehicleModel";
 
 export interface IVehicle{
     vehicleId:number;

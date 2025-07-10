@@ -1,29 +1,16 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../router/StackNavigator';
 
 const { width } = Dimensions.get('window');
 
 export interface CommerceButtonProps {
   label: string;
+  onPress?: () => void;
 }
 
-const CommerceButton: React.FC<CommerceButtonProps> = ({ label }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  const handlePress = () => {
-    if (label === 'Datos del comercio') {
-      navigation.navigate('CommerceSearcher');
-    } else if (label === 'Generar Factura') {
-      navigation.navigate('CommerceFineModal');
-    }
-    // Puedes agregar más condiciones aquí si agregas más botones
-  };
-
+const CommerceButton: React.FC<CommerceButtonProps> = ({ label, onPress }) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={handlePress}>
+    <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text style={styles.label}>{label}</Text>
     </TouchableOpacity>
   );

@@ -7,7 +7,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
-import { useNetworkStatus } from '../../utlis/useNetworkStatus';
 // import { startLogIn } from '../../redux/slices/authThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
@@ -16,7 +15,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
-  const isOnline = useNetworkStatus();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -24,10 +22,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       return;
     }
 
-    if (!isOnline) {
-      Alert.alert('Sin conexión', 'Necesitas conexión a Internet para iniciar sesión.');
-      return;
-    }
 
     // await dispatch(startLogIn(email, password));
     navigation.navigate('Home');

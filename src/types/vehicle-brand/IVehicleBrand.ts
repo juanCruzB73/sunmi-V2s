@@ -1,4 +1,4 @@
-import { IVehicleModel } from "./IVheicleModel";
+import { IVehicleModel } from "./IVehicleModel";
 
 export interface IVehicleBrand{
     vehicleBrandId:number;

@@ -14,7 +14,7 @@ import { CommerceSearcher } from '../screens/searcher/CommerceSearcher';
 import CommerceFineScreen from '../screens/fine/CommerceFineScreen';
 import VehicleFineScreen from '../screens/fine/VehicleFineScreen';
 import { VehicleSearcher } from '../screens/searcher/VehicleSearcher';
-import TestDb from '../dbTest/testDb';
+import TestDb from '../db/testDb';
 export type RootStackParamList = {
   Login: undefined;
   Home: undefined;
@@ -53,9 +53,9 @@ const StackNavigator = () => {
       <Stack.Screen name="FineSearcher" component={FineSearcher} options={{ headerShown: false }} />
       <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Printing" component={PrintingScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CommerceFineModal" component={CommerceFineModalScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="VehicleFineModal" component={CommerceFineModalScreen} options={{ headerShown: false }} />
       <Stack.Screen name="profile" component={ProfileScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CommerceSearcher" component={CommerceSearcher} options={{ headerShown: false }} />
+      <Stack.Screen name="VehicleSearcher" component={CommerceSearcher} options={{ headerShown: false }} />
       <Stack.Screen name="VehicleFineModal" component={VehicleFineModalScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );

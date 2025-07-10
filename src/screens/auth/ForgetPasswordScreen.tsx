@@ -2,21 +2,26 @@ import React, { useState } from 'react';
 import { View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import EmailInput from '../../components/forgotPassword/EmailInput';
 import LoginButton from '../../components/login/LoginButton';
-import { TopBar } from '../../components/top-bar/TopBar';
 import { Dimensions } from 'react-native';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-
+import { useNetworkStatus} from '../../utlis/useNetworkStatus';
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const ForgetPasswordScreen: React.FC = ({ navigation }: any) => {
   const [email, setEmail] = useState<string>('');
+  const isOnline = useNetworkStatus();
 
   const handleSend = () => {
     if (!email.trim()) {
       Alert.alert('Correo vacío', 'Por favor ingresá tu correo electrónico.');
       return;
+      
     }
+      if (!isOnline) {
+          Alert.alert('Sin conexión', 'Necesitas conexión a Internet para enviar el correo.');
+          return;
+        }
     Alert.alert('Recuperar contraseña', `Se enviará un correo a: ${email}`);
   };
 //A IMPLEMENTAR
@@ -26,7 +31,6 @@ const ForgetPasswordScreen: React.FC = ({ navigation }: any) => {
 
   return (
     <>
-      <TopBar navigation={navigation}/>
       <View style={styles.container}>
        <View style={styles.textContainer}>
          <Text style={styles.title}>¿Olvidó su contraseña?</Text>

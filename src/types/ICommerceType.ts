@@ -1,4 +1,4 @@
 export interface ICommerceType{
-    comerTypeId:number;
+    commerTypeId:number;
     commerceTypeName:string,
 }

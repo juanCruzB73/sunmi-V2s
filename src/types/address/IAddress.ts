@@ -5,6 +5,6 @@ export interface IAddress{
     streetName:string;
     streetNumber:string;
     lat:number
-    logn:number;
+    long:number;
     city:ICity;
 }

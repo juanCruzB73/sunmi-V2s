@@ -1,29 +1,16 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../router/StackNavigator';
 
 const { width } = Dimensions.get('window');
 
 export interface VehicleButtonProps {
   label: string;
+  onPress?: () => void;
 }
 
-const VehicleButton: React.FC<VehicleButtonProps> = ({ label }) => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  const handlePress = () => {
-    if (label === 'Datos del comercio') {
-      navigation.navigate('VehicleSearcher');
-    } else if (label === 'Generar Factura') {
-      navigation.navigate('VehicleFineModal');
-    }
-    // Puedes agregar más condiciones aquí si agregas más botones
-  };
-
+const VehicleButton: React.FC<VehicleButtonProps> = ({ label, onPress }) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={handlePress}>
+    <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text style={styles.label}>{label}</Text>
     </TouchableOpacity>
   );
