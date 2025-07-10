@@ -15,8 +15,7 @@ import fineModalStyles from '../../styles/fineModalStyles';
 
 import { useFineModalHandlers } from '../../hooks/useFineModalHandlers';
 import { useCommerceForm } from '../../hooks/useCommerceForm';
-import pickMedia from '../../utlis/ImagePickerService';
-import { fetchLocation } from '../../utlis/getLocatiom';
+
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VehicleFineModal'>;

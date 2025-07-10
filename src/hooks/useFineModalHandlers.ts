@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import pickMedia from '../utlis/ImagePickerService';
 import { fetchLocation } from '../utlis/getLocatiom';
-import { ICommerce } from '../types';
 
 type MediaItem = { uri: string; type: string };
 type SourceType = 'camera' | 'gallery';
