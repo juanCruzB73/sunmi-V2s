@@ -29,7 +29,7 @@ const ProfileScreen = ({ navigation }: Props) => {
             name={user.name}
             email={user.email}
           />
-          <View style={styles.optionContainer}>
+          <View style={styles.optionBox}>
             <ProfileOption icon="bell" label="Notificaciones" onPress={() => {}} />
             <ProfileOption icon="question-circle" label="Ayuda" onPress={() => {}} />
             <ProfileOption icon="cog" label="Configuraciones" onPress={() => {}} />

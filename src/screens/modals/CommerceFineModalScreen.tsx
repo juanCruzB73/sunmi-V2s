@@ -1,459 +1,184 @@
-// Primera parte del componente embellecido
-import React, { useEffect, useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Pressable,
-  Text,
-  Modal,
-  FlatList,
-  TextInput,
-  Image,
-  Alert
-} from 'react-native';
-import { TopBar } from '../../components/top-bar/TopBar';
+import React, { useState } from 'react';
+import {ScrollView,View,Pressable,Text,TextInput,Alert,Image,Modal} from 'react-native';
+import Video from 'react-native-video';
+import LinearGradient from 'react-native-linear-gradient';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../router/StackNavigator';
+
 import CommerceFineInput from '../../components/fine/CommerceFineInput';
 import VehicleCommerceFooterButtons from '../../components/fine/VehicleCommerceFooterButtons';
 import SaveSuccesSnackbar from '../../components/fine/SaveSuccesSnackbar';
-import Video from 'react-native-video';
+import { TopBar } from '../../components/top-bar/TopBar';
+import SelectModal from '../../components/modal/SelectModal';
+
+import fineModalStyles from '../../styles/fineModalStyles';
+
+import { useFineModalHandlers } from '../../hooks/useFineModalHandlers';
+import { useCommerceForm } from '../../hooks/useCommerceForm';
+import pickMedia from '../../utlis/ImagePickerService';
 import { fetchLocation } from '../../utlis/getLocatiom';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../router/StackNavigator';
-import LinearGradient from 'react-native-linear-gradient';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-// import moment from 'moment'; // Uncomment if you want to use moment.js
 
 
-interface ICommerce {
-  rutcommerce: string;
-  commerceregister: string;
-  tipo: string;
-  gravedad: string;
-  calle: string;
-  numeracion: string;
-  descripcion: string;
-  fecha: string;
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'VehicleFineModal'>;
 
-type Props = NativeStackScreenProps<RootStackParamList, 'CommerceFineModal'>;
-
-export const CommerceFineModalScreen = ({ navigation }: Props) => {
-  const [commerce, setCommerce] = useState<ICommerce>({
-    rutcommerce: '',
-    commerceregister: '',
-    tipo: '',
-    gravedad: '',
-    calle: '',
-    numeracion: '',
-    descripcion: '',
-    fecha: '',
-  });
-
-  const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
+export const VehicleFineModalScreen = ({ navigation }: Props) => {
+  const { commerce, handleChange, handleReset, formatDate } = useCommerceForm();
   const [gravedadModal, setGravedadModal] = useState(false);
-  const [calleModal, setCalleModal] = useState(false);
-  const [showSnackbar, setShowSnackbar] = useState(false);
-  const [mediaViewer, setMediaViewer] = useState<{ uri: string; type: string } | null>(null);
-  const [mediaPreviewList, setMediaPreviewList] = useState<{ uri: string; type: string }[]>([]);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [showDate,setShowDate]=useState(false);
-  
-
-  const handleChange = (field: keyof typeof commerce, value: string) => {
-    setCommerce({ ...commerce, [field]: value });
-  };
-  
-
-  const handleShowDate=(date: Date)=>{
-    setShowDate(!showDate);
-    const formatted = date.toLocaleDateString('es-ES');
-    handleChange('fecha', formatted);
-  }
+  const [tipoModal, setTipoModal] = useState(false);
 
   
-  // Estilos para el componente
-  const styles = StyleSheet.create({
-    container: {
-      padding: 16,
-      paddingBottom: 32,
-    },
-    selectButton: {
-      backgroundColor: '#fff',
-      borderRadius: 8,
-      padding: 12,
-      marginBottom: 12,
-      borderWidth: 1,
-      borderColor: '#cfd8dc',
-      alignItems: 'center',
-    },
-    selectButtonText: {
-      fontSize: 16,
-      color: '#333',
-    },
-    modalOverlay: {
-      flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.3)',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    modalContent: {
-      backgroundColor: '#fff',
-      borderRadius: 12,
-      padding: 20,
-      width: '80%',
-      maxHeight: '60%',
-      alignItems: 'stretch',
-    },
-    modalItem: {
-      paddingVertical: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: '#eee',
-    },
-    modalItemText: {
-      fontSize: 16,
-      color: '#333',
-    },
-    modalCancel: {
-      marginTop: 16,
-      alignItems: 'center',
-    },
-    modalCancelText: {
-      color: '#1976d2',
-      fontWeight: 'bold',
-      fontSize: 16,
-    },
-    previewScroll: {
-      flexDirection: 'row',
-      marginBottom: 12,
-    },
-    previewContainer: {
-      marginRight: 12,
-      alignItems: 'center',
-      position: 'relative',
-    },
-    previewImage: {
-      width: 80,
-      height: 80,
-      borderRadius: 8,
-      backgroundColor: '#eee',
-    },
-    previewVideo: {
-      width: 80,
-      height: 80,
-      borderRadius: 8,
-      backgroundColor: '#eee',
-    },
-    removeIcon: {
-      position: 'absolute',
-      top: -8,
-      right: -8,
-      backgroundColor: '#fff',
-      borderRadius: 12,
-      padding: 2,
-      elevation: 2,
-    },
-    removeIconText: {
-      fontSize: 16,
-      color: '#e53935',
-    },
-    viewerOverlay: {
-      flex: 1,
-      backgroundColor: 'rgba(0,0,0,0.9)',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    viewerClose: {
-      position: 'absolute',
-      top: 40,
-      right: 20,
-      zIndex: 2,
-      backgroundColor: '#fff',
-      borderRadius: 16,
-      padding: 8,
-    },
-    viewerCloseText: {
-      fontSize: 16,
-      color: '#333',
-    },
-    viewerImage: {
-      width: 320,
-      height: 320,
-      borderRadius: 8,
-    },
-    viewerVideo: {
-      width: 320,
-      height: 320,
-      borderRadius: 8,
-      backgroundColor: '#000',
-    },
-    textArea: {
-      backgroundColor: '#fff',
-      borderRadius: 8,
-      padding: 12,
-      minHeight: 80,
-      textAlignVertical: 'top',
-      borderWidth: 1,
-      borderColor: '#cfd8dc',
-      marginBottom: 16,
-      fontSize: 16,
-    },
-    footer: {
-      marginTop: 16,
-      marginBottom: 32,
-    },
-  });
-
-  const handleClear = () => {
-    setCommerce({
-      rutcommerce: '',
-      commerceregister: '',
-      tipo: '',
-      gravedad: '',
-      calle: '',
-      numeracion: '',
-      descripcion: '',
-      fecha: '',
-    });
-    setMediaPreviewList([]);
-  };
-
-  const handleSave = () => {
-    setShowSnackbar(true);
-    setTimeout(() => setShowSnackbar(false), 2000);
-  };
-
-  const handleMediaSource = async (source: 'camera' | 'gallery', type: 'photo' | 'video') => {
-   
-  };
-
-  const handleRemoveMediaItem = (index: number) => {
-    setMediaPreviewList(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleOpenMedia = (item: { uri: string; type: string }) => {
-    setMediaViewer(item);
-  };
-
-  const closeMediaViewer = () => {
-    setMediaViewer(null);
-  };
-
-  const handleGetLocation = async () => {
-    await fetchLocation(location, setLocation);
-  };
-
-  const gravedadOptions = ['Alta', 'Media', 'Leve'];
-  const calleOptions = ['Calle 1', 'Calle 2', 'Calle 3'];
+  const gravedadOptions = ['Grave', 'Moderado', 'Leve'];
   const delitos = ['Tipo 1', 'Tipo 2', 'Tipo 3'];
+
+  const {
+  showSnackbar,
+  showDate,
+  location,
+  mediaViewer,
+  mediaPreviewList,
+  handleShowDate,
+  handleMediaSource,
+  handleRemoveMediaItem,
+  handleOpenMedia,
+  handleCloseMediaViewer,
+  handleGetLocation,
+  handleClear,
+  handleSave,
+} = useFineModalHandlers({ formatDate, handleChange, handleReset });
 
   return (
     <>
       <TopBar navigation={navigation} />
       <LinearGradient colors={['#f1f5fa', '#d8e4f4']} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.container}>
-                      {/* Selector gravedad */}
-        <Pressable style={styles.selectButton} onPress={() => setGravedadModal(true)}>
-          <Text style={styles.selectButtonText}>
-            {commerce.gravedad || 'Gravedad'}
-          </Text>
-        </Pressable>
-        <Modal visible={gravedadModal} transparent animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <FlatList
-                data={gravedadOptions}
-                keyExtractor={item => item}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={styles.modalItem}
-                    onPress={() => {
-                      handleChange('gravedad', item);
-                      setGravedadModal(false);
-                    }}
-                  >
-                    <Text style={styles.modalItemText}>{item}</Text>
-                  </Pressable>
-                )}
-              />
-              <Pressable style={styles.modalCancel} onPress={() => setGravedadModal(false)}>
-                <Text style={styles.modalCancelText}>Cancelar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Selector calle */}
-        <Pressable style={styles.selectButton} onPress={() => setCalleModal(true)}>
-          <Text style={styles.selectButtonText}>
-            {commerce.calle || 'Calle'}
-          </Text>
-        </Pressable>
-        <Modal visible={calleModal} transparent animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <FlatList
-                data={calleOptions}
-                keyExtractor={item => item}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={styles.modalItem}
-                    onPress={() => {
-                      handleChange('calle', item);
-                      setCalleModal(false);
-                    }}
-                  >
-                    <Text style={styles.modalItemText}>{item}</Text>
-                  </Pressable>
-                )}
-              />
-              <Pressable style={styles.modalCancel} onPress={() => setCalleModal(false)}>
-                <Text style={styles.modalCancelText}>Cancelar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Campos base */}
-        <CommerceFineInput label="RUT Comercio" value={commerce.rutcommerce} onChangeText={(v) => handleChange('rutcommerce', v)} />
-        <CommerceFineInput label="Registro Comercial" value={commerce.commerceregister} onChangeText={(v) => handleChange('commerceregister', v)} />
-        <Pressable style={styles.selectButton} onPress={()=>handleShowDate(new Date)}>
-          {
-            showDate?(
-              <Text style={styles.selectButtonText}>
-                {commerce.fecha}
-              </Text>
-            ):(
-              <Text>
-                'Ingresar Fecha 📅'
-              </Text>
-            )
-          }
-        </Pressable>
-
-        {/* Tipo de delito */}
-        <Pressable style={styles.selectButton} onPress={() => setModalVisible(true)}>
-          <Text style={styles.selectButtonText}>
-            {commerce.tipo || 'Tipo de delito'}
-          </Text>
-        </Pressable>
-        <Modal visible={modalVisible} transparent animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <FlatList
-                data={delitos}
-                keyExtractor={item => item}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={styles.modalItem}
-                    onPress={() => {
-                      handleChange('tipo', item);
-                      setModalVisible(false);
-                    }}
-                  >
-                    <Text style={styles.modalItemText}>{item}</Text>
-                  </Pressable>
-                )}
-              />
-              <Pressable style={styles.modalCancel} onPress={() => setModalVisible(false)}>
-                <Text style={styles.modalCancelText}>Cancelar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Numeración */}
-        <CommerceFineInput label="Numeración" value={commerce.numeracion} onChangeText={(v) => handleChange('numeracion', v)} />
-
-        {/* Multimedia */}
-        <Pressable
-          style={styles.selectButton}
-          onPress={() =>
-            Alert.alert('Origen', '¿Qué querés hacer?', [
-              { text: 'Tomar foto', onPress: () => handleMediaSource('camera', 'photo') },
-              { text: 'Grabar video', onPress: () => handleMediaSource('camera', 'video') },
-              { text: 'Galería', onPress: () => handleMediaSource('gallery', 'photo') },
-              { text: 'Cancelar', style: 'cancel' },
-            ])
-          }
-        >
-          <Text style={styles.selectButtonText}>Imagen/Video 📷</Text>
-        </Pressable>
-
-        {mediaPreviewList.length > 0 && (
-          <ScrollView horizontal style={styles.previewScroll}>
-            {mediaPreviewList.map((item, index) => (
-              <View key={index} style={styles.previewContainer}>
-                <Pressable onPress={() => handleOpenMedia(item)}>
-                  {item.type.startsWith('image') ? (
-                    <Image source={{ uri: item.uri }} style={styles.previewImage} />
-                  ) : (
-                    <Video source={{ uri: item.uri }} style={styles.previewVideo} paused resizeMode="cover" />
-                  )}
-                </Pressable>
-                <Pressable style={styles.removeIcon} onPress={() => handleRemoveMediaItem(index)}>
-                  <Text style={styles.removeIconText}>❌</Text>
-                </Pressable>
-              </View>
-            ))}
-          </ScrollView>
-        )}
-
-        {/* Viewer de medios */}
-        {mediaViewer && (
-          <Modal visible transparent animationType="fade" onRequestClose={closeMediaViewer}>
-            <View style={styles.viewerOverlay}>
-              <Pressable style={styles.viewerClose} onPress={closeMediaViewer}>
-                <Text style={styles.viewerCloseText}>Cerrar ✖️</Text>
-              </Pressable>
-              {mediaViewer.type.startsWith('image') ? (
-                <Image source={{ uri: mediaViewer.uri }} style={styles.viewerImage} resizeMode="contain" />
-              ) : (
-                <Video
-                  source={{ uri: mediaViewer.uri }}
-                  style={styles.viewerVideo}
-                  controls
-                  resizeMode="contain"
-                  paused={false}
-                />
-              )}
-            </View>
-          </Modal>
-        )}
-
-        {/* Ubicación */}
-        <Pressable style={styles.selectButton} onPress={handleGetLocation}>
-          <Text style={styles.selectButtonText}>Obtener Ubicación 📍</Text>
-        </Pressable>
-
-        {location && (
-          <View style={{ marginBottom: 16 }}>
-            <Text style={{ fontSize: 16 }}>Latitud: {location.latitude}</Text>
-            <Text style={{ fontSize: 16 }}>Longitud: {location.longitude}</Text>
-          </View>
-        )}
-
-        {/* Descripción */}
-        <TextInput
-          style={styles.textArea}
-          placeholder="Descripción del hecho"
-          value={commerce.descripcion}
-          onChangeText={v => handleChange('descripcion', v)}
-          multiline
-        />
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          <VehicleCommerceFooterButtons
-            onCancel={() => {}}
-            onClear={handleClear}
-            onSave={handleSave}
+        <ScrollView contentContainerStyle={fineModalStyles.container}>
+          <Pressable style={fineModalStyles.selectButton} onPress={() => setGravedadModal(true)}>
+            <Text style={fineModalStyles.selectButtonText}>
+              {commerce.gravedad || 'Gravedad'}
+            </Text>
+          </Pressable>
+          <SelectModal
+            visible={gravedadModal}
+            options={gravedadOptions}
+            onSelect={(item: string) => {
+              handleChange('gravedad', item);
+              setGravedadModal(false);
+            }}
+            onCancel={() => setGravedadModal(false)}
           />
-        </View>
-      </ScrollView>
+
+          <CommerceFineInput label="RUT" value={commerce.rutcommerce} onChangeText={v => handleChange('rutcommerce', v)} />
+          <CommerceFineInput label="Registro de Comercio" value={commerce.commerceregister} onChangeText={v => handleChange('commerceregister', v)} />
+          <CommerceFineInput label="Numeracion" value={commerce.numeracion} onChangeText={v => handleChange('numeracion', v)} />
+
+          <Pressable style={fineModalStyles.selectButton} onPress={() => handleShowDate(new Date())}>
+            <Text style={fineModalStyles.selectButtonText}>
+              {showDate ? commerce.fecha : 'Ingresar Fecha'}
+            </Text>
+          </Pressable>
+
+          <Pressable style={fineModalStyles.selectButton} onPress={() => setTipoModal(true)}>
+            <Text style={fineModalStyles.selectButtonText}>
+              {commerce.tipo || 'Tipo de delito'}
+            </Text>
+          </Pressable>
+          <SelectModal
+            visible={tipoModal}
+            options={delitos}
+            onSelect={(item: string) => {
+              handleChange('tipo', item);
+              setTipoModal(false);
+            }}
+            onCancel={() => setTipoModal(false)}
+          />
+
+                  <CommerceFineInput
+            label="Numeración"
+            value={commerce.numeracion}
+            onChangeText={v => handleChange('numeracion', v)}
+          />
+
+          <Pressable
+            style={fineModalStyles.selectButton}
+            onPress={() => {
+              Alert.alert('Origen', '¿Qué querés hacer?', [
+                { text: 'Tomar foto', onPress: () => handleMediaSource('camera', 'photo') },
+                { text: 'Grabar video', onPress: () => handleMediaSource('camera', 'video') },
+                { text: 'Galería', onPress: () => handleMediaSource('gallery', 'photo') },
+                { text: 'Cancelar', style: 'cancel' },
+              ]);
+            }}
+          >
+            <Text style={fineModalStyles.selectButtonText}>Imagen/Video</Text>
+          </Pressable>
+
+          {mediaPreviewList.length > 0 && (
+            <ScrollView horizontal style={fineModalStyles.previewScroll} showsHorizontalScrollIndicator={false}>
+              {mediaPreviewList.map((item, index) => (
+                <View key={index} style={fineModalStyles.previewContainer}>
+                  <Pressable onPress={() => handleOpenMedia(item)}>
+                    {item.type.startsWith('image') ? (
+                      <Image source={{ uri: item.uri }} style={fineModalStyles.previewImage} />
+                    ) : (
+                      <Video source={{ uri: item.uri }} style={fineModalStyles.previewVideo} paused resizeMode="cover" />
+                    )}
+                  </Pressable>
+                  <Pressable style={fineModalStyles.removeIcon} onPress={() => handleRemoveMediaItem(index)}>
+                    <Text style={fineModalStyles.removeIconText}>X</Text>
+                  </Pressable>
+                </View>
+              ))}
+            </ScrollView>
+          )}
+
+          {mediaViewer && (
+            <Modal visible transparent animationType="fade" onRequestClose={handleCloseMediaViewer}>
+              <View style={fineModalStyles.viewerOverlay}>
+                <Pressable style={fineModalStyles.viewerClose} onPress={handleCloseMediaViewer}>
+                  <Text style={fineModalStyles.viewerCloseText}>Cerrar</Text>
+                </Pressable>
+                {mediaViewer.type.startsWith('image') ? (
+                  <Image source={{ uri: mediaViewer.uri }} style={fineModalStyles.viewerImage} resizeMode="contain" />
+                ) : (
+                  <Video
+                    source={{ uri: mediaViewer.uri }}
+                    style={fineModalStyles.viewerVideo}
+                    controls
+                    paused={false}
+                    resizeMode="contain"
+                  />
+                )}
+              </View>
+            </Modal>
+          )}
+
+          <Pressable style={fineModalStyles.selectButton} onPress={handleGetLocation}>
+            <Text style={fineModalStyles.selectButtonText}>Obtener Ubicación</Text>
+          </Pressable>
+          {location && (
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontSize: 16 }}>Latitud: {location.latitude}</Text>
+              <Text style={{ fontSize: 16 }}>Longitud: {location.longitude}</Text>
+            </View>
+          )}
+
+          <TextInput
+            style={fineModalStyles.textArea}
+            placeholder="Descripción del hecho"
+            value={commerce.descripcion}
+            onChangeText={v => handleChange('descripcion', v)}
+            multiline
+          />
+
+          <View style={fineModalStyles.footer}>
+            <VehicleCommerceFooterButtons
+              onCancel={() => {}}
+              onClear={handleClear}
+              onSave={handleSave}
+            />
+          </View>
+        </ScrollView>
+      </LinearGradient>
       <SaveSuccesSnackbar visible={showSnackbar} />
-        </LinearGradient>
     </>
-  ); 
-}
+);
+};
