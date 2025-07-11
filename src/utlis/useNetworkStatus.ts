@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import { syncFinesToServer } from '../localDB/fine/syncFines';
 import { syncCommerceToServer } from '../localDB/commerce/syncCommerce';
+import { syncFinesToServer } from '../localDB/fine/syncFines';
 import { syncVehicleToServer } from '../localDB/vehicle/syncVehicle';
 
 
