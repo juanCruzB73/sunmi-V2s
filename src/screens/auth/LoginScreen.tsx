@@ -16,16 +16,38 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Campos incompletos', 'Por favor completa email y contraseña.');
+  const url = 'https://fc15b9ccbd00.ngrok-free.app/api/v1/auth/sign_in'; // or your actual endpoint
+
+const handleLogin = async () => {
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // "Accept": "application/json", // Optional but recommended
+      },
+      body: JSON.stringify({
+        email: "fcasteller@gmail.com",
+        password: "2668765",
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      Alert.alert("Login failed", errorData.errors?.[0] || "Unknown error");
       return;
     }
 
+    const result = await response.json();
 
-    // await dispatch(startLogIn(email, password));
-    navigation.navigate('Home');
-  };
+    Alert.alert("Success", result.data?.email || "Logged in!");
+
+    // navigation.navigate("Home");
+  } catch (err) {
+    Alert.alert("Error", err.message);
+  }
+};
+
 
   const handleForgotPassword = () => {
     navigation.navigate('ForgetPassword');
