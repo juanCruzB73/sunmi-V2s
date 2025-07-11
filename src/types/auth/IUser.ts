@@ -1,7 +1,10 @@
-export interface IUser{
-    userId:number|null,
-    email:string
-    name:string
+export interface IUser {
+  userId: number | null;
+  email: string;
+  name: string;
+  accessToken?: string;
+  client?: string;
+  uid?: string;
 }
 
 export type AuthAction =

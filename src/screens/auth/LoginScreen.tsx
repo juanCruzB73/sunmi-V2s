@@ -43,9 +43,14 @@ const handleLogin = async () => {
     Alert.alert("Success", result.data?.email || "Logged in!");
 
     // navigation.navigate("Home");
-  } catch (err) {
+  } catch (err: unknown) {
+  if (err instanceof Error) {
     Alert.alert("Error", err.message);
+  } else {
+    Alert.alert("Error", String(err));
   }
+}
+
 };
 
 

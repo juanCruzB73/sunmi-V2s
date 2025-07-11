@@ -13,8 +13,8 @@ import SelectModal from '../../components/modal/SelectModal';
 
 import fineModalStyles from '../../styles/fineModalStyles';
 
-import { useFineModalHandlers } from '../../hooks/useFineModalHandlers';
-import { useCommerceForm } from '../../hooks/useCommerceForm';
+import { useFineModalHandlers } from '../../hooks/fine/useFineModalHandlers';
+import { useCommerceForm } from '../../hooks/commerce/useCommerceForm';
 
 
 

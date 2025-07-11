@@ -1,0 +1,2 @@
+// src/config.ts
+export const API_BASE_URL = "https://fc15b9ccbd00.ngrok-free.app";

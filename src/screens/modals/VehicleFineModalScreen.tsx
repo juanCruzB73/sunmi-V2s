@@ -14,10 +14,10 @@ import SelectModal from '../../components/modal/SelectModal';
 
 import fineModalStyles from '../../styles/fineModalStyles';
 
-import { useVehicleForm } from '../../hooks/useVehicleForm';
+import { useVehicleForm } from '../../hooks/vehicle/useVehicleForm';
 import pickMedia from '../../utlis/ImagePickerService';
 import { fetchLocation } from '../../utlis/getLocatiom';
-import { useFineModalHandlers } from '../../hooks/useFineModalHandlers';
+import { useFineModalHandlers } from '../../hooks/fine/useFineModalHandlers';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VehicleFineModal'>;
 

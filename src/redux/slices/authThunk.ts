@@ -36,3 +36,28 @@ export const startLogOut=()=>{
         dispatch(onLogOut());
     }
 };*/
+// src/redux/thunks/authThunk.ts
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AuthService } from "../../services/authService";
+import { LoginPayload } from "../../types/authentication/auth";
+
+export const loginThunk = createAsyncThunk(
+  "auth/loginThunk",
+  async ({ email, password }: LoginPayload, thunkAPI) => {
+    try {
+      const result = await AuthService.login({ email, password });
+
+      return {
+        name: result.data.name,
+        email: result.data.email,
+        userId: result.data.id,
+        accessToken: result.headers.accessToken,
+        client: result.headers.client,
+        uid: result.headers.uid,
+      };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
