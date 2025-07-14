@@ -4,11 +4,13 @@ export type LoginPayload = {
   password: string;
 };
 
+export interface IAuthHeaders {
+  accessToken: string;
+  client: string;
+  uid: string;
+}
+
 export type LoginResponse = {
-  headers: {
-    accessToken: string;
-    client: string;
-    uid: string;
-  };
+  headers: IAuthHeaders;
   data: any;
 };

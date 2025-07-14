@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-
+import { Text, ScrollView, StyleSheet } from 'react-native';
 // Funciones que interactúan con la base SQLite
 import { getDBConnection } from './db';
 import { getPendingFines } from './fine/fines';

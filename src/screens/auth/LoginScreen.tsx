@@ -5,8 +5,8 @@ import LoginButton from '../../components/login/LoginButton';
 import ForgetPassword from '../../components/login/ForgetPassword';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // import { startLogIn } from '../../redux/slices/authThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
@@ -14,17 +14,17 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch<AppDispatch>();
 
-  const url = 'https://fc15b9ccbd00.ngrok-free.app/api/v1/auth/sign_in'; // or your actual endpoint
+  
+  const url = 'https://bc063767bb1a.ngrok-free.app/api/v1/auth/sign_in'; // or your actual endpoint
 
-const handleLogin = async () => {
+  const handleLogin = async () => {
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        // "Accept": "application/json", // Optional but recommended
+        "Accept": "application/json",
       },
       body: JSON.stringify({
         email: "fcasteller@gmail.com",
@@ -40,23 +40,41 @@ const handleLogin = async () => {
 
     const result = await response.json();
 
+    // ✅ Get the token from the response headers
+    const accessToken = response.headers.get('Access-Token');
+   /* const client = response.headers.get('Client');
+    const uid = response.headers.get('Uid'); // optional depending on backend
+    const bearerToken = response.headers.get('Authorization'); // if you're using 'Bearer ...'
+*/
+    if (!accessToken) {
+      Alert.alert("Login failed", "No token received from server.");
+      return;
+    }
+
+    // ✅ Save the token to AsyncStorage
+    await AsyncStorage.setItem('auth_token', accessToken);
+
+    // ✅ Dispatch to Redux
+
+    // Optional: save user info, etc.
+    // await AsyncStorage.setItem('user_info', JSON.stringify(result.data));
+
     Alert.alert("Success", result.data?.email || "Logged in!");
+    navigation.navigate("Home");
 
-    // navigation.navigate("Home");
-  } catch (err: unknown) {
-  if (err instanceof Error) {
-    Alert.alert("Error", err.message);
-  } else {
-    Alert.alert("Error", String(err));
-  }
-}
-
+  } catch (err) {
+    const errorMessage = (err as Error).message || "Ha ocurrido un error inesperado";
+    Alert.alert("Error", errorMessage);
+  }
 };
+
 
 
   const handleForgotPassword = () => {
     navigation.navigate('ForgetPassword');
   };
+
+
 
   return (
     <View style={styles.container}>
