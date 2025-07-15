@@ -39,10 +39,9 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackNavigator = () => {
   const { status } = useSelector((state: RootState) => state.auth);
-  const isAuthenticated = status === "authenticated";
 
   return (
-    <Stack.Navigator initialRouteName={isAuthenticated ? "Home" : "Login"}>
+    <Stack.Navigator initialRouteName={status==="authenticated" ? "Home" : "Login"}>
       {/* Públicos */}
       <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} options={{ headerShown: false }} />

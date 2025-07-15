@@ -1,15 +1,13 @@
 // src/redux/slices/authSlice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { loginThunk } from "./authThunk";
 
 export interface IUser {
   userId: number | null;
   name: string;
   email: string;
-  accessToken?: string;
-  client?: string;
-  uid?: string;
 }
+
+
 
 export interface IAuthState {
   status: "authenticated" | "non-authenticated" | "checking";
@@ -32,12 +30,12 @@ const authSlice = createSlice({
   initialState,
   reducers: {
   
-    onChecking: (state) => {
+    onCheckingAuth: (state) => {
       state.status = "checking";
       state.user = { name: "", email: "", userId: null };
       state.errorMessage = null;
     },
-    loginSuccess: (state, action: PayloadAction<IUser>) => {
+    onLogin: (state, action: PayloadAction<IUser>) => {
         state.status = "authenticated";
         state.user = action.payload;
         state.errorMessage = null;
@@ -53,21 +51,9 @@ const authSlice = createSlice({
       }
     },
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(loginThunk.fulfilled, (state, action: PayloadAction<IUser>) => {
-        state.status = "authenticated";
-        state.user = action.payload;
-        state.errorMessage = null;
-      })
-      .addCase(loginThunk.rejected, (state, action) => {
-        state.status = "non-authenticated";
-        state.user = { name: "", email: "", userId: null };
-        state.errorMessage = action.payload as string;
-      });
-  },
+  
   
 });
 
-export const { onChecking, onLogOut, loginSuccess, setToken } = authSlice.actions;
+export const { onCheckingAuth, onLogOut, onLogin, setToken } = authSlice.actions;
 export default authSlice.reducer;
