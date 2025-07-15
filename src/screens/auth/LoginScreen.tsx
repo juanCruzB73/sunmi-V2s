@@ -6,75 +6,72 @@ import ForgetPassword from '../../components/login/ForgetPassword';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// import { startLogIn } from '../../redux/slices/authThunk';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../../redux/slices/authSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
 
-  
-  const url = 'https://bc063767bb1a.ngrok-free.app/api/v1/auth/sign_in'; // or your actual endpoint
+  const url = 'https://bc063767bb1a.ngrok-free.app/api/v1/auth/sign_in';
 
   const handleLogin = async () => {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: JSON.stringify({
-        email: "fcasteller@gmail.com",
-        password: "2668765",
-      }),
-    });
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          email: "fcasteller@gmail.com",
+          password: "2668765",
+        }),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      Alert.alert("Login failed", errorData.errors?.[0] || "Unknown error");
-      return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        Alert.alert("Login failed", errorData.errors?.[0] || "Unknown error");
+        return;
+      }
+
+      const result = await response.json();
+
+      // ✅ Get the token from the response headers
+      const accessToken = response.headers.get('Access-Token');
+      /* const client = response.headers.get('Client');
+      const uid = response.headers.get('Uid');
+      const bearerToken = response.headers.get('Authorization');
+      */
+      if (!accessToken) {
+        Alert.alert("Login failed", "No token received from server.");
+        return;
+      }
+
+      // ✅ Save the token to AsyncStorage
+      await AsyncStorage.setItem('auth_token', accessToken);
+
+      // ✅ Dispatch to Redux
+      dispatch(setToken(accessToken));
+
+      // Optional: save user info, etc.
+      // await AsyncStorage.setItem('user_info', JSON.stringify(result.data));
+
+      Alert.alert("Success", result.data?.email || "Logged in!");
+      navigation.navigate("Home");
+
+    } catch (err) {
+      const errorMessage = (err as Error).message || "Ha ocurrido un error inesperado";
+      Alert.alert("Error", errorMessage);
     }
-
-    const result = await response.json();
-
-    // ✅ Get the token from the response headers
-    const accessToken = response.headers.get('Access-Token');
-   /* const client = response.headers.get('Client');
-    const uid = response.headers.get('Uid'); // optional depending on backend
-    const bearerToken = response.headers.get('Authorization'); // if you're using 'Bearer ...'
-*/
-    if (!accessToken) {
-      Alert.alert("Login failed", "No token received from server.");
-      return;
-    }
-
-    // ✅ Save the token to AsyncStorage
-    await AsyncStorage.setItem('auth_token', accessToken);
-
-    // ✅ Dispatch to Redux
-
-    // Optional: save user info, etc.
-    // await AsyncStorage.setItem('user_info', JSON.stringify(result.data));
-
-    Alert.alert("Success", result.data?.email || "Logged in!");
-    navigation.navigate("Home");
-
-  } catch (err) {
-    const errorMessage = (err as Error).message || "Ha ocurrido un error inesperado";
-    Alert.alert("Error", errorMessage);
-  }
-};
-
-
+  };
 
   const handleForgotPassword = () => {
     navigation.navigate('ForgetPassword');
   };
-
-
 
   return (
     <View style={styles.container}>

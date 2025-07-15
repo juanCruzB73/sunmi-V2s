@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Dimensions,
   StyleSheet,
   TextInput,
   Pressable,
@@ -72,7 +71,6 @@ const FineSearcher = ({ navigation }: Props) => {
   );
 };
 
-const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   gradient: {
