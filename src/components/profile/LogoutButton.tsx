@@ -1,13 +1,8 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
-import { onLogOut } from '../../redux/slices/authSlice';
 import { startLogOut } from '../../redux/slices/authThunk';
-
 const { width } = Dimensions.get('window');
 
 const LogoutButton: React.FC = () => {

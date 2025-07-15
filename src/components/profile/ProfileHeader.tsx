@@ -13,8 +13,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, email }) => {
         source={require('../../assets/SonicAvatarPrueba.png')}
         style={styles.avatar}
       />
-      <Text style={styles.name}>{name}</Text>
-      <Text style={styles.email}>{email}</Text>
+      <Text style={styles.name}>name: {name}</Text>
+      <Text style={styles.email}>email: {email}</Text>
     </View>
   );
 };

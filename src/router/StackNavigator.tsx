@@ -38,26 +38,32 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const StackNavigator = () => {
+
   const { status } = useSelector((state: RootState) => state.auth);
+  console.log(status)
 
   return (
-    <Stack.Navigator initialRouteName={status==="authenticated" ? "Home" : "Login"}>
-      {/* Públicos */}
-      <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} options={{ headerShown: false }} />
-
-      {/* Privados */}
-      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CommerceMenu" component={CommerceScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="VehicleScreen" component={VehicleScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="FineSearcher" component={FineSearcher} options={{ headerShown: false }} />
-      <Stack.Screen name="Printing" component={PrintingScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="VehicleFineModal" component={VehicleFineModalScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="profile" component={ProfileScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="CommerceFineScreen" component={CommerceFineModalScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="VehicleFineScreen" component={VehicleFineScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="VehicleSearcher" component={VehicleSearcher} options={{ headerShown: false }} />
-      <Stack.Screen name="TestDbScreen" component={TestDbScreen} options={{ headerShown: false }} />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {status === "authenticated" ? (
+        <>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="CommerceMenu" component={CommerceScreen} />
+          <Stack.Screen name="VehicleScreen" component={VehicleScreen} />
+          <Stack.Screen name="FineSearcher" component={FineSearcher} />
+          <Stack.Screen name="Printing" component={PrintingScreen} />
+          <Stack.Screen name="VehicleFineModal" component={VehicleFineModalScreen} />
+          <Stack.Screen name="profile" component={ProfileScreen} />
+          <Stack.Screen name="CommerceFineScreen" component={CommerceFineModalScreen} />
+          <Stack.Screen name="VehicleFineScreen" component={VehicleFineScreen} />
+          <Stack.Screen name="VehicleSearcher" component={VehicleSearcher} />
+          <Stack.Screen name="TestDbScreen" component={TestDbScreen} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} />
+        </>
+      )}
     </Stack.Navigator>
   );
 };

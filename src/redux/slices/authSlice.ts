@@ -44,16 +44,11 @@ const authSlice = createSlice({
       state.status = "non-authenticated";
       state.user = { name: "", email: "", userId: null };
       state.errorMessage = null;
-    },
-    setToken: (state, action: PayloadAction<string>) => {
-      if (state.user) {
-        state.user.accessToken = action.payload;
-      }
-    },
+    }
   },
   
   
 });
 
-export const { onCheckingAuth, onLogOut, onLogin, setToken } = authSlice.actions;
+export const { onCheckingAuth, onLogOut, onLogin } = authSlice.actions;
 export default authSlice.reducer;

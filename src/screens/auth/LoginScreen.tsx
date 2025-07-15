@@ -12,17 +12,15 @@ import { AppDispatch, RootState } from '../../redux/store';
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('fcasteller@gmail.com');
+  const [password, setPassword] = useState('2668765');
   
   const dispatch = useDispatch<AppDispatch>()
-  const { user } = useSelector((state: RootState) => state.auth);
 
 
   const handleLogin = async () => {
     try {
       const success = await dispatch(startOnLogIn({ email, password }));
-      Alert.alert(user.email)
       
     } catch (err) {
       const errorMessage = (err as Error).message || "Ha ocurrido un error inesperado";

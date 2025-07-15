@@ -13,14 +13,13 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
-//import { onLogin, onLogOut } from '../../redux/slices/authSlice';
-import LinearGradient from 'react-native-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'profile'>;
 
 const ProfileScreen = ({ navigation }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user, status } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
+  console.log(user)
     return (
       <>
         <TopBar navigation={navigation} isProfileScreen />
