@@ -5,7 +5,7 @@ import  formSlice  from './slices/form/formSlice';
 export const store = configureStore({
   reducer: {
     auth: authSlice,
-    form: formSlice
+    form: formSlice,
   },
 });
 

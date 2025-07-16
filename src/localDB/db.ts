@@ -2,7 +2,7 @@ import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { createFinesTable } from './fine/fines';
 import { createCommerceTable } from './commerce/commerce';
 import { createVehicleTable } from './vehicle/vehicle';
-import { createAuthHeadersTable } from './session/authHeaders';
+import { createOfflineAuthTable } from './session/offlineAuth'; // Importa la función para crear la tabla de autenticación offline
 
 SQLite.enablePromise(true);  // Habilita el uso de promesas en SQLite para manejar operaciones asíncronas
 
@@ -14,6 +14,7 @@ export const getDBConnection = async (): Promise<SQLiteDatabase> => {
 export const createTables = async (db: SQLiteDatabase): Promise<void> => {
   await createFinesTable(db);       // Crea la tabla para guardar multas offline
   await createCommerceTable(db);    // Crea la tabla para comercios
-  await createVehicleTable(db);     // Crea la tabla para vehículos
-  await createAuthHeadersTable(db); // Crea la tabla para guardar los headers de autenticación
+  await createVehicleTable(db);  // Crea la tabla para vehículos
+  await createOfflineAuthTable(db);
+
 };

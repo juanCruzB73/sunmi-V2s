@@ -1,6 +1,5 @@
 import { getDBConnection } from '../db'; // Abre la conexión local SQLite
 import { getPendingVehicles, markVehicleAsSynced } from './vehicle'; // Funciones para leer y actualizar el estado de los registros
-import { IVehicle } from '../../types/modal/IVehicle'; // Tipo que define la estructura de un vehículo
 
 export const syncVehicleToServer = async (): Promise<void> => {
   const db = await getDBConnection(); //  Abre la base de datos app_data.db

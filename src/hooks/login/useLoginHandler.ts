@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../router/StackNavigator";
 import { getDBConnection } from "../../localDB/db";
-import { saveHeaders } from "../../localDB/session/authHeaders";
+import { saveHeaders } from "../../localDB/session/offlineAuth";
 
 export const useLoginHandler = () => {
   const dispatch = useDispatch();
