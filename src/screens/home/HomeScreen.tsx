@@ -1,12 +1,27 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Pressable, View, Text, StyleSheet, Dimensions } from 'react-native'
 import { TopBar } from '../../components/top-bar/TopBar'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
+import { AppDispatch, RootState } from '../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { startLoadForms } from '../../redux/slices/form/formThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const HomeScreen = ({ navigation }: Props) => {
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { forms } = useSelector((state: RootState) => state.form);
+
+  useEffect(()=>{
+    const getForms=async()=>{
+      dispatch(startLoadForms());
+    }
+    getForms();
+    console.log(forms);
+  },[])
+
   return (
     <>
       <TopBar navigation={navigation} />
