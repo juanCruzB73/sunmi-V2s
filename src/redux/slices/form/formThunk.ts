@@ -12,7 +12,7 @@ const setTokenHeader=(tokenData:IAuthToken)=>{
     "uid": tokenData.uid ?? "",
     "token-type": "Bearer",
     "Accept": "*/*"
-    }
+    };
     return headers;
 };
 
