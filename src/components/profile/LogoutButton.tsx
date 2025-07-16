@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../redux/store';
-import { startLogOut } from '../../redux/slices/authThunk';
+import { startLogOut } from '../../redux/slices/auth/authThunk';
 const { width } = Dimensions.get('window');
 
 const LogoutButton: React.FC = () => {

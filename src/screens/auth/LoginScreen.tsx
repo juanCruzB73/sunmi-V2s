@@ -6,7 +6,7 @@ import ForgetPassword from '../../components/login/ForgetPassword';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { useDispatch, useSelector } from 'react-redux';
-import { startOnLogIn } from '../../redux/slices/authThunk';
+import { startOnLogIn } from '../../redux/slices/auth/authThunk';
 import { AppDispatch, RootState } from '../../redux/store';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;

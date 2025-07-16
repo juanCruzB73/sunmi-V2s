@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../redux/slices/authSlice";
+import { loginSuccess } from "../../redux/slices/auth/authSlice";
 import { AuthService } from "../../services/AuthService";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";

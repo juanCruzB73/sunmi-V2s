@@ -49,3 +49,6 @@ export const getPendingCommerce = async (
 export const markCommerceAsSynced = async (db: SQLiteDatabase, commerceId: number): Promise<void> => {
   await db.executeSql('UPDATE commerce SET synced = 1 WHERE commerceId = ?;', [commerceId]); // Actualiza el estado de sincronización del comercio
 };
+
+//update
+//delete
