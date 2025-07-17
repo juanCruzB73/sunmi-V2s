@@ -1,6 +1,5 @@
 import {API_BASE_URL } from '@env';
 import { AppDispatch } from '../../store';
-import { Alert } from 'react-native';
 import { IAuthToken } from '../../../types/IAuthToken';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onCheckingForms, onLoadForms, onSetErrorMessage } from './formSlice';
@@ -31,7 +30,7 @@ export const startLoadForms=()=>{
             dispatch(onSetErrorMessage(null));
         }catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            Alert.alert(message);
+            console.log(message);
             return false;
         }
     }

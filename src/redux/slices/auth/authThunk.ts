@@ -107,11 +107,11 @@ export const startOnLogIn = (payload: ILogin) => {
           body: JSON.stringify({ email: normalizedEmail, password: payload.password })
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          Alert.alert("Login failed", errorData.errors?.[0] || "Unknown error");
-          return false;
-        }
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.log("Login failed", errorData.errors?.[0] || "Unknown error");
+            return false;
+          }
 
         const data = await response.json();
         const accessToken = response.headers.get('access-token');

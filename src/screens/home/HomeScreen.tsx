@@ -19,7 +19,6 @@ const HomeScreen = ({ navigation }: Props) => {
       dispatch(startLoadForms());
     }
     getForms();
-    console.log(forms);
   },[])
 
   return (
