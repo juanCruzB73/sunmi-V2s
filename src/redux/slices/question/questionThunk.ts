@@ -32,7 +32,7 @@ export const startLoadQuestions=(formId:number)=>{
             dispatch(onSetErrorMessage(null));
         }catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            Alert.alert(message);
+            console.log(message);
             return false;
         }
     }
@@ -53,7 +53,7 @@ export const startLoadQuestionsByPanel=(formId:number,panelId:number)=>{
             dispatch(onSetErrorMessage(null));
         }catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            Alert.alert(message);
+            console.log(message);
             return false;
         }
     }

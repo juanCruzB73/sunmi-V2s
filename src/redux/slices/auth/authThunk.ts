@@ -72,7 +72,7 @@ export const startOnLogIn=(payload:ILogin)=>{
 
           if (!response.ok) {
             const errorData = await response.json();
-            Alert.alert("Login failed", errorData.errors?.[0] || "Unknown error");
+            console.log("Login failed", errorData.errors?.[0] || "Unknown error");
             return false;
           }
 

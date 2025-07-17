@@ -31,7 +31,7 @@ export const startLoadForms=()=>{
             dispatch(onSetErrorMessage(null));
         }catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
-            Alert.alert(message);
+            console.log(message);
             return false;
         }
     }
