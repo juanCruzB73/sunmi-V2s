@@ -27,7 +27,6 @@ export const startLoadQuestions=(formId:number)=>{
             const headers=setTokenHeader(tokenData);
             const response=await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}`,{headers:headers});
             const data=await response.json();
-            console.log(data)
             dispatch(onLoadQuestions(data.questions));
             dispatch(onSetErrorMessage(null));
         }catch (error: unknown) {
@@ -48,7 +47,6 @@ export const startLoadQuestionsByPanel=(formId:number,panelId:number)=>{
             const headers=setTokenHeader(tokenData);
             const response=await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}/panel/${panelId}`,{headers:headers});
             const data=await response.json();
-            console.log(data)
             dispatch(onLoadQuestions(data.questions));
             dispatch(onSetErrorMessage(null));
         }catch (error: unknown) {
@@ -56,5 +54,11 @@ export const startLoadQuestionsByPanel=(formId:number,panelId:number)=>{
             console.log(message);
             return false;
         }
+    }
+};
+
+export const saveFormAnswers=()=>{
+    return async (dispatch: AppDispatch) =>{
+        
     }
 };
