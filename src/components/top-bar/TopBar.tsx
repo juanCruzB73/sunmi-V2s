@@ -7,7 +7,11 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 type TopBarProps = {
   navigation: NativeStackNavigationProp<
     RootStackParamList,
-    'Home' | 'CommerceMenu' | 'VehicleScreen' | 'FineSearcher' | 'VehicleFineModal' | 'CommerceFineModal' | 'Printing' | 'profile' | 'CommerceMenu' | 'CommerceFineScreen' | 'VehicleFineScreen' | 'VehicleSearcher' 
+    'DisplayForms' |'Home' |
+    'CommerceMenu' | 'VehicleScreen' | 'FineSearcher' |
+    'VehicleFineModal' | 'CommerceFineModal' | 'Printing' |
+    'profile' | 'CommerceMenu' | 'CommerceFineScreen' | 'VehicleFineScreen' |
+    'VehicleSearcher' |'DisplayQuestions'
   >;
   isProfileScreen?: boolean; // Nuevo prop opcional
 };

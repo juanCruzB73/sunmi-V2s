@@ -1,3 +1,5 @@
+import { IQuestionOption } from "./IQuestionOption";
+
 export interface IQuestion{
     id: number;
     name: string;
@@ -12,4 +14,5 @@ export interface IQuestion{
     created_at: string;
     updated_at: string;
     show_list: boolean;
+    question_options?:IQuestionOption[]
 }
