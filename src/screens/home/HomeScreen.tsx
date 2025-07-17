@@ -27,6 +27,7 @@ const HomeScreen = ({ navigation }: Props) => {
       <TopBar navigation={navigation} />
       <View style={styles.container}>
         {[
+          { label: 'Formularios', route: 'DisplayForms' },
           { label: 'Automóviles', route: 'VehicleScreen' },
           { label: 'Comercio', route: 'CommerceMenu' },
           { label: 'Multas', route: 'FineSearcher' },

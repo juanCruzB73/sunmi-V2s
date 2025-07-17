@@ -7,12 +7,14 @@ export interface IFormState {
   isSavingForms:boolean;
   forms:IForm[]
   errorMessage: string | null;
+  activeForm:IForm|null
 }
 
 const initialState: IFormState = {
   isSavingForms: false,
   forms: [],
   errorMessage: null,
+  activeForm:null
 };
 
 const formSlice = createSlice({
@@ -27,6 +29,9 @@ const formSlice = createSlice({
         state.forms=action.payload;
         state.isSavingForms=false;
     },
+    onSetActiveForm:(state,action: PayloadAction<IForm>)=>{
+      state.activeForm=action.payload;
+    },
     onSetErrorMessage:(state,action:PayloadAction<string|null>)=>{
         state.errorMessage=action.payload;
     }
@@ -35,5 +40,5 @@ const formSlice = createSlice({
   
 });
 
-export const { onCheckingForms, onLoadForms, onSetErrorMessage } = formSlice.actions;
+export const { onCheckingForms, onLoadForms, onSetErrorMessage,onSetActiveForm } = formSlice.actions;
 export default formSlice.reducer;
