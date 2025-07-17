@@ -38,7 +38,7 @@ export interface IForm{
     user_id:number;
     created_at:string;
     updated_at:string;
-    area_id:79;
+    area_id:number;
     visible_app:boolean;
     question:IQuestion[]
 }

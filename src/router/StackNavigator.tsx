@@ -14,7 +14,6 @@ import { VehicleFineModalScreen } from "../screens/modals/VehicleFineModalScreen
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import VehicleFineScreen from "../screens/fine/VehicleFineScreen";
 import { VehicleSearcher } from "../screens/searcher/VehicleSearcher";
-import TestDbScreen from "../localDB/testDb";
 import { CommerceFineModalScreen } from "../screens/fine/CommerceFineScreen";
 import { DisplayForms } from "../testForms/DisplayForms";
 import { DisplayQuestions } from "../testForms/DisplayQuestions";
@@ -56,12 +55,9 @@ const StackNavigator = () => {
           <Stack.Screen name="VehicleScreen" component={VehicleScreen} />
           <Stack.Screen name="FineSearcher" component={FineSearcher} />
           <Stack.Screen name="Printing" component={PrintingScreen} />
-          <Stack.Screen name="VehicleFineModal" component={VehicleFineModalScreen} />
           <Stack.Screen name="profile" component={ProfileScreen} />
-          <Stack.Screen name="CommerceFineScreen" component={CommerceFineModalScreen} />
           <Stack.Screen name="VehicleFineScreen" component={VehicleFineScreen} />
           <Stack.Screen name="VehicleSearcher" component={VehicleSearcher} />
-          <Stack.Screen name="TestDbScreen" component={TestDbScreen} />
         </>
       ) : (
         <>

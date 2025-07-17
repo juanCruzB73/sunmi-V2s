@@ -32,38 +32,12 @@ export const startLoadForms = () => {
       };
       const headers = setTokenHeader(tokenData);
 
-      const netState = await NetInfo.fetch();
-
-      if (!netState.isConnected) {
-        const offlineForms = await getOfflineForms();
-        const mappedForms: IForm[] = offlineForms.map(form => ({
-          id: form.id,
-          name: form.name,
-          publish: form.publish,
-          description: form.description,
-          incident_id: form.incident_id,
-          user_id: form.user_id,
-          created_at: form.created_at,
-          updated_at: form.updated_at,
-          area_id: 0 as number, // ✅ Ajuste para cumplir con IForm
-          visible_app: true,
-          question: []
-        }));
-        dispatch(onLoadForms(mappedForms));
-        dispatch(onSetErrorMessage("Cargando formularios desde almacenamiento local"));
-        return;
-      }
-
       const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible`, { headers: headers });
       const data = await response.json();
-      console.log(data);
-
-      for (const form of data) {
-        await saveFormOffline(form);
-      }
-
-      dispatch(onLoadForms(data));
+      
+      dispatch(onLoadForms(data))
       dispatch(onSetErrorMessage(null));
+
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       console.log(message);
@@ -72,6 +46,7 @@ export const startLoadForms = () => {
     }
   };
 };
+
 export const startCreateForm = (newForm: IForm) => {
   return async (dispatch: AppDispatch) => {
     try {

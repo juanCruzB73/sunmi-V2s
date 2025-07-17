@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
-    elevation: 3, // for Android shadow
+    elevation: 3,
   },
   title: {
     fontSize: 20,

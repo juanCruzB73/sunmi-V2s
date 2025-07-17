@@ -8,8 +8,8 @@ import { TopBar } from '../components/top-bar/TopBar';
 import { RootStackParamList } from '../router/StackNavigator';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TouchableOpacity } from 'react-native';
-import { startLoadQuestions } from '../redux/slices/question/questionThunk';
 import { onSetActiveForm } from '../redux/slices/form/formSlice';
+import { startLoadQuestions, startLoadQuestionsByPanel } from '../redux/slices/question/questionThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayForms'>;
 
@@ -18,7 +18,7 @@ export const DisplayForms = ({ navigation }: Props) => {
     //const { questions } = useSelector((state: RootState) => state.question);
     
     const dispatch = useDispatch<AppDispatch>();
-
+    console.log(forms)
     const handlePress = (form: IForm) => {
         const getQuestions=async()=>{
             dispatch(startLoadQuestions(form.id));

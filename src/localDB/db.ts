@@ -1,8 +1,5 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 
-import { createFinesTable } from './fine/fines';
-import { createCommerceTable } from './commerce/commerce';
-import { createVehicleTable } from './vehicle/vehicle';
 import { createOfflineAuthTable } from './session/offlineAuth';
 
 import { createFormsTable } from './forms/forms';
@@ -17,9 +14,7 @@ export const getDBConnection = async (): Promise<SQLiteDatabase> => {
 };
 
 export const createTables = async (db: SQLiteDatabase): Promise<void> => {
-  await createFinesTable(db);
-  await createCommerceTable(db);
-  await createVehicleTable(db);
+
   await createOfflineAuthTable(db);
 
   await createFormsTable(db);

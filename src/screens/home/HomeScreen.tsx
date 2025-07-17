@@ -6,6 +6,9 @@ import { RootStackParamList } from '../../router/StackNavigator';
 import { AppDispatch, RootState } from '../../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { startLoadForms } from '../../redux/slices/form/formThunk';
+import { startOfflineForms } from '../../redux/slices/form/offlineFormThunk';
+import NetInfo from '@react-native-community/netinfo';
+import { saveFormOffline } from '../../redux/slices/offline/formsOffline';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -13,10 +16,20 @@ const HomeScreen = ({ navigation }: Props) => {
 
   const dispatch = useDispatch<AppDispatch>();
   const { forms } = useSelector((state: RootState) => state.form);
-
+  
+  
   useEffect(()=>{
     const getForms=async()=>{
-      dispatch(startLoadForms());
+      const netState = await NetInfo.fetch();
+      if(!netState.isConnected){
+        console.log("firirnf")
+        dispatch(startOfflineForms());
+      }else{ 
+        dispatch(startLoadForms());
+        for (const form of forms) {
+          await saveFormOffline(form);
+        }
+      }
     }
     getForms();
   },[])

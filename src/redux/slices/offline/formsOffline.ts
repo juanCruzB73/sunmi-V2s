@@ -4,6 +4,7 @@ import { Form, insertForm } from "../../../localDB/forms/forms";
 
 export const saveFormOffline = async (form: Form): Promise<void> => {
   const db = await getDBConnection();
+  console.log("Saving form: ", form);
   await insertForm(db, form);
 };
 
