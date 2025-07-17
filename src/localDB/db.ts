@@ -1,20 +1,29 @@
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
+
 import { createFinesTable } from './fine/fines';
 import { createCommerceTable } from './commerce/commerce';
 import { createVehicleTable } from './vehicle/vehicle';
-import { createOfflineAuthTable } from './session/offlineAuth'; // Importa la función para crear la tabla de autenticación offline
+import { createOfflineAuthTable } from './session/offlineAuth';
 
-SQLite.enablePromise(true);  // Habilita el uso de promesas en SQLite para manejar operaciones asíncronas
+import { createFormsTable } from './forms/forms';
+import { createQuestionsTable } from './questions/questions';
+import { createUsersTable } from './users/users';
+import { createQuestionOptionsTable } from './questions/questionOptions';
 
+SQLite.enablePromise(true);
 
 export const getDBConnection = async (): Promise<SQLiteDatabase> => {
-  return SQLite.openDatabase({ name: 'app_data.db', location: 'default' });// Abre o crea la base de datos 'app_data.db' en la ubicación predeterminada
+  return SQLite.openDatabase({ name: 'app_data.db', location: 'default' });
 };
 
 export const createTables = async (db: SQLiteDatabase): Promise<void> => {
-  await createFinesTable(db);       // Crea la tabla para guardar multas offline
-  await createCommerceTable(db);    // Crea la tabla para comercios
-  await createVehicleTable(db);  // Crea la tabla para vehículos
+  await createFinesTable(db);
+  await createCommerceTable(db);
+  await createVehicleTable(db);
   await createOfflineAuthTable(db);
 
+  await createFormsTable(db);
+  await createQuestionsTable(db);
+  await createQuestionOptionsTable(db);
+  await createUsersTable(db);
 };
