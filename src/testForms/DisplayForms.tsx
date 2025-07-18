@@ -15,7 +15,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'DisplayForms'>;
 
 export const DisplayForms = ({ navigation }: Props) => {
     const { forms } = useSelector((state: RootState) => state.form);
-    const { questions } = useSelector((state: RootState) => state.question);
+    //const { questions } = useSelector((state: RootState) => state.question);
     
     const dispatch = useDispatch<AppDispatch>();
     console.log(forms);
@@ -24,9 +24,8 @@ export const DisplayForms = ({ navigation }: Props) => {
         const getQuestions=async()=>{
             dispatch(startLoadQuestions(form.id));
         };
-        getQuestions();
-        console.log(questions)
         dispatch(onSetActiveForm(form))
+        getQuestions();
         navigation.navigate('DisplayQuestions')
     };
 

@@ -107,11 +107,12 @@ export const startOnLogIn = (payload: ILogin) => {
           body: JSON.stringify({ email: normalizedEmail, password: payload.password })
         });
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            console.log("Login failed", errorData.errors?.[0] || "Unknown error");
-            return false;
-          }
+
+        if (!response.ok) {
+          const text = await response.text();
+          console.error(`HTTP ${response.status}: ${text}`);
+          throw new Error(`Request failed with status ${response.status}`);
+        };
 
         const data = await response.json();
         const accessToken = response.headers.get('access-token');
@@ -148,7 +149,7 @@ export const startOnLogIn = (payload: ILogin) => {
       const offlineValid = await loginOffline(db, normalizedEmail, payload.password);
 
       if (offlineValid) {
-        console.log('[OFFLINE LOGIN] Usuario validado localmente. Guardando datos en AsyncStorage...');
+        const offlineResult = await loginOffline(db, normalizedEmail, payload.password);
 
         await AsyncStorage.multiSet([
           ['access-token', 'offline'],
@@ -156,11 +157,14 @@ export const startOnLogIn = (payload: ILogin) => {
           ['uid', normalizedEmail],
         ]);
 
-        dispatch(onLogin({
-          userId: 0,
-          name: normalizedEmail,
-          email: normalizedEmail,
+        if (offlineResult) {
+          dispatch(onLogin({
+            userId: offlineResult.userId,
+            name: offlineResult.username,
+            email: offlineResult.username,
         }));
+      }
+
         return true;
       } else {
         console.log('[OFFLINE LOGIN] Falló la validación local. Usuario no encontrado o contraseña inválida.');

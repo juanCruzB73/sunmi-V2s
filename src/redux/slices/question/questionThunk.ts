@@ -25,15 +25,22 @@ export const startLoadQuestions=(formId:number)=>{
             const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
+            
             const response=await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}`,{headers:headers});
+
+            if (!response.ok) {
+              const text = await response.text();
+              console.error(`HTTP ${response.status}: ${text}`);
+              throw new Error(`Request failed with status ${response.status}`);
+            };
+            
             const data=await response.json();
-            console.log(data)
             dispatch(onLoadQuestions(data.questions));
             dispatch(onSetErrorMessage(null));
         }catch (error: unknown) {
             const message = error instanceof Error ? error.message : String(error);
             console.log(message);
-            return false;
+            return;
         }
     }
 };
@@ -53,9 +60,14 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
       const headers = setTokenHeader(tokenData);
 
       const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
-      const data = await response.json();
-      console.log(data);
 
+      if (!response.ok) {
+        const text = await response.text();
+        console.error(`HTTP ${response.status}: ${text}`);
+        throw new Error(`Request failed with status ${response.status}`);
+      };
+
+      const data = await response.json();
       dispatch(onLoadQuestions(data.questions));
       dispatch(onSetErrorMessage(null));
     } catch (error: unknown) {

@@ -10,11 +10,11 @@ bcrypt.setRandomFallback(() => {
   return randomBytes;
 });
 
-// Crea la tabla si no existe
 export const createOfflineAuthTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
     CREATE TABLE IF NOT EXISTS offlineAuth (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
       username TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
       last_login DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -23,11 +23,11 @@ export const createOfflineAuthTable = async (db: SQLiteDatabase): Promise<void> 
   await db.executeSql(query);
 };
 
-// Registra un nuevo usuario offline
 export const registerOfflineUser = async (
   db: SQLiteDatabase,
   username: string,
-  plainPassword: string
+  plainPassword: string,
+  userId: number
 ): Promise<void> => {
   try {
     const normalizedUsername = username.trim().toLowerCase();
@@ -35,24 +35,25 @@ export const registerOfflineUser = async (
     const passwordHash = bcrypt.hashSync(plainPassword, salt);
 
     const query = `
-      INSERT OR REPLACE INTO offlineAuth (username, password_hash, last_login)
-      VALUES (?, ?, datetime('now'));
+      INSERT OR REPLACE INTO offlineAuth (user_id, username, password_hash, last_login)
+      VALUES (?, ?, ?, datetime('now'));
     `;
-    await db.executeSql(query, [normalizedUsername, passwordHash]);
+    await db.executeSql(query, [userId, normalizedUsername, passwordHash]);
+    console.log("user saved")
   } catch (error) {
     console.error('Error al registrar usuario offline:', error);
   }
 };
 
-// Obtiene datos del usuario por nombre
+
 export const getOfflineUser = async (
   db: SQLiteDatabase,
   username: string
-): Promise<{ username: string; password_hash: string } | null> => {
+): Promise<{ user_id: number; username: string; password_hash: string } | null> => {
   try {
     const normalizedUsername = username.trim().toLowerCase();
     const [results] = await db.executeSql(
-      `SELECT username, password_hash FROM offlineAuth WHERE username = ?`,
+      `SELECT user_id, username, password_hash FROM offlineAuth WHERE username = ?`,
       [normalizedUsername]
     );
     if (results.rows.length > 0) {
@@ -65,21 +66,25 @@ export const getOfflineUser = async (
   }
 };
 
-// Valida el login offline (activo o restauración pasiva)
+
 export const loginOffline = async (
   db: SQLiteDatabase,
   username: string,
   plainPassword: string
-): Promise<boolean> => {
+): Promise<false | { userId: number; username: string }> => {
   const user = await getOfflineUser(db, username);
   if (!user) return false;
 
-  if (!plainPassword) {
-    return true;
+  if (!plainPassword || bcrypt.compareSync(plainPassword, user.password_hash)) {
+    return {
+      userId: user.user_id,
+      username: user.username,
+    };
   }
 
-  return bcrypt.compareSync(plainPassword, user.password_hash);
+  return false;
 };
+
 
 // Obtiene la última fecha de login
 export const getLastLogin = async (

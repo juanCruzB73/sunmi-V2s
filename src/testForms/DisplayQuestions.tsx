@@ -28,23 +28,28 @@ export const DisplayQuestions = ({ navigation }: Props) => {
 
     const handleNextPanel=(panelId:number)=>{
       dispatch(startLoadQuestionsByPanel(activeForm!.id,panelId))
-    }
+    };
 
     useEffect(()=>{
+      console.log(questions)
       if (!Array.isArray(questions)) return;
+
       const filtered = questions.filter((q: IQuestion) =>
         Array.isArray(q.question_options) && q.question_options.length > 0
       );
+
       if (filtered.length > 0) {
         setQuestionsTodisplay(filtered);
       } else {
         setQuestionsTodisplay(questions);
       }
+
     },[questions])
 
     if (!Array.isArray(questions)) {
         return <Text style={{ padding: 20 }}>Loading questions...</Text>;
-    }
+    };
+
     return (
     <ScrollView>
       <TopBar navigation={navigation} />
