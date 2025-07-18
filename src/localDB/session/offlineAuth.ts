@@ -1,7 +1,6 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import bcrypt from 'bcryptjs';
 
-// Fallback para entropía en React Native
 bcrypt.setRandomFallback(() => {
   const randomBytes: number[] = [];
   for (let i = 0; i < 16; i++) {
@@ -10,13 +9,21 @@ bcrypt.setRandomFallback(() => {
   return randomBytes;
 });
 
+
+export const dropOfflineAuthTable = async (db: SQLiteDatabase): Promise<void> => {
+  await db.executeSql(`DROP TABLE IF EXISTS offlineAuth`);
+};
+
 export const createOfflineAuthTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
     CREATE TABLE IF NOT EXISTS offlineAuth (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL,
-      username TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL,
+      lastname TEXT,
+      email TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
+      uid TEXT,
       last_login DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `;
@@ -25,60 +32,102 @@ export const createOfflineAuthTable = async (db: SQLiteDatabase): Promise<void> 
 
 export const registerOfflineUser = async (
   db: SQLiteDatabase,
-  username: string,
-  plainPassword: string,
-  userId: number
+  {
+    userId,
+    name,
+    lastname,
+    email,
+    plainPassword,
+    uid,
+  }: {
+    userId: number;
+    name: string;
+    lastname: string;
+    email: string;
+    plainPassword: string;
+    uid: string;
+  }
 ): Promise<void> => {
   try {
-    const normalizedUsername = username.trim().toLowerCase();
+    const normalizedEmail = email.trim().toLowerCase();
     const salt = bcrypt.genSaltSync(10);
     const passwordHash = bcrypt.hashSync(plainPassword, salt);
 
     const query = `
-      INSERT OR REPLACE INTO offlineAuth (user_id, username, password_hash, last_login)
-      VALUES (?, ?, ?, datetime('now'));
+      INSERT OR REPLACE INTO offlineAuth (user_id, name, lastname, email, password_hash, uid, last_login)
+      VALUES (?, ?, ?, ?, ?, ?, datetime('now'));
     `;
-    await db.executeSql(query, [userId, normalizedUsername, passwordHash]);
-    console.log("user saved")
+    await db.executeSql(query, [
+      userId,
+      name.trim(),
+      lastname?.trim() ?? '',
+      normalizedEmail,
+      passwordHash,
+      uid,
+    ]);
+
+    console.log("🟢 Usuario offline registrado");
   } catch (error) {
-    console.error('Error al registrar usuario offline:', error);
+    console.error('🔴 Error al registrar usuario offline:', error);
   }
 };
-
 
 export const getOfflineUser = async (
-  db: SQLiteDatabase,
-  username: string
-): Promise<{ user_id: number; username: string; password_hash: string } | null> => {
-  try {
-    const normalizedUsername = username.trim().toLowerCase();
-    const [results] = await db.executeSql(
-      `SELECT user_id, username, password_hash FROM offlineAuth WHERE username = ?`,
-      [normalizedUsername]
-    );
-    if (results.rows.length > 0) {
-      return results.rows.item(0);
+    db: SQLiteDatabase,
+    email: string
+  ) => {
+    try {
+      const normalizedEmail = email.trim().toLowerCase();
+      const [results] = await db.executeSql(
+        `SELECT user_id, email, password_hash, name, lastname FROM offlineAuth WHERE email = ?`,
+        [normalizedEmail]
+      );
+
+      if (results.rows.length > 0) {
+        return results.rows.item(0);
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error al obtener usuario offline:', error instanceof Error ? error.message : error);
+      return null;
     }
-    return null;
+  };
+
+export const printAllOfflineUsers = async (db: SQLiteDatabase) => {
+  try {
+    const [results] = await db.executeSql(`SELECT * FROM offlineAuth`);
+    for (let i = 0; i < results.rows.length; i++) {
+      console.log('👤 Usuario offline registrado:', results.rows.item(i));
+    }
   } catch (error) {
-    console.error('Error al obtener usuario offline:', error);
-    return null;
+    console.error('Error al listar usuarios offline:', error);
   }
 };
+
 
 
 export const loginOffline = async (
   db: SQLiteDatabase,
-  username: string,
+  email: string,
   plainPassword: string
-): Promise<false | { userId: number; username: string }> => {
-  const user = await getOfflineUser(db, username);
-  if (!user) return false;
+): Promise<false | { userId: number; name: string; email: string }> => {
+  const user = await getOfflineUser(db, email);
+  console.log('[DEBUG] Usuario encontrado offline:', user);
 
-  if (!plainPassword || bcrypt.compareSync(plainPassword, user.password_hash)) {
+  if (!user) {
+    console.log('[DEBUG] Usuario no existe');
+    return false;
+  }
+
+  const passwordMatch = bcrypt.compareSync(plainPassword, user.password_hash);
+  console.log('[DEBUG] Contraseña válida:', passwordMatch);
+
+  if (plainPassword && passwordMatch) {
     return {
       userId: user.user_id,
-      username: user.username,
+      name: user.name,
+      email: user.email,
     };
   }
 

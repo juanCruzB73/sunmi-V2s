@@ -5,7 +5,7 @@ import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
 import { Alert } from "react-native";
 import { API_BASE_URL } from '@env';
 import { getDBConnection } from "../../../localDB/db";
-import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
+import { createOfflineAuthTable, dropOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
 
 export interface ILogin {
   email: string;
@@ -28,72 +28,45 @@ const storeAuthTokens = async (
   }
 };
 
+
 export const restoreAuthState = () => {
   return async (dispatch: AppDispatch) => {
-    dispatch(onCheckingAuth());
+    const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
+    const tokenData = Object.fromEntries(values);
 
-    try {
-      const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-      const tokenData = Object.fromEntries(values);
-      const normalizedEmail = tokenData['uid']?.trim().toLowerCase() ?? '';
-      const netState = await NetInfo.fetch();
-
-      const tokensExist = tokenData["access-token"] && tokenData.client && tokenData.uid;
-
-      if (tokensExist && netState.isConnected) {
-        const response = await fetch(`${API_BASE_URL}/api/v1/auth/validate_token`, {
-          headers: {
-            "access-token": tokenData["access-token"] ?? '',
-            "client": tokenData.client ?? '',
-            "uid": tokenData.uid ?? '',
-            "token-type": "Bearer",
-            "Accept": "*/*",
-          }
-        });
-
-        if (response.ok) {
-          const data: any = await response.json();
-          dispatch(onLogin({
-            userId: data.data.id,
-            name: data.data.name,
-            email: data.data.email,
-          }));
-          return;
-        }
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/validate_token`, {
+      headers: {
+        "access-token": tokenData["access-token"] ?? "",
+        "client": tokenData.client ?? "",
+        "uid": tokenData.uid ?? "",
+        "token-type": "Bearer",
+        "Accept": "*/*",
       }
+    });
 
-      const db = await getDBConnection();
-      const offlineOk = await loginOffline(db, normalizedEmail, '');
+    const data: any = await response.json();
 
-      if (offlineOk) {
-        console.log('[RESTORE SESSION] Restauración offline exitosa. Usuario validado sin conexión.');
-
-        dispatch(onLogin({
-          userId: 0,
-          name: normalizedEmail,
-          email: normalizedEmail,
-        }));
-      } else {
-        console.log('[RESTORE SESSION] Falló restauración offline. Usuario no encontrado.');
-        dispatch(onLogOut());
-        Alert.alert('Sesión expirada', 'No se pudo validar la sesión en modo online ni offline.');
-      }
-
-    } catch (error) {
-      console.error('Error restaurando sesión:', error);
+    if (tokenData["access-token"] && tokenData.client && tokenData.uid && response.ok) {
+      dispatch(onLogin({
+        userId: data.data.id,
+        name: data.data.name,
+        email: data.data.email,
+      }));
+    } else {
       dispatch(onLogOut());
-      Alert.alert('Error inesperado', 'No se pudo restaurar la sesión.');
     }
   };
 };
+
 
 export const startOnLogIn = (payload: ILogin) => {
   return async (dispatch: AppDispatch) => {
     dispatch(onCheckingAuth());
 
     const db = await getDBConnection();
+    //await dropOfflineAuthTable(db);
     await createOfflineAuthTable(db);
-    const normalizedEmail = payload.email.trim().toLowerCase();
+    //const normalizedEmail = payload.email.trim().toLowerCase();
     const netState = await NetInfo.fetch();
 
     if (netState.isConnected) {
@@ -104,7 +77,7 @@ export const startOnLogIn = (payload: ILogin) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ email: normalizedEmail, password: payload.password })
+          body: JSON.stringify({ email: payload.email, password: payload.password })
         });
 
 
@@ -129,7 +102,15 @@ export const startOnLogIn = (payload: ILogin) => {
         };
 
         await storeAuthTokens(accessToken, client, uid);
-        await registerOfflineUser(db, normalizedEmail, payload.password);
+        await registerOfflineUser(db, {
+          userId: data.data.id,
+          name: data.data.name,
+          lastname: data.data.lastname ?? '',
+          email: data.data.email,
+          plainPassword: payload.password,
+          uid: uid ?? '',
+        });
+
 
         dispatch(onLogin({
           userId: authData.userId,
@@ -146,25 +127,21 @@ export const startOnLogIn = (payload: ILogin) => {
       }
 
     } else {
-      const offlineValid = await loginOffline(db, normalizedEmail, payload.password);
+      const offlineValid = await loginOffline(db, payload.email, payload.password);
 
       if (offlineValid) {
-        const offlineResult = await loginOffline(db, normalizedEmail, payload.password);
-
         await AsyncStorage.multiSet([
           ['access-token', 'offline'],
           ['client', 'offline'],
-          ['uid', normalizedEmail],
+          ['uid', payload.email],
         ]);
-
-        if (offlineResult) {
-          dispatch(onLogin({
-            userId: offlineResult.userId,
-            name: offlineResult.username,
-            email: offlineResult.username,
+      
+        dispatch(onLogin({
+          userId: offlineValid.userId,
+          name: offlineValid.name,
+          email: offlineValid.email,
         }));
-      }
-
+      
         return true;
       } else {
         console.log('[OFFLINE LOGIN] Falló la validación local. Usuario no encontrado o contraseña inválida.');
