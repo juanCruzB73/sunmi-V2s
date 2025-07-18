@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo';
-import { syncCommerceToServer } from '../localDB/commerce/syncCommerce';
-import { syncFinesToServer } from '../localDB/fine/syncFines';
-import { syncVehicleToServer } from '../localDB/vehicle/syncVehicle';
 
 
 export const useNetworkStatus = () => {
@@ -19,9 +16,7 @@ export const useNetworkStatus = () => {
 
       // Sincronización automática al recuperar conexión
       if (online) {
-        syncFinesToServer();
-        syncCommerceToServer();
-        syncVehicleToServer();
+        
       }
     });
 

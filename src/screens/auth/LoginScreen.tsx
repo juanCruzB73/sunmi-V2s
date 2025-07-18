@@ -24,7 +24,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       
     } catch (err) {
       const errorMessage = (err as Error).message || "Ha ocurrido un error inesperado";
-      Alert.alert("Error", errorMessage);
+      console.log("Error", errorMessage);
     }
   };
 

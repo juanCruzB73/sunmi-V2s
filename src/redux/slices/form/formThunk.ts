@@ -53,7 +53,7 @@ export const startCreateForm = (newForm: IForm) => {
       const netState = await NetInfo.fetch();
 
       if (!netState.isConnected) {
-        await saveFormOffline(newForm); // ✅ Ajuste: guardar localmente si no hay conexión
+        await saveFormOffline(newForm);
         dispatch(onSetErrorMessage("Formulario guardado localmente sin conexión"));
         return;
       }

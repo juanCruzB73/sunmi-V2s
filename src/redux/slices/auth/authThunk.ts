@@ -140,7 +140,7 @@ export const startOnLogIn = (payload: ILogin) => {
 
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        Alert.alert(message);
+        console.log(message);
         return false;
       }
 
@@ -164,7 +164,7 @@ export const startOnLogIn = (payload: ILogin) => {
         return true;
       } else {
         console.log('[OFFLINE LOGIN] Falló la validación local. Usuario no encontrado o contraseña inválida.');
-        Alert.alert("Sin conexión", "Credenciales inválidas en modo offline.");
+        console.log("Sin conexión", "Credenciales inválidas en modo offline.");
         dispatch(onLogOut());
         return false;
       }

@@ -22,7 +22,6 @@ const HomeScreen = ({ navigation }: Props) => {
     const getForms=async()=>{
       const netState = await NetInfo.fetch();
       if(!netState.isConnected){
-        console.log("firirnf")
         dispatch(startOfflineForms());
       }else{ 
         dispatch(startLoadForms());
@@ -40,8 +39,6 @@ const HomeScreen = ({ navigation }: Props) => {
       <View style={styles.container}>
         {[
           { label: 'Formularios', route: 'DisplayForms' },
-          { label: 'Automóviles', route: 'VehicleScreen' },
-          { label: 'Comercio', route: 'CommerceMenu' },
           { label: 'Multas', route: 'FineSearcher' },
           { label: 'Otros', route: undefined }
         ].map((item, index) => (
