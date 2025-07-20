@@ -2,6 +2,7 @@ import { IQuestionOption } from "./IQuestionOption";
 
 export interface IQuestion{
     id: number;
+    form_id?: number;
     name: string;
     type: string;
     owner: string;

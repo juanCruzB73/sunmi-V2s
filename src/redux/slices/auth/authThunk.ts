@@ -71,7 +71,7 @@ export const startOnLogIn = (payload: ILogin) => {
 
     if (netState.isConnected) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/auth/sign_in`, {
+        const response = await fetch(`https://75b5130417b0.ngrok-free.app/api/v1/auth/sign_in`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',

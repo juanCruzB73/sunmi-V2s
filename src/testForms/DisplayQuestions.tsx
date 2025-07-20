@@ -8,6 +8,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { IQuestion } from '../types/form/IQuestion';
 import QuestionInput from '../components/question-option/QuestionInput';
 import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThunk';
+import { startOfflineQuestionsByPanel } from '../redux/slices/offline/questionsOffline';
+import NetInfo from '@react-native-community/netinfo';
+
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayQuestions'>;
 
@@ -20,31 +23,21 @@ export const DisplayQuestions = ({ navigation }: Props) => {
 
     const [answers, setAnswers] = useState<Record<number, any>>({});
 
-    const [questionsToDisplay,setQuestionsTodisplay]=useState<IQuestion[]>([]);
+    //const [questionsToDisplay,setQuestionsTodisplay]=useState<IQuestion[]>([]);
 
     const handleChange = (questionId: number, newValue: any) => {
         setAnswers((prev) => ({ ...prev, [questionId]: newValue }));
     };
 
-    const handleNextPanel=(panelId:number)=>{
-      dispatch(startLoadQuestionsByPanel(activeForm!.id,panelId))
-    };
+    const handleNextPanel = async (panelId: number) => {
+  const netState = await NetInfo.fetch();
 
-    useEffect(()=>{
-      console.log(questions)
-      if (!Array.isArray(questions)) return;
-
-      const filtered = questions.filter((q: IQuestion) =>
-        Array.isArray(q.question_options) && q.question_options.length > 0
-      );
-
-      if (filtered.length > 0) {
-        setQuestionsTodisplay(filtered);
-      } else {
-        setQuestionsTodisplay(questions);
-      }
-
-    },[questions])
+  if (netState.isConnected) {
+    await dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
+  } else {
+    await dispatch(startOfflineQuestionsByPanel(panelId));
+  }
+}
 
     if (!Array.isArray(questions)) {
         return <Text style={{ padding: 20 }}>Loading questions...</Text>;
@@ -54,7 +47,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     <ScrollView>
       <TopBar navigation={navigation} />
 
-      {questionsToDisplay.map((question: IQuestion) => (
+      {questions.map((question: IQuestion) => (
         <View key={question.id} style={{ margin: 10 }}>
           <QuestionInput
             question={{
