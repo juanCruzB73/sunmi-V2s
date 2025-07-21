@@ -1,4 +1,3 @@
-import { API_BASE_URL } from '@env';
 import { AppDispatch } from '../../store';
 import { IAuthToken } from '../../../types/IAuthToken';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -41,7 +40,7 @@ export const startLoadForms = () => {
       };
       const headers = setTokenHeader(tokenData);
 
-      const response = await fetch(`https://75b5130417b0.ngrok-free.app/api/v1/forms/visible`, { headers: headers });
+      const response = await fetch(`https://0c265f18c4b7.ngrok-free.app/api/v1/forms/visible`, { headers: headers });
       const data = await response.json();
       
       for (const form of data) {

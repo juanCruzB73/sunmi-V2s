@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo';
-
+import { triggerSync } from '../sync/syncManager'; // ruta desde utils hacia sync
 
 export const useNetworkStatus = () => {
-  const [isOnline, setIsOnline] = useState<boolean>(true); // por defecto true para evitar bloqueos iniciales
+  const [isOnline, setIsOnline] = useState<boolean>(true);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -14,9 +14,8 @@ export const useNetworkStatus = () => {
 
       setIsOnline(online);
 
-      // Sincronización automática al recuperar conexión
       if (online) {
-        
+        triggerSync(); // ← Esto dispara la sincronización
       }
     });
 

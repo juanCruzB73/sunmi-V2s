@@ -6,6 +6,8 @@ import { createFormsTable } from './forms/forms';
 import { createQuestionsTable } from './questions/questions';
 import { createUsersTable } from './users/users';
 import { createQuestionOptionsTable } from './questions/questionOptions';
+import { createClaimsTable } from './claims/claims';
+import { createAnswersTable } from './claims/answers';
 
 SQLite.enablePromise(true);
 
@@ -21,4 +23,6 @@ export const createTables = async (db: SQLiteDatabase): Promise<void> => {
   await createQuestionsTable(db);
   await createQuestionOptionsTable(db);
   await createUsersTable(db);
+  await createClaimsTable(db);
+  await createAnswersTable(db);
 };
