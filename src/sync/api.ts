@@ -1,23 +1,43 @@
-import axios from 'axios';                                   // Cliente HTTP
-import { IAnswer } from '../types/claims/IAnswer';           // Interfaz de respuestas
-import { IClaim } from '../types/claims/IClaim';             // Interfaz de reclamos
+import { IAnswer } from '../types/claims/IAnswer';
+import { IClaim } from '../types/claims/IClaim';
 
-const API_BASE = 'https://0c265f18c4b7.ngrok-free.app/api/v1/forms/visible/claims'; // URL base para tu API
+const API_BASE = 'https://0c265f18c4b7.ngrok-free.app/api/v1/forms/visible/claims';
 
 export const api = {
   sendAnswer: async (answer: IAnswer): Promise<void> => {
     try {
-      await axios.post(`${API_BASE}/answers`, answer);       // Envia respuesta al endpoint /answers
+      const response = await fetch(`${API_BASE}/answers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+          // Authorization: `Bearer ${token}` // ← Si usás autenticación, podés agregarlo
+        },
+        body: JSON.stringify(answer)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
     } catch (error) {
-      throw error; // El error se maneja en syncAnswers.ts
+      throw error; // Se maneja en syncAnswers.ts
     }
   },
 
   sendClaim: async (claim: IClaim): Promise<void> => {
     try {
-      await axios.post(`${API_BASE}/claims`, claim);         // Envia reclamo al endpoint /claims
+      const response = await fetch(`${API_BASE}/claims`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(claim)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
     } catch (error) {
-      throw error; // El error se maneja en syncClaims.ts
+      throw error; // Se maneja en syncClaims.ts
     }
   }
 };
