@@ -44,7 +44,7 @@ export const startLoadForms = () => {
       const data = await response.json();
       
       for (const form of data) {
-        await insertForm(db, form); // asegurate de que `form` tenga el shape correcto
+        await insertForm(db, form);
       }
 
       dispatch(onLoadForms(data))

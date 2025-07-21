@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { Button, ScrollView, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
 import { TopBar } from '../components/top-bar/TopBar';
@@ -22,6 +22,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const [answers, setAnswers] = useState<Record<number, any>>({});
+    const [optionSelected, setOptionSelected] = useState<number|null>(null);
 
     //const [questionsToDisplay,setQuestionsTodisplay]=useState<IQuestion[]>([]);
 
@@ -29,19 +30,28 @@ export const DisplayQuestions = ({ navigation }: Props) => {
         setAnswers((prev) => ({ ...prev, [questionId]: newValue }));
     };
 
-    const handleNextPanel = async (panelId: number) => {
-  const netState = await NetInfo.fetch();
+    const handleNextPanel = async (panelId: number|null) => {
+      const netState = await NetInfo.fetch();
 
-  if (netState.isConnected) {
-    await dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
-  } else {
-    await dispatch(startOfflineQuestionsByPanel(panelId));
-  }
-}
+      if (netState.isConnected) {
+        panelId&&await dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
+      } else {
+        panelId&&await dispatch(startOfflineQuestionsByPanel(panelId));
+      }
+    };
+
+    const handleSaveOptionSelected=(option:number|null)=>{
+      setOptionSelected(option);
+      console.log(optionSelected)
+    };
 
     if (!Array.isArray(questions)) {
         return <Text style={{ padding: 20 }}>Loading questions...</Text>;
     };
+
+    const handleSubmit=()=>{
+      console.log("submited");
+    }
 
     return (
     <ScrollView>
@@ -56,17 +66,24 @@ export const DisplayQuestions = ({ navigation }: Props) => {
               options: question.question_options ?? [],
               value: answers[question.id] || '',
               onChange: (val) => handleChange(question.id, val),
-              onPressFunction:(value) => {
-                if (value?.panel_id) {
-                  handleNextPanel(value?.panel_id)
-                } else {
-                  console.log('No next panel');
-                }
-              }
+              onPressFunction:(val) => {handleSaveOptionSelected(val)}
             }}
           />
+          {
+          question.question_options&&question.question_options.length>0&&
+          <Button
+            title="Siguiente Panel"
+            onPress={() => handleNextPanel(optionSelected)}
+          />
+          }
         </View>
       ))}
+      {
+        <Button
+            title="Enviar"
+            onPress={() => handleSubmit()}
+          />
+      }
     </ScrollView>
   )
 }

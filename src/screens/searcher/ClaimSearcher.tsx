@@ -13,34 +13,21 @@ import InfoCard from "../cards/InfoCard";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../router/StackNavigator";
 import LinearGradient from "react-native-linear-gradient";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
-export interface ICardInfo {
-  nroMulta: number;
-  type: "Automovil" | "Multa";
-  plateOrRut: string;
-  status: "synced" | "unsynced";
-}
 
-type Props = NativeStackScreenProps<RootStackParamList, "FineSearcher">;
+type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;
 
-const cardInfoInitialState: ICardInfo[] = [
-  { nroMulta: 1001, type: "Automovil", plateOrRut: "ABC123", status: "synced" },
-  { nroMulta: 1002, type: "Multa", plateOrRut: "12.345.678-9", status: "synced" },
-  { nroMulta: 1003, type: "Automovil", plateOrRut: "XYZ789", status: "unsynced" },
-  { nroMulta: 1004, type: "Multa", plateOrRut: "98.765.432-1", status: "unsynced" },
-  { nroMulta: 1005, type: "Automovil", plateOrRut: "DEF456", status: "unsynced" },
-  { nroMulta: 1006, type: "Multa", plateOrRut: "11.222.333-4", status: "synced" },
-  { nroMulta: 1007, type: "Automovil", plateOrRut: "GHI789", status: "unsynced" },
-];
-
-const FineSearcher = ({ navigation }: Props) => {
+const ClaimSearcher = ({ navigation }: Props) => {
   const [searchInput, setSearchInput] = useState("");
+  const { claims } = useSelector((state: RootState) => state.claim);
 
   return (
     <>
       <TopBar navigation={navigation} />
       <LinearGradient colors={["#f1f5fa", "#d8e4f4"]} style={styles.gradient}>
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
           <View style={styles.searchContainer}>
             <FontAwesome name="search" size={20} color="#555" style={styles.searchIcon} />
             <TextInput
@@ -60,12 +47,12 @@ const FineSearcher = ({ navigation }: Props) => {
           </View>
 
           <FlatList
-            data={cardInfoInitialState}
-            keyExtractor={(item) => item.nroMulta.toString()}
+            data={claims}
+            keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.list}
-            renderItem={({ item }) => <InfoCard item={item} />}
+            renderItem={({ item }) => <InfoCard claim={item} />}
           />
-        </ScrollView>
+        </View>
       </LinearGradient>
     </>
   );
@@ -105,4 +92,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FineSearcher;
+export default ClaimSearcher;
