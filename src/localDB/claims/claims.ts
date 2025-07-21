@@ -1,6 +1,7 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { IClaim } from '../../types/claims/IClaim';
 
+//  Crea la tabla 'claims' en SQLite si no existe
 export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
     CREATE TABLE IF NOT EXISTS claims (
@@ -22,9 +23,10 @@ export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
       isSynced INTEGER DEFAULT 0
     );
   `;
-  await db.executeSql(query);
+  await db.executeSql(query); // 🧨 Ejecuta creación de tabla
 };
 
+// 📥 Inserta o reemplaza un reclamo en la base local
 export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<void> => {
   const query = `
     INSERT OR REPLACE INTO claims (
@@ -32,13 +34,14 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
       status_type_id, form_id, incident_id, created_at, updated_at, area_id, isSynced
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
+
   const params = [
     claim.id,
     claim.status,
     claim.type,
     claim.date,
     claim.removed_at,
-    claim.removed ? 1 : 0,
+    claim.removed ? 1 : 0, //  Convertido a entero
     claim.reason,
     claim.user_id,
     claim.removed_user_id,
@@ -51,9 +54,10 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
     claim.isSynced ? 1 : 0
   ];
 
-  await db.executeSql(query, params);
+  await db.executeSql(query, params); //  Guarda el reclamo
 };
 
+//  Obtiene todos los claims que aún no fueron sincronizados
 export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> => {
   const results = await db.executeSql('SELECT * FROM claims WHERE isSynced = 0');
   const claimRows = results[0].rows;
@@ -67,7 +71,7 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> =
       type: row.type,
       date: row.date,
       removed_at: row.removed_at,
-      removed: row.removed === 1,
+      removed: row.removed === 1, //  Convertido a booleano
       reason: row.reason,
       user_id: row.user_id,
       removed_user_id: row.removed_user_id,
@@ -78,9 +82,9 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> =
       updated_at: row.updated_at,
       area_id: row.area_id,
       isSynced: row.isSynced === 1,
-      answers: [] // ← si estás guardando answers en otra tabla, se pueden cargar luego por `claim_id`
+      answers: [] //  Placeholder por si querés asociar answers cargados aparte
     });
   }
 
-  return claims;
+  return claims; //  Devuelve los reclamos pendientes
 };

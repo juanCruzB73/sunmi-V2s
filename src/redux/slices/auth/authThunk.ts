@@ -2,10 +2,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
 import { AppDispatch } from "../../store";
 import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
-import { Alert } from "react-native";
 import {API_URL } from '@env';
 import { getDBConnection } from "../../../localDB/db";
-import { createOfflineAuthTable, dropOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
+import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
 
 export interface ILogin {
   email: string;

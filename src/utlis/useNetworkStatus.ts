@@ -1,26 +1,30 @@
 import { useEffect, useState } from 'react';
-import NetInfo from '@react-native-community/netinfo';
-import { triggerSync } from '../sync/syncManager'; // ruta desde utils hacia sync
+import NetInfo from '@react-native-community/netinfo'; // Librería para detectar conectividad de red
+import { triggerSync } from '../sync/syncManager';      // Función que lanza la sincronización
 
+// Hook personalizado que detecta si el dispositivo está online
 export const useNetworkStatus = () => {
-  const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [isOnline, setIsOnline] = useState<boolean>(true); // Estado que representa si hay conexión
 
   useEffect(() => {
+    // Se suscribe a los cambios de red
     const unsubscribe = NetInfo.addEventListener(state => {
       const reachable = state.isInternetReachable;
+
+      // Determina si el dispositivo está realmente conectado
       const online = reachable === null
         ? state.isConnected ?? false
         : state.isConnected && reachable;
 
-      setIsOnline(online);
+      setIsOnline(online); // Actualiza estado local
 
       if (online) {
-        triggerSync(); // ← Esto dispara la sincronización
+        triggerSync(); // Si hay conexión, ejecuta sincronización automática
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Limpia la suscripción al desmontar el componente
   }, []);
 
-  return isOnline;
+  return isOnline; // Retorna el estado de red (si se requiere desde el componente)
 };
