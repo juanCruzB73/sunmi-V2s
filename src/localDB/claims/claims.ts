@@ -1,7 +1,7 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { IClaim } from '../../types/claims/IClaim';
 
-//  Crea la tabla 'claims' en SQLite si no existe
+// 🧱 Crea la tabla 'claims' en SQLite si no existe
 export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
     CREATE TABLE IF NOT EXISTS claims (
@@ -41,7 +41,7 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
     claim.type,
     claim.date,
     claim.removed_at,
-    claim.removed ? 1 : 0, //  Convertido a entero
+    claim.removed ? 1 : 0, // ✅ Convertido a entero
     claim.reason,
     claim.user_id,
     claim.removed_user_id,
@@ -54,10 +54,10 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
     claim.isSynced ? 1 : 0
   ];
 
-  await db.executeSql(query, params); //  Guarda el reclamo
+  await db.executeSql(query, params); // 💾 Guarda el reclamo
 };
 
-//  Obtiene todos los claims que aún no fueron sincronizados
+// 🔍 Obtiene todos los claims que aún no fueron sincronizados
 export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> => {
   const results = await db.executeSql('SELECT * FROM claims WHERE isSynced = 0');
   const claimRows = results[0].rows;
@@ -71,7 +71,7 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> =
       type: row.type,
       date: row.date,
       removed_at: row.removed_at,
-      removed: row.removed === 1, //  Convertido a booleano
+      removed: row.removed === 1, // 🔎 Convertido a booleano
       reason: row.reason,
       user_id: row.user_id,
       removed_user_id: row.removed_user_id,
@@ -82,9 +82,9 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> =
       updated_at: row.updated_at,
       area_id: row.area_id,
       isSynced: row.isSynced === 1,
-      answers: [] //  Placeholder por si querés asociar answers cargados aparte
+      answers: [] // 🧩 Placeholder por si querés asociar answers cargados aparte
     });
   }
 
-  return claims; //  Devuelve los reclamos pendientes
+  return claims; // 📤 Devuelve los reclamos pendientes
 };

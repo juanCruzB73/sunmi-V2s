@@ -8,12 +8,6 @@ import type { RootStackParamList } from '../../router/StackNavigator';
 import { IClaim } from '../../types/claims/IClaim';
 import { IAnswer } from '../../types/claims/IAnswer';
 
-interface IItem {
-  nroMulta: number,
-  type: "Automovil" | "Multa",
-  plateOrRut: string,
-  status: "synced" | "unsynced"
-}
 
 interface ICardProps {
   claim: IClaim;
@@ -61,11 +55,11 @@ const InfoCard: FC<ICardProps> = ({ claim }) => {
   }, 300);
   }*/
   return (
-    <View style={claim.synced ? styles.container : styles.containerNotSync}>
+    <View style={claim.isSynced ? styles.container : styles.containerNotSync}>
       <View style={styles.infoContainer}>
         <Text>ID: {claim.id}</Text>
         <Text>Date: {claim.date}</Text>
-        <Text>Synced: {claim.synced ? 'Yes' : 'No'}</Text>
+        <Text>Synced: {claim.isSynced ? 'Yes' : 'No'}</Text>
         {claim.answers.map((answer:IAnswer) => (
           <View key={answer.id}>
             <Text>{answer.question.name}: {answer.input_string}</Text>

@@ -5,7 +5,7 @@ import {
   Pressable,
   View,
   FlatList,
-  ScrollView
+  
 } from "react-native";
 import { TopBar } from "../../components/top-bar/TopBar";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
