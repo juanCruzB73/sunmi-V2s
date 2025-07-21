@@ -41,11 +41,11 @@ export const startLoadForms = () => {
       };
       const headers = setTokenHeader(tokenData);
 
-      const response = await fetch(`https://75b5130417b0.ngrok-free.app/api/v1/forms/visible`, { headers: headers });
+      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible`, { headers: headers });
       const data = await response.json();
       
       for (const form of data) {
-        await insertForm(db, form); // asegurate de que `form` tenga el shape correcto
+        await insertForm(db, form);
       }
 
       dispatch(onLoadForms(data))

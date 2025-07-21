@@ -39,7 +39,7 @@ const HomeScreen = ({ navigation }: Props) => {
       <View style={styles.container}>
         {[
           { label: 'Formularios', route: 'DisplayForms' },
-          { label: 'Multas', route: 'FineSearcher' },
+          //{ label: 'Multas', route: 'FineSearcher' },
           { label: 'Otros', route: undefined }
         ].map((item, index) => (
           <Pressable

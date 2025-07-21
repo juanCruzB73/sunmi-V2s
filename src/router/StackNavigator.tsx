@@ -4,26 +4,25 @@ import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 
 import HomeScreen from "../screens/home/HomeScreen";
-import FineSearcher from "../screens/searcher/FineSearcher";
-import CommerceScreen from "../screens/Menu/CommerceScreen";
+import ClaimSearcher from "../screens/searcher/ClaimSearcher";
+import CommerceScreen from "../screens/Menu/ClaimMenu";
 import VehicleScreen from "../screens/Menu/VehicleScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import ForgetPasswordScreen from "../screens/auth/ForgetPasswordScreen";
 import PrintingScreen from "../screens/modals/PrintingScreen";
-import { VehicleFineModalScreen } from "../screens/modals/VehicleFineModalScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import VehicleFineScreen from "../screens/fine/VehicleFineScreen";
 import { VehicleSearcher } from "../screens/searcher/VehicleSearcher";
-import { CommerceFineModalScreen } from "../screens/fine/CommerceFineScreen";
 import { DisplayForms } from "../testForms/DisplayForms";
 import { DisplayQuestions } from "../testForms/DisplayQuestions";
+import ClaimMenu from "../screens/Menu/ClaimMenu";
 
 export type RootStackParamList = {
   Login: undefined;
   Home: undefined;
-  CommerceMenu: undefined;
+  ClaimMenu: undefined;
   VehicleScreen: undefined;
-  FineSearcher: undefined;
+  ClaimSearcher: undefined;
   ForgetPassword: undefined;
   Printing: undefined;
   CommerceFineModal: undefined;
@@ -51,9 +50,9 @@ const StackNavigator = () => {
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="DisplayForms" component={DisplayForms} />
           <Stack.Screen name="DisplayQuestions" component={DisplayQuestions} />
-          <Stack.Screen name="CommerceMenu" component={CommerceScreen} />
+          <Stack.Screen name="ClaimMenu" component={ClaimMenu} />
           <Stack.Screen name="VehicleScreen" component={VehicleScreen} />
-          <Stack.Screen name="FineSearcher" component={FineSearcher} />
+          <Stack.Screen name="ClaimSearcher" component={ClaimSearcher} />
           <Stack.Screen name="Printing" component={PrintingScreen} />
           <Stack.Screen name="profile" component={ProfileScreen} />
           <Stack.Screen name="VehicleFineScreen" component={VehicleFineScreen} />

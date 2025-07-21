@@ -3,9 +3,9 @@ import NetInfo from '@react-native-community/netinfo';
 import { AppDispatch } from "../../store";
 import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
 import { Alert } from "react-native";
-import { API_BASE_URL } from '@env';
+import { API_BASE_URL,API_BASE_URL2 } from '@env';
 import { getDBConnection } from "../../../localDB/db";
-import { createOfflineAuthTable, dropOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
+import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
 
 export interface ILogin {
   email: string;
@@ -71,7 +71,7 @@ export const startOnLogIn = (payload: ILogin) => {
 
     if (netState.isConnected) {
       try {
-        const response = await fetch(`https://75b5130417b0.ngrok-free.app/api/v1/auth/sign_in`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/auth/sign_in`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',

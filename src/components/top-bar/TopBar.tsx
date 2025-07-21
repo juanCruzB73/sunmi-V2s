@@ -8,9 +8,9 @@ type TopBarProps = {
   navigation: NativeStackNavigationProp<
     RootStackParamList,
     'DisplayForms' |'Home' |
-    'CommerceMenu' | 'VehicleScreen' | 'FineSearcher' |
+    'ClaimMenu' | 'VehicleScreen' | 'ClaimSearcher' |
     'VehicleFineModal' | 'CommerceFineModal' | 'Printing' |
-    'profile' | 'CommerceMenu' | 'CommerceFineScreen' | 'VehicleFineScreen' |
+    'profile' | 'CommerceFineScreen' | 'VehicleFineScreen' |
     'VehicleSearcher' |'DisplayQuestions'
   >;
   isProfileScreen?: boolean; // Nuevo prop opcional

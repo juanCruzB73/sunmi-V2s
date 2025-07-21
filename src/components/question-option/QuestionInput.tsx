@@ -66,17 +66,11 @@ export default function QuestionInput({ question }: { question: Question }) {
             <View key={option.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Switch
                 value={value === option}
-                onValueChange={() => onChange(option)}
+                onValueChange={() => {onChange(option);onPressFunction&&onPressFunction(option.panel_id)}}
               />
               <Text>{option.name}</Text>
             </View>
           ))}
-          <Button
-              title="Submit Answer"
-              onPress={() => {
-                if (onPressFunction) onPressFunction(value);
-            }}
-          />
         </View>
       );
 

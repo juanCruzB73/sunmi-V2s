@@ -36,7 +36,7 @@ export const startLoadQuestions=(formId:number)=>{
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
             
-            const response=await fetch(`https://75b5130417b0.ngrok-free.app/api/v1/forms/visible/${formId}`,{headers:headers});
+            const response=await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}`,{headers:headers});
 
             if (!response.ok) {
               const text = await response.text();
@@ -83,7 +83,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
       };
       const headers = setTokenHeader(tokenData);
 
-      const response = await fetch(`https://75b5130417b0.ngrok-free.app/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
+      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 
       if (!response.ok) {
         const text = await response.text();
@@ -92,7 +92,6 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
       };
 
       const data = await response.json();
-      console.log(data)
       dispatch(onLoadQuestions(data.questions));
       dispatch(onSetErrorMessage(null));
       return { payload: data.questions };
