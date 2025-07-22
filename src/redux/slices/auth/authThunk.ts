@@ -70,7 +70,7 @@ export const startOnLogIn = (payload: ILogin) => {
 
     if (netState.isConnected) {
       try {
-        const response = await fetch(`https://0c265f18c4b7.ngrok-free.app/api/v1/auth/sign_in`, {
+        const response = await fetch(`https://0062eaef9715.ngrok-free.app/api/v1/auth/sign_in`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -99,8 +99,10 @@ export const startOnLogIn = (payload: ILogin) => {
           client,
           uid,
         };
+console.log('AuthData:',authData);
 
         await storeAuthTokens(accessToken, client, uid);
+
         await registerOfflineUser(db, {
           userId: data.data.id,
           name: data.data.name,
