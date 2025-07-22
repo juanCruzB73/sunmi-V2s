@@ -33,7 +33,7 @@ const claimSlice = createSlice({
       state.claims.push(action.payload);
       state.isSavingClaims=false;
     },
-    onSetActiveClaim:(state,action: PayloadAction<IClaim>)=>{
+    onSetActiveClaim:(state,action: PayloadAction<IClaim|null>)=>{
       state.activeClaim=action.payload;
       state.isSavingClaims=false;
     },

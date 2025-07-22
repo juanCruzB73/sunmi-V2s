@@ -7,6 +7,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../router/StackNavigator';
 import { IClaim } from '../../types/claims/IClaim';
 import { IAnswer } from '../../types/claims/IAnswer';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../redux/store';
+import { onSetActiveClaim } from '../../redux/slices/claims/claimSlice';
 
 
 interface ICardProps {
@@ -15,6 +18,8 @@ interface ICardProps {
 
 const InfoCard: FC<ICardProps> = ({ claim }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const dispatch = useDispatch<AppDispatch>();
 
   /*const handlePrint = async () => {
     navigation.navigate('Printing');
@@ -56,7 +61,7 @@ const InfoCard: FC<ICardProps> = ({ claim }) => {
   }*/
 
   return (
-    <View style={claim.isSynced ? styles.container : styles.containerNotSync}>
+    <TouchableOpacity style={claim.isSynced ? styles.container : styles.containerNotSync} onPress={()=>{dispatch(onSetActiveClaim(claim));navigation.navigate('ClaimScreen')}}>
       <View style={styles.infoContainer}>
         <Text>ID: {claim.id}</Text>
         <Text>Date: {claim.date}</Text>
@@ -81,7 +86,7 @@ const InfoCard: FC<ICardProps> = ({ claim }) => {
       <TouchableOpacity style={styles.printButton} onPress={()=>console.log("print function")}>
         <FontAwesome name="print" size={20} color="#fff" />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };
 

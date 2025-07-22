@@ -10,7 +10,7 @@ type TopBarProps = {
     'DisplayForms' |'Home' |
     'ClaimMenu' | 'VehicleScreen' | 'ClaimSearcher' |
     'VehicleFineModal' | 'CommerceFineModal' | 'Printing' |
-    'profile' | 'CommerceFineScreen' | 'VehicleFineScreen' |
+    'profile' | 'CommerceFineScreen' | 'ClaimScreen' |
     'VehicleSearcher' |'DisplayQuestions'
   >;
   isProfileScreen?: boolean; // Nuevo prop opcional

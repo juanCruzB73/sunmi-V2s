@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onAddClaim, onCheckingClaims, onLoadClaims, onSetErrorMessage } from "./claimSlice";
-import { API } from '@env';
+import { API_BASE_URL2 } from '@env';
 import { ICreateClaim } from "../../../types/claims/ICreateClaim";
 
 const setTokenHeader = (tokenData: IAuthToken) => {
@@ -60,8 +60,6 @@ console.log("🧠 startAddClaim arrancó");
         'Content-Type': 'application/json',
       };
 
-      console.log("📤 Sending claim:", JSON.stringify(inClaim, null, 2));
-
       const response = await fetch(`${API}/api/v1/forms/visible/claims`, {
         method: 'POST',
         headers,
@@ -69,19 +67,18 @@ console.log("🧠 startAddClaim arrancó");
       });
 
       const responseText = await response.text();
-      console.log("📥 Raw response:", responseText);
 
       let parsedResponse: any;
       try {
         parsedResponse = JSON.parse(responseText);
       } catch (e) {
-        console.error("❌ Failed to parse JSON:", e);
+        console.error("Failed to parse JSON:", e);
         dispatch(onSetErrorMessage("Respuesta del servidor no válida"));
         return;
       }
 
       if (!response.ok || parsedResponse?.msg === "error creating claim") {
-        console.error("❌ Error creating claim:", parsedResponse.errors || parsedResponse.msg);
+        console.error("Error creating claim:", parsedResponse.errors || parsedResponse.msg);
         dispatch(
           onSetErrorMessage(
             parsedResponse.errors?.join(" | ") || parsedResponse.msg || "Error desconocido"
@@ -90,11 +87,12 @@ console.log("🧠 startAddClaim arrancó");
         return;
       }
 
-      // ✅ Success
       dispatch(onAddClaim(parsedResponse.claim));
+      dispatch(onSetActiveClaim(parsedResponse.claim));
+      console.log(parsedResponse.claim);
       dispatch(onSetErrorMessage(null));
     } catch (error) {
-      console.error("❌ Network or unexpected error:", error);
+      console.error("Network or unexpected error:", error);
       dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
     }
   };
