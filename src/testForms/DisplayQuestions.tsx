@@ -10,6 +10,7 @@ import QuestionInput from '../components/question-option/QuestionInput';
 import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThunk';
 import { startOfflineQuestionsByPanel } from '../redux/slices/offline/questionsOffline';
 import NetInfo from '@react-native-community/netinfo';
+import { startAddClaim } from '../redux/slices/claims/claimThunk';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayQuestions'>;
@@ -27,6 +28,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     //const [questionsToDisplay,setQuestionsTodisplay]=useState<IQuestion[]>([]);
 
     const handleChange = (questionId: number, newValue: any) => {
+      console.log(answers)
         setAnswers((prev) => ({ ...prev, [questionId]: newValue }));
     };
 
@@ -45,13 +47,33 @@ export const DisplayQuestions = ({ navigation }: Props) => {
       console.log(optionSelected)
     };
 
+    const handleSubmit=()=>{
+      const answersArray = Object.entries(answers).map(([questionId, value]) => ({
+        input_string: String(value),
+        question_id: String(questionId),
+      }));
+      const data={
+        claim:{
+          form_id:activeForm!.id,
+          incident_id:activeForm!.incident_id,
+          status_type_id:179,
+          area_id:activeForm!.area_id,
+          answers_attributes:answersArray
+        }
+      }
+      dispatch(startAddClaim(data));
+    }
+
+    useEffect(() => {
+      setAnswers({});
+      setOptionSelected(null); // Opcional: resetear el panel seleccionado
+    }, [questions]);
+
     if (!Array.isArray(questions)) {
         return <Text style={{ padding: 20 }}>Loading questions...</Text>;
     };
 
-    const handleSubmit=()=>{
-      console.log("submited");
-    }
+    
 
     return (
     <ScrollView>

@@ -6,7 +6,6 @@ import { getDBConnection } from '../../../localDB/db';
 import { createFormsTable, dropFormsTable, insertForm } from '../../../localDB/forms/forms';
 import { createQuestionsTable, dropQuestionsTable } from '../../../localDB/questions/questions';
 import { createQuestionOptionsTable, dropQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
-import { API_BASE_URL } from '@env';
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -42,7 +41,7 @@ export const startLoadForms = () => {
       };
       const headers = setTokenHeader(tokenData);
 
-      const response = await fetch('https://0062eaef9715.ngrok-free.app/api/v1/forms/visible', { headers: headers });
+      const response = await fetch(`https://0c265f18c4b7.ngrok-free.app/api/v1/forms/visible`, { headers: headers });
       const data = await response.json();
       console.log('Forms data:', data);
       console.log('Headers:', response);
