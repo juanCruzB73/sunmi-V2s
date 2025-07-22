@@ -2,12 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onCheckingForms } from "../form/formSlice";
-import { API_BASE_URL } from '@env';
+import { API_BASE_URL2 } from '@env';
 import { onLoadQuestions, onSetErrorMessage } from "./questionSlice";
 import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions } from "../../../localDB/questions/questions";
 import { getDBConnection } from "../../../localDB/db";
-import { createQuestionOptionsTable, dropQuestionOptionsTable, insertQuestionOption } from "../../../localDB/questions/questionOptions";
-import QuestionInput from "../../../components/question-option/QuestionInput";
+import { createQuestionOptionsTable, dropQuestionOptionsTable } from "../../../localDB/questions/questionOptions";
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -36,7 +35,7 @@ export const startLoadQuestions=(formId:number)=>{
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
             
-            const response=await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}`,{headers:headers});
+            const response=await fetch(`${API_BASE_URL2}/api/v1/forms/visible/${formId}`,{headers:headers});
 
             if (!response.ok) {
               const text = await response.text();
@@ -83,7 +82,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
       };
       const headers = setTokenHeader(tokenData);
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
+      const response = await fetch(`${API_BASE_URL2}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 
       if (!response.ok) {
         const text = await response.text();
