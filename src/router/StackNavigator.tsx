@@ -11,11 +11,11 @@ import LoginScreen from "../screens/auth/LoginScreen";
 import ForgetPasswordScreen from "../screens/auth/ForgetPasswordScreen";
 import PrintingScreen from "../screens/modals/PrintingScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
-import VehicleFineScreen from "../screens/fine/VehicleFineScreen";
 import { VehicleSearcher } from "../screens/searcher/VehicleSearcher";
 import { DisplayForms } from "../testForms/DisplayForms";
 import { DisplayQuestions } from "../testForms/DisplayQuestions";
 import ClaimMenu from "../screens/Menu/ClaimMenu";
+import { ClaimScreen } from "../screens/claim/ClaimScreen";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -30,7 +30,7 @@ export type RootStackParamList = {
   profile: undefined;
   CommerceScreen: undefined;
   CommerceFineScreen: undefined;
-  VehicleFineScreen: undefined;
+  ClaimScreen: undefined;
   VehicleSearcher: undefined;
   TestDbScreen: undefined;
   DisplayForms:undefined;
@@ -55,7 +55,7 @@ const StackNavigator = () => {
           <Stack.Screen name="ClaimSearcher" component={ClaimSearcher} />
           <Stack.Screen name="Printing" component={PrintingScreen} />
           <Stack.Screen name="profile" component={ProfileScreen} />
-          <Stack.Screen name="VehicleFineScreen" component={VehicleFineScreen} />
+          <Stack.Screen name="ClaimScreen" component={ClaimScreen} />
           <Stack.Screen name="VehicleSearcher" component={VehicleSearcher} />
         </>
       ) : (

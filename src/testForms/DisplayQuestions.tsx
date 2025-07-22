@@ -28,7 +28,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     //const [questionsToDisplay,setQuestionsTodisplay]=useState<IQuestion[]>([]);
 
     const handleChange = (questionId: number, newValue: any) => {
-      console.log(answers)
+        console.log(answers)
         setAnswers((prev) => ({ ...prev, [questionId]: newValue }));
     };
 
@@ -64,10 +64,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
       dispatch(startAddClaim(data));
     }
 
-    useEffect(() => {
-      setAnswers({});
-      setOptionSelected(null); // Opcional: resetear el panel seleccionado
-    }, [questions]);
+    
 
     if (!Array.isArray(questions)) {
         return <Text style={{ padding: 20 }}>Loading questions...</Text>;
