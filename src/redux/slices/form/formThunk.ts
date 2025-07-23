@@ -29,12 +29,12 @@ export const startLoadForms = () => {
       dispatch(onCheckingForms());
       
       const db = await getDBConnection();
-      await dropFormsTable(db)
-      await dropQuestionOptionsTable(db);
-      await dropQuestionsTable(db);
-      await createQuestionOptionsTable(db);
-      await createQuestionsTable(db);
-      await createFormsTable(db);
+      //await dropFormsTable(db)
+      //await dropQuestionOptionsTable(db);
+      //await dropQuestionsTable(db);
+      //await createQuestionOptionsTable(db);
+      //await createQuestionsTable(db);
+      //await createFormsTable(db);
 
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
       const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
