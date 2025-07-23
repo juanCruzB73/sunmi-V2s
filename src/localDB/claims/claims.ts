@@ -23,7 +23,11 @@ export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
       isSynced INTEGER DEFAULT 0
     );
   `;
-  await db.executeSql(query); // 🧨 Ejecuta creación de tabla
+  console.log("🧱 Verificando existencia de tabla 'claims'");
+
+  await db.executeSql(query);
+  console.log("✅ Tabla 'claims' lista");
+
 };
 
 // 📥 Inserta o reemplaza un reclamo en la base local
@@ -41,11 +45,11 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
     claim.type,
     claim.date,
     claim.removed_at,
-    claim.removed ? 1 : 0, // ✅ Convertido a entero
+    claim.removed ? 1 : 0,
     claim.reason,
     claim.user_id,
     claim.removed_user_id,
-    claim.status_type_id,
+   // claim.status_type_id,
     claim.form_id,
     claim.incident_id,
     claim.created_at,
@@ -54,7 +58,7 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
     claim.isSynced ? 1 : 0
   ];
 
-  await db.executeSql(query, params); // 💾 Guarda el reclamo
+  await db.executeSql(query, params);
 };
 
 // 🔍 Obtiene todos los claims que aún no fueron sincronizados
@@ -71,20 +75,26 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> =
       type: row.type,
       date: row.date,
       removed_at: row.removed_at,
-      removed: row.removed === 1, // 🔎 Convertido a booleano
+      removed: row.removed === 1,
       reason: row.reason,
       user_id: row.user_id,
       removed_user_id: row.removed_user_id,
-      status_type_id: row.status_type_id,
+      //status_type_id: row.status_type_id,
       form_id: row.form_id,
       incident_id: row.incident_id,
       created_at: row.created_at,
       updated_at: row.updated_at,
       area_id: row.area_id,
       isSynced: row.isSynced === 1,
-      answers: [] // 🧩 Placeholder por si querés asociar answers cargados aparte
+      answers: []
     });
   }
 
-  return claims; // 📤 Devuelve los reclamos pendientes
+  return claims;
+};
+
+// 🧹 Elimina reclamos de prueba con razón "Control de rutina"
+export const eliminarClaimsDePrueba = async (db: SQLiteDatabase): Promise<void> => {
+  await db.executeSql('DELETE FROM claims WHERE reason = "Control de rutina"');
+  console.log("🧹 Reclamos de prueba eliminados manualmente");
 };

@@ -24,9 +24,11 @@ const claimSlice = createSlice({
       state.isSavingClaims=true;
     },
     onLoadClaims: (state, action: PayloadAction<IClaim[]>) => {
-      state.claims=action.payload;
-      state.isSavingClaims=false;
-    },
+  state.claims = action.payload;
+  state.isSavingClaims = false;
+  console.log("📦 Estado Redux actualizado con claims:", action.payload); // 👈 nuevo log
+},
+
     onAddClaim:(state,action:PayloadAction<IClaim>)=>{
       state.claims.push(action.payload);
       state.isSavingClaims=false;

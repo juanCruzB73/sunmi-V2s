@@ -24,5 +24,6 @@ export const createTables = async (db: SQLiteDatabase): Promise<void> => {
   await createQuestionOptionsTable(db);
   await createUsersTable(db);
   await createClaimsTable(db);
+  
   await createAnswersTable(db);
 };

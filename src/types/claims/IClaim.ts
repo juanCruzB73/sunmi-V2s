@@ -10,7 +10,7 @@ export interface IClaim{
     reason: null;
     user_id: number;
     removed_user_id: null;
-    status_type_id: number;
+    //status_type_id: number;
     form_id: number;
     incident_id: number;
     created_at: string;

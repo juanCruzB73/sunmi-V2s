@@ -54,6 +54,7 @@ const InfoCard: FC<ICardProps> = ({ claim }) => {
       }
   }, 300);
   }*/
+
   return (
     <View style={claim.isSynced ? styles.container : styles.containerNotSync}>
       <View style={styles.infoContainer}>
@@ -65,6 +66,16 @@ const InfoCard: FC<ICardProps> = ({ claim }) => {
             <Text>{answer.question.name}: {answer.input_string}</Text>
           </View>
         ))}
+
+        {/* ⬇️ Ajuste mínimo: mensaje si el claim no está sincronizado */}
+        {!claim.isSynced && (
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+            <FontAwesome name="exclamation-circle" size={14} color="#fff" />
+            <Text style={{ marginLeft: 6, color: '#fff', fontSize: 12 }}>
+              Pendiente de sincronización
+            </Text>
+          </View>
+        )}
       </View>
 
       <TouchableOpacity style={styles.printButton} onPress={()=>console.log("print function")}>

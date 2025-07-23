@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onCheckingForms } from "../form/formSlice";
-import { API_BASE_URL2 } from '@env';
+import { API_BASE_URL as API_BASE } from '@env';
 import { onLoadQuestions, onSetErrorMessage } from "./questionSlice";
 import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions } from "../../../localDB/questions/questions";
 import { getDBConnection } from "../../../localDB/db";
@@ -34,9 +34,9 @@ export const startLoadQuestions=(formId:number)=>{
             const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
-            
-            const response=await fetch(`${API_BASE_URL2}/api/v1/forms/visible/${formId}`,{headers:headers});
+            console.log("response", `${API_BASE}/api/v1/forms/visible/${formId}`);
 
+            const response=await fetch(`${API_BASE}/api/v1/forms/visible/${formId}`,{headers:headers});
             if (!response.ok) {
               const text = await response.text();
               console.error(`HTTP ${response.status}: ${text}`);
@@ -82,7 +82,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
       };
       const headers = setTokenHeader(tokenData);
 
-      const response = await fetch(`${API_BASE_URL2}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
+      const response = await fetch(`${API_BASE}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 
       if (!response.ok) {
         const text = await response.text();

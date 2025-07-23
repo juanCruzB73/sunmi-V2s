@@ -21,6 +21,6 @@ export interface IAnswer{
     updated_at: string;
       isSynced: boolean; // ← Campo nuevo
 
-    tag: null;
+    tag?: null | string; // Nuevo campo opcional
     question:IQuestion;
 }
