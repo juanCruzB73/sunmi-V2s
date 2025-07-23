@@ -4,6 +4,8 @@ import { AppDispatch } from "../../store";
 import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
 import { API_BASE_URL3 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
+import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
+import { getDBConnection } from "../../../localDB/db";
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -20,7 +22,10 @@ const setTokenHeader = (tokenData: IAuthToken) => {
 export const startGetClaims=(formId:number)=>{
     return async (dispatch: AppDispatch) =>{
         try{
+            const db = await getDBConnection();
             dispatch(onCheckingClaims());
+            await dropClaimsTable(db);
+            await createClaimsTable(db);
             const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
             const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
             const tokenData: IAuthToken = {
@@ -31,6 +36,9 @@ export const startGetClaims=(formId:number)=>{
             const headers = setTokenHeader(tokenData);
             const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
             const data=await response.json();
+            for (const claim of data) {
+              await insertClaim(db, claim);
+            };
             dispatch(onLoadClaims(data));
             onSetErrorMessage(null);
         }catch(error){
@@ -46,7 +54,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(onCheckingClaims());
-
+      const db = await getDBConnection();
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
       const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
@@ -76,7 +84,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
         dispatch(onSetErrorMessage("Respuesta del servidor no válida"));
         return;
       }
-
+      //await insertClaim()
       if (!response.ok || parsedResponse?.msg === "error creating claim") {
         console.error("Error creating claim:", parsedResponse.errors || parsedResponse.msg);
         dispatch(
@@ -155,7 +163,7 @@ export const startDeleteClaim=(claimId:number)=>{
   return async (dispatch: AppDispatch) =>{
     try {
       dispatch(onCheckingClaims());
-      console.log(claimId)
+      const db = await getDBConnection();
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
       const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
@@ -173,10 +181,13 @@ export const startDeleteClaim=(claimId:number)=>{
         method: 'DELETE',
         headers,
       });
+
+      await deleteClaim(db,claimId);
+
       if(!response.ok){
         console.log("error borrando claim");
         return;
-      }
+      } 
       dispatch(onDeleteClaim(claimId));
       dispatch(onSetErrorMessage(null));
     } catch (error) {

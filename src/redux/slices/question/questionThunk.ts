@@ -25,11 +25,11 @@ export const startLoadQuestions=(formId:number)=>{
         try{
             dispatch(onCheckingForms());
             const db = await getDBConnection();
-            await dropQuestionOptionsTable(db);
-            await dropQuestionsTable(db);
-            await createQuestionOptionsTable(db);
-            await createQuestionsTable(db);
-
+            //await dropQuestionOptionsTable(db);
+            //await dropQuestionsTable(db);
+            //await createQuestionOptionsTable(db);
+            //await createQuestionsTable(db);
+//
             const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
             const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}

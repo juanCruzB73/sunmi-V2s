@@ -64,7 +64,7 @@ export const startOnLogIn = (payload: ILogin) => {
 
     const db = await getDBConnection();
     //await dropOfflineAuthTable(db);
-    await createOfflineAuthTable(db);
+    //await createOfflineAuthTable(db);
     //const normalizedEmail = payload.email.trim().toLowerCase();
     const netState = await NetInfo.fetch();
 
