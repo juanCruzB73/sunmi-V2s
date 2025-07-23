@@ -19,4 +19,5 @@ export interface IClaim{
     area_id: number;
     isSynced: boolean;
     answers:IAnswer[];
+    main_panel_id:number;
 }

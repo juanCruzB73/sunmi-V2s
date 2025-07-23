@@ -10,19 +10,32 @@ import { TopBar } from '../../components/top-bar/TopBar';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import LinearGradient from 'react-native-linear-gradient';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
 import { IAnswer } from '../../types/claims/IAnswer';
+import { startLoadQuestionsByPanel } from '../../redux/slices/question/questionThunk';
+import { startDeleteClaim } from '../../redux/slices/claims/claimThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimScreen'>;
 
 export const ClaimScreen = ({ navigation }: Props) => {
+  
+  const { activeForm } = useSelector((state: RootState) => state.form);
   const { activeClaim } = useSelector((state: RootState) => state.claim);
-  console.log(activeClaim);
+
+  const dispatch = useDispatch<AppDispatch>();
   
-  if (!activeClaim)return<><TopBar navigation={navigation} /><Text>No se selecciono Claim</Text></>
+  if (!activeClaim)return<><TopBar navigation={navigation} /><Text>No se selecciono Solicitud</Text></>
+  if (!activeForm)return<><TopBar navigation={navigation} /><Text>No se selecciono Formulario</Text></>
   
-  //const countAnswers=activeClaim.answers.length;
+  const handleClickEdit=()=>{
+    dispatch(startLoadQuestionsByPanel(activeForm!.id,activeClaim.main_panel_id));
+  };
+
+  const handleDeleteClaim=()=>{
+    console.log(activeClaim)
+    dispatch(startDeleteClaim(activeClaim.id))
+  };
   
   return (
     <>
@@ -43,7 +56,7 @@ export const ClaimScreen = ({ navigation }: Props) => {
                 styles.buttonConfirm,
                 pressed && styles.buttonPressed
               ]}
-              onPress={() => {navigation.navigate('DisplayQuestions')}}
+              onPress={() => {handleClickEdit();navigation.navigate('DisplayQuestions')}}
             >
               <Text style={styles.buttonText}>Editar</Text>
             </Pressable>
@@ -52,7 +65,7 @@ export const ClaimScreen = ({ navigation }: Props) => {
                 styles.buttonConfirm,
                 pressed && styles.buttonPressed
               ]}
-              onPress={() => navigation.navigate('ClaimSearcher')}
+              onPress={() => {handleDeleteClaim();navigation.navigate('ClaimSearcher')}}
             >
               <Text style={styles.buttonText}>Eliminar</Text>
             </Pressable>

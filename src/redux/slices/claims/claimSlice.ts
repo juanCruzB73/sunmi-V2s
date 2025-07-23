@@ -31,6 +31,19 @@ const claimSlice = createSlice({
       state.claims.push(action.payload);
       state.isSavingClaims=false;
     },
+    onEditClaim:(state,action:PayloadAction<IClaim>)=>{
+      state.claims=state.claims.map((claim:IClaim)=>{
+          if(claim.id === action.payload.id){
+            return action.payload;
+          }
+          return claim;
+      });
+      state.isSavingClaims=false;
+    },
+    onDeleteClaim:(state,action:PayloadAction<number>)=>{
+      state.claims=state.claims.filter(claim=>action.payload!==claim.id);
+      state.isSavingClaims=false;
+    },
     onSetActiveClaim:(state,action: PayloadAction<IClaim|null>)=>{
       state.activeClaim=action.payload;
       state.isSavingClaims=false;
@@ -41,5 +54,5 @@ const claimSlice = createSlice({
   }, 
 });
 
-export const { onCheckingClaims, onLoadClaims, onSetErrorMessage,onSetActiveClaim,onAddClaim } = claimSlice.actions;
+export const { onCheckingClaims, onLoadClaims, onSetErrorMessage,onSetActiveClaim,onAddClaim,onEditClaim,onDeleteClaim } = claimSlice.actions;
 export default claimSlice.reducer;

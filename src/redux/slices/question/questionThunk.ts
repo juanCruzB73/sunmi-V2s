@@ -78,7 +78,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
         uid: tokenObject['uid'] ?? '',
       };
       const headers = setTokenHeader(tokenData);
-
+      console.log(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/panel/${panelId}`);
       const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 
       if (!response.ok) {
@@ -88,6 +88,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
       };
 
       const data = await response.json();
+      console.log(data);
       dispatch(onLoadQuestions(data.questions));
       dispatch(onSetErrorMessage(null));
       return { payload: data.questions };
