@@ -54,7 +54,7 @@ export const DisplayForms = ({ navigation }: Props) => {
       dispatch(startGetClaims(activeForm!.id));
     };
     getClaims()
-    console.log(claims);
+    //console.log(claims);
     getQuestions();
 };
 

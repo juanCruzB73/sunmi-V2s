@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onCheckingForms } from "../form/formSlice";
-import { API_BASE_URL2 } from '@env';
+import { API_BASE_URL3 } from '@env';
 import { onLoadQuestions, onSetErrorMessage } from "./questionSlice";
 import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions } from "../../../localDB/questions/questions";
 import { getDBConnection } from "../../../localDB/db";
@@ -35,7 +35,7 @@ export const startLoadQuestions=(formId:number)=>{
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
             
-            const response=await fetch(`${API_BASE_URL2}/api/v1/forms/visible/${formId}`,{headers:headers});
+            const response=await fetch(`${API_BASE_URL3}/api/v1/forms/visible/${formId}`,{headers:headers});
 
             if (!response.ok) {
               const text = await response.text();
@@ -44,7 +44,7 @@ export const startLoadQuestions=(formId:number)=>{
             };
             
             const data=await response.json();
-            console.log(data.questions)
+            //console.log(data.questions)
             for (const q of data.questions) {
               const questionToInsert = {
                 ...q,
@@ -54,15 +54,12 @@ export const startLoadQuestions=(formId:number)=>{
               };
               await insertQuestionWithOptions(db, questionToInsert, q.question_options??[]);
             }
-            console.log("firind");
-            
             dispatch(onLoadQuestions(data.questions));
             dispatch(onSetErrorMessage(null));
             return { payload: data.questions };
         }catch (error: unknown) {
             //const message = error instanceof Error ? error.message : String(error);
             console.log('Error loading questions:', JSON.stringify(error, null, 2));
-
             return;
         }
     }
@@ -82,7 +79,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
       };
       const headers = setTokenHeader(tokenData);
 
-      const response = await fetch(`${API_BASE_URL2}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
+      const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 
       if (!response.ok) {
         const text = await response.text();

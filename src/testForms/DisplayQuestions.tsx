@@ -19,17 +19,17 @@ export const DisplayQuestions = ({ navigation }: Props) => {
 
     const { activeForm } = useSelector((state: RootState) => state.form);
     const { questions } = useSelector((state: RootState) => state.question);
+    const { activeClaim } = useSelector((state: RootState) => state.claim);
 
     const dispatch = useDispatch<AppDispatch>();
 
-    const [answers, setAnswers] = useState<Record<number, any>>({});
+    const [answers, setAnswers] = useState<Record<number, any>>(activeClaim?activeClaim.answers:{});
     const [optionSelected, setOptionSelected] = useState<number|null>(null);
-
-    //const [questionsToDisplay,setQuestionsTodisplay]=useState<IQuestion[]>([]);
 
     const handleChange = (questionId: number, newValue: any) => {
         console.log(answers)
         setAnswers((prev) => ({ ...prev, [questionId]: newValue }));
+        //if (!activeClaim) setAnswers((prev) => ({ ...prev, [questionId]: newValue }));
     };
 
     const handleNextPanel = async (panelId: number|null) => {

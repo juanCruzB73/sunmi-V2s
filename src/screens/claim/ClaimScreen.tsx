@@ -43,7 +43,7 @@ export const ClaimScreen = ({ navigation }: Props) => {
                 styles.buttonConfirm,
                 pressed && styles.buttonPressed
               ]}
-              onPress={() => navigation.navigate('ClaimSearcher')}
+              onPress={() => {navigation.navigate('DisplayQuestions')}}
             >
               <Text style={styles.buttonText}>Editar</Text>
             </Pressable>
