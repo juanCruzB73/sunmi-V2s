@@ -87,10 +87,14 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
         uid: tokenObject['uid'] ?? '',
       };
       const headers = setTokenHeader(tokenData);
+<<<<<<< HEAD
 
 <<<<<<< HEAD
       const response = await fetch(`${API_BASE}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 =======
+=======
+      console.log(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/panel/${panelId}`);
+>>>>>>> fbc09aa (update And delete from app to api updated)
       const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 >>>>>>> 80b9552 (commit before main_panel in claim)
 
@@ -101,6 +105,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
       };
 
       const data = await response.json();
+      console.log(data);
       dispatch(onLoadQuestions(data.questions));
       dispatch(onSetErrorMessage(null));
       return { payload: data.questions };

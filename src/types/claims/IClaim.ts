@@ -19,4 +19,9 @@ export interface IClaim{
     area_id: number;
     isSynced: boolean;
     answers:IAnswer[];
+<<<<<<< HEAD
 }
+=======
+    main_panel_id:number;
+}
+>>>>>>> fbc09aa (update And delete from app to api updated)
