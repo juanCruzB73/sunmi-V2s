@@ -2,7 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
 import { AppDispatch } from "../../store";
 import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
+<<<<<<< HEAD
 import {API_BASE_URL } from '@env';
+=======
+import {API_BASE_URL3} from '@env';
+>>>>>>> 80b9552 (commit before main_panel in claim)
 import { getDBConnection } from "../../../localDB/db";
 import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
 
@@ -33,7 +37,11 @@ export const restoreAuthState = () => {
     const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
     const tokenData = Object.fromEntries(values);
 
+<<<<<<< HEAD
     const response = await fetch(`${API_BASE_URL}/api/v1/auth/validate_token`, {
+=======
+    const response = await fetch(`${API_BASE_URL3}/api/v1/auth/validate_token`, {
+>>>>>>> 80b9552 (commit before main_panel in claim)
       headers: {
         "access-token": tokenData["access-token"] ?? "",
         "client": tokenData.client ?? "",
@@ -70,7 +78,11 @@ export const startOnLogIn = (payload: ILogin) => {
 
     if (netState.isConnected) {
       try {
+<<<<<<< HEAD
         const response = await fetch(`${API_BASE_URL}/api/v1/auth/sign_in`, {
+=======
+        const response = await fetch(`${API_BASE_URL3}/api/v1/auth/sign_in`, {
+>>>>>>> 80b9552 (commit before main_panel in claim)
           method: 'POST',
           headers: {
             'Accept': 'application/json',

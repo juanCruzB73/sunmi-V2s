@@ -6,6 +6,10 @@ import { getDBConnection } from '../../../localDB/db';
 import { createFormsTable, dropFormsTable, insertForm } from '../../../localDB/forms/forms';
 import { createQuestionsTable, dropQuestionsTable } from '../../../localDB/questions/questions';
 import { createQuestionOptionsTable, dropQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
+<<<<<<< HEAD
+=======
+import { API_BASE_URL3 } from '@env';
+>>>>>>> 80b9552 (commit before main_panel in claim)
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -40,8 +44,12 @@ export const startLoadForms = () => {
         uid: tokenObject['uid'] ?? '',
       };
       const headers = setTokenHeader(tokenData);
+<<<<<<< HEAD
 
       const response = await fetch(`https://6fb2b3471d09.ngrok-free.app/api/v1/forms/visible`, { headers: headers });
+=======
+      const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible`, { headers: headers });
+>>>>>>> 80b9552 (commit before main_panel in claim)
       const data = await response.json();
       console.log('Forms data:', data);
       console.log('Headers:', response);

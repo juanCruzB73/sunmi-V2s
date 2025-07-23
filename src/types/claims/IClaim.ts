@@ -3,6 +3,7 @@ import { IAnswer } from "./IAnswer";
 export interface IClaim{
     id: number;
     status: string;
+    panel_id:number;
     type: string;
     date: string;
     removed_at: null;
@@ -16,6 +17,6 @@ export interface IClaim{
     created_at: string;
     updated_at: string;
     area_id: number;
-    isSynced: boolean; // ← Campo nuevo
+    isSynced: boolean;
     answers:IAnswer[];
 }

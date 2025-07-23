@@ -1,8 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
+<<<<<<< HEAD
 import { onAddClaim, onCheckingClaims, onLoadClaims, onSetErrorMessage } from "./claimSlice";
 import { API_BASE_URL2 } from '@env';
+=======
+import { onAddClaim, onCheckingClaims, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
+import { API_BASE_URL3 } from '@env';
+>>>>>>> 80b9552 (commit before main_panel in claim)
 import { ICreateClaim } from "../../../types/claims/ICreateClaim";
 
 const setTokenHeader = (tokenData: IAuthToken) => {
@@ -29,7 +34,11 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
+<<<<<<< HEAD
             const response = await fetch(`${API}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
+=======
+            const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
+>>>>>>> 80b9552 (commit before main_panel in claim)
             const data=await response.json();
             dispatch(onLoadClaims(data));
             onSetErrorMessage(null);
@@ -60,7 +69,11 @@ console.log("🧠 startAddClaim arrancó");
         'Content-Type': 'application/json',
       };
 
+<<<<<<< HEAD
       const response = await fetch(`${API}/api/v1/forms/visible/claims`, {
+=======
+      const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/claims`, {
+>>>>>>> 80b9552 (commit before main_panel in claim)
         method: 'POST',
         headers,
         body: JSON.stringify(inClaim),
