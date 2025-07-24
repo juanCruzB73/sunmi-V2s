@@ -20,8 +20,13 @@ export interface IClaim{
     isSynced: boolean;
     answers:IAnswer[];
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
     main_panel_id:number;
 }
 >>>>>>> fbc09aa (update And delete from app to api updated)
+=======
+    main_panel_id:number;
+}
+>>>>>>> juanbranch

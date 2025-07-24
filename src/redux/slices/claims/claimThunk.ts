@@ -3,6 +3,7 @@ import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { onAddClaim, onCheckingClaims, onLoadClaims, onSetErrorMessage } from "./claimSlice";
 import { API_BASE_URL2 } from '@env';
 =======
@@ -20,6 +21,13 @@ import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
 import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim, removeClaimOffline } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
 >>>>>>> 59cf2f0 (falta implementar claims offline(update,insert,get,delete))
+=======
+import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
+import { API_BASE_URL4 } from '@env';
+import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
+import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
+import { getDBConnection } from "../../../localDB/db";
+>>>>>>> juanbranch
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -49,10 +57,14 @@ export const startGetClaims=(formId:number)=>{
             };
             const headers = setTokenHeader(tokenData);
 <<<<<<< HEAD
+<<<<<<< HEAD
             const response = await fetch(`${API}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
 =======
             const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
 >>>>>>> 80b9552 (commit before main_panel in claim)
+=======
+            const response = await fetch(`${API_BASE_URL4}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
+>>>>>>> juanbranch
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, claim);
@@ -73,10 +85,14 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
     try {
       dispatch(onCheckingClaims());
 <<<<<<< HEAD
+<<<<<<< HEAD
 console.log("🧠 startAddClaim arrancó");
 =======
       const db = await getDBConnection();
 >>>>>>> 59cf2f0 (falta implementar claims offline(update,insert,get,delete))
+=======
+      const db = await getDBConnection();
+>>>>>>> juanbranch
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
       const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
@@ -145,7 +161,11 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
 
+<<<<<<< HEAD
       const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
+=======
+      const response = await fetch(`${API_BASE_URL4}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
+>>>>>>> juanbranch
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
@@ -180,6 +200,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
     }
   };
 };
+<<<<<<< HEAD
 export const startLocalDeleteClaim = (claimId: number) => {
   return async (dispatch: AppDispatch) => {
     dispatch(onCheckingClaims());
@@ -189,6 +210,8 @@ export const startLocalDeleteClaim = (claimId: number) => {
     dispatch(onSetActiveClaim(null));
   };
 };
+=======
+>>>>>>> juanbranch
 
 export const startDeleteClaim=(claimId:number)=>{
   return async (dispatch: AppDispatch) =>{

@@ -4,12 +4,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onCheckingForms, onLoadForms, onSetErrorMessage } from './formSlice';
 import { getDBConnection } from '../../../localDB/db';
 import { createFormsTable, dropFormsTable, insertForm } from '../../../localDB/forms/forms';
-import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions } from '../../../localDB/questions/questions';
+import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions, insertQuestionWithOptions } from '../../../localDB/questions/questions';
 import { createQuestionOptionsTable, dropQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
-<<<<<<< HEAD
-=======
 import { API_BASE_URL4 } from '@env';
->>>>>>> 80b9552 (commit before main_panel in claim)
 import { saveFormOffline, startOfflineForms } from './offlineFormThunk';
 
 
@@ -38,7 +35,8 @@ export const startLoadForms = () => {
         uid: tokenObject['uid'] ?? '',
       };
       const headers = setTokenHeader(tokenData);
-      const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible`, { headers: headers });
+
+      const response = await fetch(`${API_BASE_URL2}/api/v1/forms/visible`, { headers: headers });
       const data = await response.json();
       
       for (const form of data) {

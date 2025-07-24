@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Dimensions,
   StyleSheet,
   Text,
   View,
-  Pressable,
-  Modal
+  Pressable
 } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -15,36 +14,29 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { IAnswer } from '../../types/claims/IAnswer';
 import { startLoadQuestionsByPanel } from '../../redux/slices/question/questionThunk';
-import { startDeleteClaim, startLocalDeleteClaim } from '../../redux/slices/claims/claimThunk'; // ✅
+import { startDeleteClaim } from '../../redux/slices/claims/claimThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimScreen'>;
 
 export const ClaimScreen = ({ navigation }: Props) => {
+  
   const { activeForm } = useSelector((state: RootState) => state.form);
   const { activeClaim } = useSelector((state: RootState) => state.claim);
+
   const dispatch = useDispatch<AppDispatch>();
-
-  const [confirmVisible, setConfirmVisible] = useState(false); // ✅
-
-  if (!activeClaim) return <><TopBar navigation={navigation} /><Text>No se seleccionó Solicitud</Text></>;
-  if (!activeForm) return <><TopBar navigation={navigation} /><Text>No se seleccionó Formulario</Text></>;
-
-  const handleClickEdit = () => {
-    dispatch(startLoadQuestionsByPanel(activeForm.id, activeClaim.main_panel_id));
-    navigation.navigate('DisplayQuestions');
+  
+  if (!activeClaim)return<><TopBar navigation={navigation} /><Text>No se selecciono Solicitud</Text></>
+  if (!activeForm)return<><TopBar navigation={navigation} /><Text>No se selecciono Formulario</Text></>
+  
+  const handleClickEdit=()=>{
+    dispatch(startLoadQuestionsByPanel(activeForm!.id,activeClaim.main_panel_id));
   };
 
-  const handleDeleteClaim = () => {
-    setConfirmVisible(true); // ✅ muestra modal
+  const handleDeleteClaim=()=>{
+    console.log(activeClaim)
+    dispatch(startDeleteClaim(activeClaim.id))
   };
-
-  const confirmDelete = () => {
-  dispatch(startDeleteClaim(activeClaim.id)); // 👈 ahora borra en API también
-  setConfirmVisible(false);
-  navigation.navigate('ClaimSearcher');
-};
-
-
+  
   return (
     <>
       <TopBar navigation={navigation} />
@@ -53,10 +45,8 @@ export const ClaimScreen = ({ navigation }: Props) => {
           <Text style={styles.title}>Datos de solicitud</Text>
 
           <View style={styles.card}>
-            {activeClaim.answers.map((answer: IAnswer) => (
-              <Text key={answer.question.id}>
-                {answer.question.name}: {answer.input_string}
-              </Text>
+            {activeClaim.answers.map((answer:IAnswer)=>(
+              <Text>{answer.question.name}: {answer.input_string}</Text>
             ))}
           </View>
 
@@ -66,46 +56,22 @@ export const ClaimScreen = ({ navigation }: Props) => {
                 styles.buttonConfirm,
                 pressed && styles.buttonPressed
               ]}
-              onPress={handleClickEdit}
+              onPress={() => {handleClickEdit();navigation.navigate('DisplayQuestions')}}
             >
               <Text style={styles.buttonText}>Editar</Text>
             </Pressable>
             <Pressable
               style={({ pressed }) => [
-                styles.buttonDelete,
+                styles.buttonConfirm,
                 pressed && styles.buttonPressed
               ]}
-              onPress={handleDeleteClaim}
+              onPress={() => {handleDeleteClaim();navigation.navigate('ClaimSearcher')}}
             >
               <Text style={styles.buttonText}>Eliminar</Text>
             </Pressable>
           </View>
         </View>
       </LinearGradient>
-
-      {/* ✅ Confirmación Modal */}
-      <Modal visible={confirmVisible} transparent animationType="fade">
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>¿Eliminar solicitud?</Text>
-            <Text style={styles.modalText}>Esta acción es permanente. ¿Estás seguro?</Text>
-            <View style={styles.modalButtons}>
-              <Pressable
-                style={[styles.buttonConfirm, styles.modalButton]}
-                onPress={confirmDelete}
-              >
-                <Text style={styles.buttonText}>Sí, eliminar</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.buttonDelete, styles.modalButton]}
-                onPress={() => setConfirmVisible(false)}
-              >
-                <Text style={styles.buttonText}>Cancelar</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </>
   );
 };
@@ -127,6 +93,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
   },
+  plate: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#007bff',
+    marginBottom: 10,
+    alignSelf: 'center',
+  },
   card: {
     backgroundColor: '#f5f7fa',
     padding: 20,
@@ -135,20 +108,24 @@ const styles = StyleSheet.create({
     gap: 10,
     elevation: 2,
   },
+  field: {
+    fontSize: 18,
+    color: '#444',
+  },
   buttonRow: {
     flexDirection: 'row',
     gap: 20,
     marginTop: 24,
   },
-  buttonConfirm: {
-    backgroundColor: '#3498db',
+  buttonGoBack: {
+    backgroundColor: '#e74c3c',
     paddingVertical: 14,
     borderRadius: 10,
     width: width * 0.4,
     alignItems: 'center',
   },
-  buttonDelete: {
-    backgroundColor: '#e74c3c',
+  buttonConfirm: {
+    backgroundColor: '#3498db',
     paddingVertical: 14,
     borderRadius: 10,
     width: width * 0.4,
@@ -162,38 +139,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '500',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: '#00000055',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    backgroundColor: '#fff',
-    padding: 24,
-    borderRadius: 14,
-    width: width * 0.8,
-    elevation: 4,
-    alignItems: 'center',
-    gap: 12,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#333',
-  },
-  modalText: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#555',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 16,
-  },
-  modalButton: {
-    width: width * 0.3,
   },
 });
