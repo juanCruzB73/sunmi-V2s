@@ -11,6 +11,7 @@ export const saveFormOffline = async (form: Form): Promise<void> => {
 export const getOfflineForms = async (): Promise<Form[]> => {
   const db = await getDBConnection();
   const results = await db.executeSql('SELECT * FROM forms;');
+  console.log(results);
   const rows = results[0].rows;
   const forms: Form[] = [];
 

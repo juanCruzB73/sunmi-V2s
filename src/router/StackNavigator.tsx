@@ -5,7 +5,6 @@ import { RootState } from "../redux/store";
 
 import HomeScreen from "../screens/home/HomeScreen";
 import ClaimSearcher from "../screens/searcher/ClaimSearcher";
-import CommerceScreen from "../screens/Menu/ClaimMenu";
 import VehicleScreen from "../screens/Menu/VehicleScreen";
 import LoginScreen from "../screens/auth/LoginScreen";
 import ForgetPasswordScreen from "../screens/auth/ForgetPasswordScreen";

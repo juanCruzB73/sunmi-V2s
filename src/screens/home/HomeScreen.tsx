@@ -17,20 +17,19 @@ const HomeScreen = ({ navigation }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const { forms } = useSelector((state: RootState) => state.form);
   
-  
+  /*
+    const netState = await NetInfo.fetch();
+    if(!netState.isConnected){
+      dispatch(startOfflineForms());
+    }
+    
+  */
   useEffect(()=>{
     const getForms=async()=>{
-      const netState = await NetInfo.fetch();
-      if(!netState.isConnected){
-        dispatch(startOfflineForms());
-      }else{ 
-        dispatch(startLoadForms());
-        for (const form of forms) {
-          await saveFormOffline(form);
-        }
-      }
+      dispatch(startLoadForms());
     }
     getForms();
+    console.log(forms)
   },[])
 
   return (

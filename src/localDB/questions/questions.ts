@@ -36,7 +36,7 @@ export const dropQuestionsTable = async (db: SQLiteDatabase): Promise<void> => {
 
 export const insertQuestion = async (db: SQLiteDatabase, question: IQuestion): Promise<void> => {
   const query = `
-    INSERT OR REPLACE INTO questions (
+    INSERT OR IGNORE INTO questions (
       id, form_id, name, type, owner, required, "order", description, filters, catalog_id, panel_id, show_list, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
   `;
