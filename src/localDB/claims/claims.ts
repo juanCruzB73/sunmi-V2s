@@ -24,13 +24,6 @@ export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
       main_panel_id INTEGER
     );
   `;
-<<<<<<< HEAD
-  console.log("🧱 Verificando existencia de tabla 'claims'");
-
-  await db.executeSql(query);
-  console.log("✅ Tabla 'claims' lista");
-
-=======
   await db.executeSql(query);
 };
 export const removeClaimOffline = async (claimId: number): Promise<void> => {
@@ -44,7 +37,6 @@ console.log("🔍 Post-delete rows:", res[0].rows.length); // debería ser 0
 export const dropClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `DROP TABLE IF EXISTS claims;`;
   await db.executeSql(query);
->>>>>>> 59cf2f0 (falta implementar claims offline(update,insert,get,delete))
 };
 
 export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<void> => {
@@ -72,7 +64,6 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
     claim.updated_at,
     claim.area_id,
     0,
-    claim.main_panel_id
 
   ];
 
@@ -101,39 +92,6 @@ export const updateClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
     WHERE id = ?;
   `;
 
-<<<<<<< HEAD
-  for (let i = 0; i < claimRows.length; i++) {
-    const row = claimRows.item(i);
-    claims.push({
-      id: row.id,
-      status: row.status,
-      type: row.type,
-      date: row.date,
-      removed_at: row.removed_at,
-      removed: row.removed === 1,
-      reason: row.reason,
-      user_id: row.user_id,
-      removed_user_id: row.removed_user_id,
-      //status_type_id: row.status_type_id,
-      form_id: row.form_id,
-      incident_id: row.incident_id,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      area_id: row.area_id,
-      isSynced: row.isSynced === 1,
-      answers: []
-    });
-  }
-
-  return claims;
-};
-
-// 🧹 Elimina reclamos de prueba con razón "Control de rutina"
-export const eliminarClaimsDePrueba = async (db: SQLiteDatabase): Promise<void> => {
-  await db.executeSql('DELETE FROM claims WHERE reason = "Control de rutina"');
-  console.log("🧹 Reclamos de prueba eliminados manualmente");
-};
-=======
   const params = [
     claim.status,
     claim.type,
@@ -143,14 +101,12 @@ export const eliminarClaimsDePrueba = async (db: SQLiteDatabase): Promise<void> 
     claim.reason,
     claim.user_id,
     claim.removed_user_id,
-    claim.status_type_id,
     claim.form_id,
     claim.incident_id,
     claim.created_at,
     claim.updated_at,
     claim.area_id,
     claim.isSynced,
-    claim.main_panel_id,
     claim.id
   ];
 
@@ -196,4 +152,3 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase) => {
 
   return mappedUnsyncedClaims;
 };
->>>>>>> 59cf2f0 (falta implementar claims offline(update,insert,get,delete))
