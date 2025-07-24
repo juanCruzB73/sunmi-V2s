@@ -13,6 +13,7 @@ export const saveQuestionOffline = async (question: IQuestion): Promise<void> =>
 };
 
 export const getOfflineQuestions = async (formId:number): Promise<IQuestion[]> => {
+  
   const db = await getDBConnection();
   const results = await db.executeSql('SELECT * FROM questions WHERE form_id = ?;', [formId]);
   const rows = results[0].rows;
@@ -20,7 +21,6 @@ export const getOfflineQuestions = async (formId:number): Promise<IQuestion[]> =
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows.item(i);
-
     const questionId = row.id;
     const [optionsResult] = await db.executeSql(
       'SELECT * FROM question_options WHERE question_id = ?;',
@@ -42,13 +42,12 @@ export const getOfflineQuestions = async (formId:number): Promise<IQuestion[]> =
       question_options: options,
     });
   };
-
   return questions;
 };
 
 export const getQuestionsByPanel = async (panelId: number) =>{
   const db = await getDBConnection();
-  const query = `SELECT * FROM questions WHERE panel_id = ? ORDER BY "order" ASC;`;
+  const query = `SELECT * FROM questions WHERE panel_id = ?;`;
   const [result] = await db.executeSql(query, [panelId]);
 
   const questions: IQuestion[] = [];
@@ -65,14 +64,6 @@ export const getQuestionsByPanel = async (panelId: number) =>{
   }
 
   return questions;
-};
-
-export const startOfflineQuestions = (formId: number) => {
-  return async (dispatch: AppDispatch) => {
-    const questions = await getOfflineQuestions(formId);
-    dispatch(onLoadQuestions(questions));
-    return 
-  };
 };
 
 export const startOfflineQuestionsByPanel = (panelId: number) => {

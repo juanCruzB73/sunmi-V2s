@@ -12,7 +12,7 @@ import { API_BASE_URL3 } from '@env';
 import { ICreateClaim } from "../../../types/claims/ICreateClaim";
 =======
 import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL3 } from '@env';
+import { API_BASE_URL4 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
 <<<<<<< HEAD
 >>>>>>> fbc09aa (update And delete from app to api updated)
@@ -90,11 +90,7 @@ console.log("🧠 startAddClaim arrancó");
         'Content-Type': 'application/json',
       };
 
-<<<<<<< HEAD
-      const response = await fetch(`${API}/api/v1/forms/visible/claims`, {
-=======
       const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/claims`, {
->>>>>>> 80b9552 (commit before main_panel in claim)
         method: 'POST',
         headers,
         body: JSON.stringify(inClaim),
@@ -149,7 +145,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
+      const response = await fetch(`${API_BASE_URL4}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
@@ -203,7 +199,7 @@ export const startDeleteClaim=(claimId:number)=>{
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/claims/${claimId}`, {
+      const response = await fetch(`${API_BASE_URL4}/api/v1/forms/visible/claims/${claimId}`, {
         method: 'DELETE',
         headers,
       });

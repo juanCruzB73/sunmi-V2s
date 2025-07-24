@@ -34,7 +34,7 @@ export type Form = {
 
 export const insertForm = async (db: SQLiteDatabase, form: Form): Promise<void> => {
   const query = `
-    INSERT OR REPLACE INTO forms (
+    INSERT OR IGNORE INTO forms (
       id, name, publish, description, incident_id, user_id, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
   `;
@@ -48,6 +48,6 @@ export const insertForm = async (db: SQLiteDatabase, form: Form): Promise<void> 
     form.created_at,
     form.updated_at
   ];
-
+  
   await db.executeSql(query, params);
 };

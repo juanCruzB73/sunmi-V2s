@@ -4,17 +4,10 @@ import { AppDispatch, RootState } from './src/redux/store';
 import StackNavigator from './src/router/StackNavigator';
 import { restoreAuthState } from './src/redux/slices/auth/authThunk';
 import { createTables, getDBConnection } from './src/localDB/db';
-import { useNetworkStatus } from './src/utlis/useNetworkStatus';
-import { eliminarClaimsDePrueba, getUnsyncedClaims } from './src/localDB/claims/claims';
-import { onLoadClaims } from './src/redux/slices/claims/claimSlice';
-import { fixAnswersTableSchema } from './src/localDB/claims/answers';
-import { syncReduxClaimsToSQLite } from './src/sync/syncReduxClaimsToSQLite';
 
-export const Main = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  useNetworkStatus(); // 🧠 Activador de triggerSync
-  const claimsRedux = useSelector((state: RootState) => state.claim.claims);
-
+export const Main = () => {    
+  const dispatch = useDispatch<AppDispatch>()
+    
   useEffect(() => {
     dispatch(restoreAuthState());
   }, [dispatch]);

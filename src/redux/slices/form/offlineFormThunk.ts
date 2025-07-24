@@ -1,17 +1,42 @@
 import { AppDispatch } from '../../store';
 import { onLoadForms, onSetErrorMessage } from './formSlice';
-import NetInfo from '@react-native-community/netinfo';
 import { IForm } from '../../../types/form/IForm';
-import { getOfflineForms } from '../offline/formsOffline';
+import { getDBConnection } from "../../../localDB/db";
+import { Form, insertForm } from "../../../localDB/forms/forms";
 
-export const startOfflineForms=()=>{
+
+export const saveFormOffline = async (form: Form): Promise<void> => {
+  const db = await getDBConnection();
+  console.log("Saving form: ", form);
+  await insertForm(db, form);
+};
+
+export const getOfflineForms = async (): Promise<Form[]> => {
+  const db = await getDBConnection();
+
+  //await dropFormsTable(db)
+  //await dropQuestionOptionsTable(db);
+  //await dropQuestionsTable(db);
+  //await createQuestionOptionsTable(db);
+  //await createQuestionsTable(db);
+  //await createFormsTable(db);
+
+  const results = await db.executeSql('SELECT * FROM forms;');
+  const rows = results[0].rows;
+  const forms: Form[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    forms.push(rows.item(i));
+  }
+
+  return forms;
+};
+
+export const startOfflineForms=()=>{  
     return async(dispatch: AppDispatch) =>{
-        const netState = await NetInfo.fetch();
 
-      if (!netState.isConnected) {
         const offlineForms = await getOfflineForms();
-
-        console.log(offlineForms)
+        console.log(offlineForms);
 
         const mappedForms: IForm[] = offlineForms.map(form => ({
           id: form.id,
@@ -26,11 +51,9 @@ export const startOfflineForms=()=>{
           visible_app: true,
           question: []
         }));
-        
+        console.log(mappedForms);
         dispatch(onLoadForms(mappedForms));
         dispatch(onSetErrorMessage("Cargando formularios desde almacenamiento local"));
         return;
-      }
-
     }
 }
