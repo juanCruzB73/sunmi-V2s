@@ -1,27 +1,10 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import NetInfo from '@react-native-community/netinfo';
-import { AppDispatch } from "../../store";
-import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import {API_BASE_URL } from '@env';
-=======
-import {API_BASE_URL3} from '@env';
->>>>>>> 80b9552 (commit before main_panel in claim)
-=======
-import {API_BASE_URL4} from '@env';
->>>>>>> d50c75b (new thunk model)
-=======
-import {API_BASE_URL4, API_URL} from '@env';
->>>>>>> 783637a (DELETE de claims DBLocal implementado)
-=======
-import {API_BASE_URL4} from '@env';
->>>>>>> juanbranch
+import { API_URL } from "@env";
 import { getDBConnection } from "../../../localDB/db";
-import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
-import { API_BASE_URL } from "../../../config/config";
+import { registerOfflineUser, loginOffline } from "../../../localDB/session/offlineAuth";
+import { AppDispatch } from "../../store";
+import { onLogin, onLogOut, onCheckingAuth } from "./authSlice";
+import { AsyncStorage } from "react-native";
+
 
 export interface ILogin {
   email: string;
@@ -50,23 +33,7 @@ export const restoreAuthState = () => {
     const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
     const tokenData = Object.fromEntries(values);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    const response = await fetch(`${API_BASE_URL}/api/v1/auth/validate_token`, {
-=======
-    const response = await fetch(`${API_BASE_URL3}/api/v1/auth/validate_token`, {
->>>>>>> 80b9552 (commit before main_panel in claim)
-=======
-    const response = await fetch(`${API_BASE_URL4}/api/v1/auth/validate_token`, {
->>>>>>> d50c75b (new thunk model)
-=======
     const response = await fetch(`${API_URL}/api/v1/auth/validate_token`, {
->>>>>>> 783637a (DELETE de claims DBLocal implementado)
-=======
-    const response = await fetch(`${API_BASE_URL4}/api/v1/auth/validate_token`, {
->>>>>>> juanbranch
       headers: {
         "access-token": tokenData["access-token"] ?? "",
         "client": tokenData.client ?? "",
@@ -103,23 +70,7 @@ export const startOnLogIn = (payload: ILogin) => {
 
     if (netState.isConnected) {
       try {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        const response = await fetch(`${API_BASE_URL}/api/v1/auth/sign_in`, {
-=======
-        const response = await fetch(`${API_BASE_URL3}/api/v1/auth/sign_in`, {
->>>>>>> 80b9552 (commit before main_panel in claim)
-=======
-        const response = await fetch(`${API_BASE_URL4}/api/v1/auth/sign_in`, {
->>>>>>> d50c75b (new thunk model)
-=======
         const response = await fetch(`${API_URL}/api/v1/auth/sign_in`, {
->>>>>>> 783637a (DELETE de claims DBLocal implementado)
-=======
-        const response = await fetch(`${API_BASE_URL4}/api/v1/auth/sign_in`, {
->>>>>>> juanbranch
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -148,10 +99,8 @@ export const startOnLogIn = (payload: ILogin) => {
           client,
           uid,
         };
-console.log('AuthData:',authData);
 
         await storeAuthTokens(accessToken, client, uid);
-
         await registerOfflineUser(db, {
           userId: data.data.id,
           name: data.data.name,

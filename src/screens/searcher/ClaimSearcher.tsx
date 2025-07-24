@@ -15,7 +15,6 @@ import { RootStackParamList } from "../../router/StackNavigator";
 import LinearGradient from "react-native-linear-gradient";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { triggerSync } from "../../sync/syncManager";
 import { getDBConnection, createTables } from "../../localDB/db";
 import { SQLiteDatabase } from "react-native-sqlite-storage";
 
@@ -30,7 +29,6 @@ const ClaimSearcher = ({ navigation }: Props) => {
     try {
       const db = await getDBConnection();
       await createTables(db);
-      await triggerSync(db);
       console.log("📦 Reclamos en Redux:", claims.length, claims.map(c => c.id));
     } catch (error) {
       console.error("⛔ Error preparando la DB:", error);

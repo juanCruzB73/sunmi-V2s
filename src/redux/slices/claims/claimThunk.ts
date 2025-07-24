@@ -1,33 +1,12 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "@env";
+import { AsyncStorage } from "react-native";
+import { dropClaimsTable, createClaimsTable, insertClaim, removeClaimOffline, deleteClaim } from "../../../localDB/claims/claims";
+import { getDBConnection } from "../../../localDB/db";
+import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { onAddClaim, onCheckingClaims, onLoadClaims, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL2 } from '@env';
-=======
-import { onAddClaim, onCheckingClaims, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL3 } from '@env';
->>>>>>> 80b9552 (commit before main_panel in claim)
-import { ICreateClaim } from "../../../types/claims/ICreateClaim";
-=======
-import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL, API_BASE_URL4 } from '@env';
-import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
-<<<<<<< HEAD
->>>>>>> fbc09aa (update And delete from app to api updated)
-=======
-import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim, removeClaimOffline } from "../../../localDB/claims/claims";
-import { getDBConnection } from "../../../localDB/db";
->>>>>>> 59cf2f0 (falta implementar claims offline(update,insert,get,delete))
-=======
-import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL4 } from '@env';
-import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
-import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
-import { getDBConnection } from "../../../localDB/db";
->>>>>>> juanbranch
+import { onCheckingClaims, onLoadClaims, onSetErrorMessage, onAddClaim, onSetActiveClaim, onEditClaim, onDeleteClaim } from "./claimSlice";
+
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -56,15 +35,7 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
-<<<<<<< HEAD
-<<<<<<< HEAD
             const response = await fetch(`${API}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
-=======
-            const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
->>>>>>> 80b9552 (commit before main_panel in claim)
-=======
-            const response = await fetch(`${API_BASE_URL4}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
->>>>>>> juanbranch
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, claim);
@@ -84,15 +55,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(onCheckingClaims());
-<<<<<<< HEAD
-<<<<<<< HEAD
 console.log("🧠 startAddClaim arrancó");
-=======
-      const db = await getDBConnection();
->>>>>>> 59cf2f0 (falta implementar claims offline(update,insert,get,delete))
-=======
-      const db = await getDBConnection();
->>>>>>> juanbranch
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
       const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
@@ -161,11 +124,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
 
-<<<<<<< HEAD
       const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
-=======
-      const response = await fetch(`${API_BASE_URL4}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
->>>>>>> juanbranch
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
@@ -200,7 +159,6 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
     }
   };
 };
-<<<<<<< HEAD
 export const startLocalDeleteClaim = (claimId: number) => {
   return async (dispatch: AppDispatch) => {
     dispatch(onCheckingClaims());
@@ -210,8 +168,6 @@ export const startLocalDeleteClaim = (claimId: number) => {
     dispatch(onSetActiveClaim(null));
   };
 };
-=======
->>>>>>> juanbranch
 
 export const startDeleteClaim=(claimId:number)=>{
   return async (dispatch: AppDispatch) =>{
