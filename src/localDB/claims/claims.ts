@@ -1,5 +1,6 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { IClaim } from '../../types/claims/IClaim';
+import { getDBConnection } from '../db';
 
 export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
@@ -31,6 +32,13 @@ export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
 
 =======
   await db.executeSql(query);
+};
+export const removeClaimOffline = async (claimId: number): Promise<void> => {
+  const db = await getDBConnection();
+  console.log("🗑️ Ejecutando DELETE en SQLite:", claimId);
+  await deleteClaim(db, claimId);
+  const res = await db.executeSql('SELECT * FROM claims WHERE id = ?;', [claimId]);
+console.log("🔍 Post-delete rows:", res[0].rows.length); // debería ser 0
 };
 
 export const dropClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
@@ -150,10 +158,7 @@ export const eliminarClaimsDePrueba = async (db: SQLiteDatabase): Promise<void> 
 };
 
 export const deleteClaim = async (db: SQLiteDatabase, claimId: number): Promise<void> => {
-  const query = `
-    DELETE FROM claims WHERE id = ?;
-  `;
-
+const query = `DELETE FROM claims WHERE CAST(id AS INTEGER) = ?`;
   await db.executeSql(query, [claimId]);
 };
 

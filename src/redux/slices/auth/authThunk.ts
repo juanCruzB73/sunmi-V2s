@@ -4,6 +4,7 @@ import { AppDispatch } from "../../store";
 import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import {API_BASE_URL } from '@env';
 =======
 import {API_BASE_URL3} from '@env';
@@ -11,8 +12,12 @@ import {API_BASE_URL3} from '@env';
 =======
 import {API_BASE_URL4} from '@env';
 >>>>>>> d50c75b (new thunk model)
+=======
+import {API_BASE_URL4, API_URL} from '@env';
+>>>>>>> 783637a (DELETE de claims DBLocal implementado)
 import { getDBConnection } from "../../../localDB/db";
 import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
+import { API_BASE_URL } from "../../../config/config";
 
 export interface ILogin {
   email: string;
@@ -43,6 +48,7 @@ export const restoreAuthState = () => {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     const response = await fetch(`${API_BASE_URL}/api/v1/auth/validate_token`, {
 =======
     const response = await fetch(`${API_BASE_URL3}/api/v1/auth/validate_token`, {
@@ -50,6 +56,9 @@ export const restoreAuthState = () => {
 =======
     const response = await fetch(`${API_BASE_URL4}/api/v1/auth/validate_token`, {
 >>>>>>> d50c75b (new thunk model)
+=======
+    const response = await fetch(`${API_URL}/api/v1/auth/validate_token`, {
+>>>>>>> 783637a (DELETE de claims DBLocal implementado)
       headers: {
         "access-token": tokenData["access-token"] ?? "",
         "client": tokenData.client ?? "",
@@ -88,6 +97,7 @@ export const startOnLogIn = (payload: ILogin) => {
       try {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         const response = await fetch(`${API_BASE_URL}/api/v1/auth/sign_in`, {
 =======
         const response = await fetch(`${API_BASE_URL3}/api/v1/auth/sign_in`, {
@@ -95,6 +105,9 @@ export const startOnLogIn = (payload: ILogin) => {
 =======
         const response = await fetch(`${API_BASE_URL4}/api/v1/auth/sign_in`, {
 >>>>>>> d50c75b (new thunk model)
+=======
+        const response = await fetch(`${API_URL}/api/v1/auth/sign_in`, {
+>>>>>>> 783637a (DELETE de claims DBLocal implementado)
           method: 'POST',
           headers: {
             'Accept': 'application/json',

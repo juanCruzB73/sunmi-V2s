@@ -12,12 +12,12 @@ import { API_BASE_URL3 } from '@env';
 import { ICreateClaim } from "../../../types/claims/ICreateClaim";
 =======
 import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL4 } from '@env';
+import { API_BASE_URL, API_BASE_URL4 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
 <<<<<<< HEAD
 >>>>>>> fbc09aa (update And delete from app to api updated)
 =======
-import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
+import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim, removeClaimOffline } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
 >>>>>>> 59cf2f0 (falta implementar claims offline(update,insert,get,delete))
 
@@ -90,7 +90,7 @@ console.log("🧠 startAddClaim arrancó");
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL3}/api/v1/forms/visible/claims`, {
+      const response = await fetch(`${API_BASE_URL4}/api/v1/forms/visible/claims`, {
         method: 'POST',
         headers,
         body: JSON.stringify(inClaim),
@@ -145,7 +145,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL4}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
@@ -178,6 +178,15 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
       console.error("Network or unexpected error:", error);
       dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
     }
+  };
+};
+export const startLocalDeleteClaim = (claimId: number) => {
+  return async (dispatch: AppDispatch) => {
+    dispatch(onCheckingClaims());
+
+    await removeClaimOffline(claimId); // 👈 Aquí tiene que eliminarse
+    dispatch(onDeleteClaim(claimId));
+    dispatch(onSetActiveClaim(null));
   };
 };
 

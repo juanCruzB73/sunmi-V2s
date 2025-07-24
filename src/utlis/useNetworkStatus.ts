@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import NetInfo from '@react-native-community/netinfo'; // Librería para detectar conectividad de red
-import { triggerSync } from '../sync/syncManager';      // Función que lanza la sincronización
 
 // Hook personalizado que detecta si el dispositivo está online
 export const useNetworkStatus = () => {
@@ -19,7 +18,6 @@ export const useNetworkStatus = () => {
       setIsOnline(online); // Actualiza estado local
 
       if (online) {
-        triggerSync(); // Si hay conexión, ejecuta sincronización automática
       }
     });
 
