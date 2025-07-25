@@ -7,9 +7,9 @@ import { createTables, getDBConnection } from './src/localDB/db';
 
 export const Main = () => {    
   const dispatch = useDispatch<AppDispatch>()
-    
+
   useEffect(() => {
-    dispatch(restoreAuthState());    
+    dispatch(restoreAuthState());
   }, [dispatch]);
 
   useEffect(() => {

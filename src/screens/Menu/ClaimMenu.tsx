@@ -5,53 +5,39 @@ import CommerceButton from '../../components/commerce/CommerceButton';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import LinearGradient from 'react-native-linear-gradient';
-import { useNetworkStatus } from '../../utlis/useNetworkStatus';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { IQuestion } from '../../types/form/IQuestion';
 import { startLoadQuestions } from '../../redux/slices/question/questionThunk';
-import { startOfflineQuestions } from '../../redux/slices/offline/questionsOffline';
 import { onLoadQuestions } from '../../redux/slices/question/questionSlice';
-import NetInfo from '@react-native-community/netinfo';
 import { startGetClaims } from '../../redux/slices/claims/claimThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimMenu'>;
 
 const ClaimMenu = ({ navigation }: Props) => {
 
-  const isOnline = useNetworkStatus();
   const { activeForm } = useSelector((state: RootState) => state.form);
   const dispatch = useDispatch<AppDispatch>();
+    
+  const getQuestions = async () => {
 
+    let loadedQuestions: IQuestion[] = [];
+    const result = await dispatch(startLoadQuestions(activeForm!.id));
+      
+    if ('payload' in result! && Array.isArray(result.payload)) {
+      loadedQuestions = result.payload;
+    };
   
-    const getQuestions = async () => {
-        const netState = await NetInfo.fetch();
+    const filtered = loadedQuestions.filter(
+      (q) => Array.isArray(q.question_options) && q.question_options.length > 0
+    );
+  
+    dispatch(onLoadQuestions(filtered));
+  };
 
-        let loadedQuestions: IQuestion[] = [];
-
-
-        if (netState.isConnected) {
-          const result = await dispatch(startLoadQuestions(activeForm!.id));
-          if ('payload' in result! && Array.isArray(result.payload)) {
-            loadedQuestions = result.payload;
-          }
-        } else {
-          const result = await dispatch(startOfflineQuestions(activeForm!.id));
-          if ('payload' in result! && Array.isArray(result.payload)) {
-            loadedQuestions = result.payload;
-          }
-        }
-      
-        const filtered = loadedQuestions.filter(
-          (q) => Array.isArray(q.question_options) && q.question_options.length > 0
-        );
-      
-        dispatch(onLoadQuestions(filtered));
-      };
-
-      const getClaims=async()=>{
-        dispatch(startGetClaims(activeForm!.id));
-      };
+  const getClaims=async()=>{
+    dispatch(startGetClaims(activeForm!.id));
+  };
 
       
 

@@ -26,8 +26,6 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     const [answers, setAnswers] = useState<Record<number, any>>({});
     const [optionSelected, setOptionSelected] = useState<number|null>(null);
 
-
-
     const handleChange = (questionId: number, newValue: any) => {
       console.log(answers)
       setAnswers((prev) => {
@@ -52,18 +50,11 @@ export const DisplayQuestions = ({ navigation }: Props) => {
 
 
     const handleNextPanel = async (panelId: number|null) => {
-      const netState = await NetInfo.fetch();
-
-      if (netState.isConnected) {
-        panelId&&await dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
-      } else {
-        panelId&&await dispatch(startOfflineQuestionsByPanel(panelId));
-      }
+      panelId&&dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
     };
 
     const handleSaveOptionSelected=(option:number|null)=>{
       setOptionSelected(option);
-      console.log(optionSelected)
     };
 
     const handleSubmit = () => {
@@ -87,7 +78,6 @@ export const DisplayQuestions = ({ navigation }: Props) => {
       claim: {
         form_id: activeForm!.id,
         incident_id: activeForm!.incident_id,
-        //status_type_id: 179,
         area_id: activeForm!.area_id,
         answers_attributes: answersArray
       }
@@ -97,7 +87,6 @@ export const DisplayQuestions = ({ navigation }: Props) => {
         id:activeClaim.id,
         form_id: activeForm!.id,
         incident_id: activeForm!.incident_id,
-        //status_type_id: 179,
         area_id: activeForm!.area_id,
         answers_attributes: answersArray
       }
