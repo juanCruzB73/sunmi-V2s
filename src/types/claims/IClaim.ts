@@ -11,7 +11,7 @@ export interface IClaim{
     reason: null;
     user_id: number;
     removed_user_id: null;
-    //status_type_id: number;
+    status_type_id: number;
     form_id: number;
     incident_id: number;
     created_at: string;
@@ -19,14 +19,5 @@ export interface IClaim{
     area_id: number;
     isSynced: boolean;
     answers:IAnswer[];
-<<<<<<< HEAD
-<<<<<<< HEAD
-}
-=======
     main_panel_id:number;
 }
->>>>>>> fbc09aa (update And delete from app to api updated)
-=======
-    main_panel_id:number;
-}
->>>>>>> juanbranch

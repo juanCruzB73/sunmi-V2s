@@ -24,10 +24,14 @@ export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
       main_panel_id INTEGER
     );
   `;
-  await db.executeSql(query); // 🧨 Ejecuta creación de tabla
+  await db.executeSql(query);
 };
 
-// 📥 Inserta o reemplaza un reclamo en la base local
+export const dropClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
+  const query = `DROP TABLE IF EXISTS claims;`;
+  await db.executeSql(query);
+};
+
 export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<void> => {
   const query = `
     INSERT OR IGNORE INTO claims (
@@ -42,33 +46,89 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
     claim.type,
     claim.date,
     claim.removed_at,
-    claim.removed ? 1 : 0, // ✅ Convertido a entero
+    claim.removed ? 1 : 0,
     claim.reason,
     claim.user_id,
     claim.removed_user_id,
+    claim.status_type_id,
     claim.form_id,
     claim.incident_id,
     claim.created_at,
     claim.updated_at,
     claim.area_id,
-    claim.isSynced ? 1 : 0
+    0, // isSynced inicial
+    claim.main_panel_id
   ];
 
-  await db.executeSql(query, params); // 💾 Guarda el reclamo
+  await db.executeSql(query, params);
 };
 
-// 🔍 Obtiene todos los claims que aún no fueron sincronizados
+export const updateClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<void> => {
+  const query = `
+    UPDATE claims SET
+      status = ?,
+      type = ?,
+      date = ?,
+      removed_at = ?,
+      removed = ?,
+      reason = ?,
+      user_id = ?,
+      removed_user_id = ?,
+      status_type_id = ?,
+      form_id = ?,
+      incident_id = ?,
+      created_at = ?,
+      updated_at = ?,
+      area_id = ?,
+      isSynced = ?,
+      main_panel_id = ?
+    WHERE id = ?;
+  `;
+
+  const params = [
+    claim.status,
+    claim.type,
+    claim.date,
+    claim.removed_at,
+    claim.removed ? 1 : 0,
+    claim.reason,
+    claim.user_id,
+    claim.removed_user_id,
+    claim.status_type_id,
+    claim.form_id,
+    claim.incident_id,
+    claim.created_at,
+    claim.updated_at,
+    claim.area_id,
+    claim.isSynced,
+    claim.main_panel_id,
+    claim.id
+  ];
+
+  await db.executeSql(query, params);
+};
+export const deleteClaim = async (db: SQLiteDatabase, claimId: number) => {
+  return db.executeSql(`DELETE FROM claims WHERE id = ?;`, [claimId]);
+};
+
+export const removeClaimOffline = async (claimId: number): Promise<void> => {
+  const db = await getDBConnection();
+  console.log("🗑️ Eliminando localmente claim ID:", claimId);
+  await deleteClaim(db, claimId);
+
+  const res = await db.executeSql('SELECT * FROM claims WHERE id = ?;', [claimId]);
+  console.log("🔍 Post-delete rows:", res[0].rows.length); // debería ser 0 si fue exitoso
+};
+
 export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> => {
   const results = await db.executeSql('SELECT * FROM claims WHERE isSynced = 0');
-
-  // `results` is usually an array of [ResultSet], need to extract rows
   const rows: IClaim[] = [];
-  const len = results[0].rows.length;
-  for (let i = 0; i < len; i++) {
+
+  for (let i = 0; i < results[0].rows.length; i++) {
     rows.push(results[0].rows.item(i));
   }
 
-  const mappedUnsyncedClaims: IClaim[] = rows.map((claim: any) => ({
+  return rows.map((claim: any) => ({
     id: claim.id,
     status: claim.status,
     panel_id: claim.panel_id,
@@ -89,6 +149,4 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> =
     answers: claim.answers,
     main_panel_id: claim.main_panel_id,
   }));
-
-  return mappedUnsyncedClaims;
 };

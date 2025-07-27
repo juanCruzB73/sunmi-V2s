@@ -1,14 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
-import { onCheckingForms } from "../form/formSlice";
-import { API_BASE_URL4 } from '@env';
-import { onLoadQuestions, onSetErrorMessage } from "./questionSlice";
-import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions } from "../../../localDB/questions/questions";
-import { getDBConnection } from "../../../localDB/db";
-import { createQuestionOptionsTable, dropQuestionOptionsTable } from "../../../localDB/questions/questionOptions";
-import { getOfflineQuestions, startOfflineQuestionsByPanel } from "../offline/questionsOffline";
-import { startOfflineQuestions } from "./offlineQuestionThunk";
+import { onCheckingForms, onSetErrorMessage } from "../form/formSlice";
+
+
+import { startOfflineQuestions, startOfflineQuestionsByPanel } from "./offlineQuestionThunk";
+import { API_BASE } from "@env";
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -31,32 +28,17 @@ export const startLoadQuestions=(formId:number)=>{
             const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
-<<<<<<< HEAD
-            console.log("response", `${API_BASE}/api/v1/forms/visible/${formId}`);
-=======
             
-            const response=await fetch(`${API_BASE_URL2}/api/v1/forms/visible/${formId}`,{headers:headers});
+            const response=await fetch(`${API_BASE}/api/v1/forms/visible/${formId}`,{headers:headers});
 
-            if (!response.ok) {
-              const text = await response.text();
-              console.error(`HTTP ${response.status}: ${text}`);
-              throw new Error(`Request failed with status ${response.status}`);
+            if (response.ok) {
+              const data=await response.json();
+              console.log(data);
+              
             };
             
-            const data=await response.json();
-            console.log(data.questions)
-            for (const q of data.questions) {
-              const questionToInsert = {
-                ...q,
-                form_id: formId,
-                filters: JSON.stringify(q.filters ?? {}),
-                catalog_id: q.catalog_id ?? null,
-              };
-              await insertQuestionWithOptions(db, questionToInsert, q.question_options??[]);
-            }
-            console.log("firind");
-            
-            dispatch(onLoadQuestions(data.questions));
+            //dispatch(onLoadQuestions(data.questions));
+            const data=dispatch(startOfflineQuestions(formId));
             dispatch(onSetErrorMessage(null));
             return data ;
 
@@ -80,8 +62,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
         uid: tokenObject['uid'] ?? '',
       };
       const headers = setTokenHeader(tokenData);
-
-      const response = await fetch(`${API_BASE_URL2}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
+      const response = await fetch(`${API_BASE}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 
       if (response.ok) {
         const data = await response.json();

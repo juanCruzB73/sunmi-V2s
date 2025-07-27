@@ -3,11 +3,10 @@ import { IAuthToken } from '../../../types/IAuthToken';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onCheckingForms, onLoadForms, onSetErrorMessage } from './formSlice';
 import { getDBConnection } from '../../../localDB/db';
-import { createFormsTable, dropFormsTable, insertForm } from '../../../localDB/forms/forms';
-import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions, insertQuestionWithOptions } from '../../../localDB/questions/questions';
-import { createQuestionOptionsTable, dropQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
-import { API_BASE_URL4 } from '@env';
+
 import { saveFormOffline, startOfflineForms } from './offlineFormThunk';
+import { API_BASE_URL } from '@env';
+import { insertQuestionWithOptions } from '../../../localDB/questions/questions';
 
 
 const setTokenHeader = (tokenData: IAuthToken) => {
@@ -16,8 +15,7 @@ const setTokenHeader = (tokenData: IAuthToken) => {
     "client": tokenData.client ?? "",
     "uid": tokenData.uid ?? "",
     "token-type": "Bearer",
-    "Accept": "*/*",
-    "ngrok-skip-browser-warning": "69420"
+    "Accept": "*/*"
   };
   return headers;
 };
@@ -35,15 +33,22 @@ export const startLoadForms = () => {
         uid: tokenObject['uid'] ?? '',
       };
       const headers = setTokenHeader(tokenData);
+      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible`, { headers: headers });
+      if(response.ok){
+        const data = await response.json();
 
-      const response = await fetch(`${API_BASE_URL2}/api/v1/forms/visible`, { headers: headers });
-      const data = await response.json();
-      
-      for (const form of data) {
-        await insertForm(db, form);
+        for (const form of data) {
+          //console.log(form)
+          await saveFormOffline(form);
+          for (const question of form.questions) {
+            insertQuestionWithOptions(db,question,question.question_options??[]);
+          }
+        }
+
       }
 
-      dispatch(onLoadForms(data))
+      dispatch(startOfflineForms())
+      //dispatch(onLoadForms(data))
       dispatch(onSetErrorMessage(null));
 
     } catch (error: unknown) {
