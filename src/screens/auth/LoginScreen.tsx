@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { View, Alert, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import InputField from '../../components/login/InputField';
 import LoginButton from '../../components/login/LoginButton';
 import ForgetPassword from '../../components/login/ForgetPassword';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { startOnLogIn } from '../../redux/slices/auth/authThunk';
-import { AppDispatch, RootState } from '../../redux/store';
+import { AppDispatch } from '../../redux/store';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 

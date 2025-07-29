@@ -1,15 +1,12 @@
-import React, { useEffect } from 'react'
-import { Pressable, View, Text, StyleSheet, Dimensions } from 'react-native'
+import React, { useEffect, useState } from 'react';
+import { Pressable, View, Text, StyleSheet, Dimensions } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { AppDispatch, RootState } from '../../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { startLoadForms } from '../../redux/slices/form/formThunk';
-import { startOfflineForms } from '../../redux/slices/form/offlineFormThunk';
 import NetInfo from '@react-native-community/netinfo';
-import { saveFormOffline } from '../../redux/slices/offline/formsOffline';
-
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const HomeScreen = ({ navigation }: Props) => {
@@ -17,24 +14,40 @@ const HomeScreen = ({ navigation }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const { forms } = useSelector((state: RootState) => state.form);
   
-  /*
-    const netState = await NetInfo.fetch();
-    if(!netState.isConnected){
-      dispatch(startOfflineForms());
-    }
-    
-  */
+  const [isConnected, setIsConnected] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected);
+    });
+
+    // Optional: Get current state immediately
+    NetInfo.fetch().then(state => {
+      setIsConnected(state.isConnected);
+    });
+
+    return () => {
+      unsubscribe(); // Cleanup the listener on unmount
+    };
+  }, []);
+
   useEffect(()=>{
     const getForms=async()=>{
       dispatch(startLoadForms());
     }
     getForms();
-    console.log(forms)
   },[])
 
   return (
     <>
       <TopBar navigation={navigation} />
+      <Text>
+        {isConnected === null
+          ? 'Checking connection...'
+          : isConnected
+          ? 'You are online ✅'
+          : 'No internet connection ❌'}
+      </Text>
       <View style={styles.container}>
         {[
           { label: 'Formularios', route: 'DisplayForms' },

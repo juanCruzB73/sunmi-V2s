@@ -66,18 +66,14 @@ export const fixAnswersTableSchema = async (db: SQLiteDatabase): Promise<void> =
 
 // 📥 Inserta o reemplaza una respuesta
 export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise<void> => {
-  if (!answer.owner_type || answer.owner_id === null || answer.owner_id === undefined) {
-    console.warn(`⚠️ Respuesta con ID ${answer.id} no se insertó: owner_type y/o owner_id faltantes`);
-    return;
-  }
-
-  const query = `
-    INSERT OR REPLACE INTO answers (
-      id, input_string, input_text, input_date, input_datetime, options, latitude, longitude,
-      item_id, person_id, address_id, question_id, owner_type, owner_id, answerable_type,
-      answerable_id, created_at, updated_at, tag, isSynced
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-  `;
+  try{
+    const query = `
+      INSERT OR REPLACE INTO answers (
+        id, input_string, input_text, input_date, input_datetime, options, latitude, longitude,
+        item_id, person_id, address_id, question_id, owner_type, owner_id, answerable_type,
+        answerable_id, created_at, updated_at, tag, isSynced
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
 
   const params = [
     answer.id,
@@ -85,7 +81,7 @@ export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise
     answer.input_text,
     answer.input_date,
     answer.input_datetime,
-    JSON.stringify(answer.options),
+    JSON.stringify(answer.options), // Convierte opciones a string JSON
     answer.latitude,
     answer.longitude,
     answer.item_id,
@@ -99,14 +95,13 @@ export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise
     answer.created_at,
     answer.updated_at,
     answer.tag,
-    answer.isSynced ? 1 : 0
+    answer.isSynced ? 1 : 0 //  Marcado como sincronizado (1) o pendiente (0)
   ];
 
-  await db.executeSql(query, params);
-  console.log(`✅ Answer ${answer.id} insertado correctamente`);
+  await db.executeSql(query, params); //  Guarda en la base
 };
 
-// 🔍 Answers sin sincronizar
+//  Obtiene todos los answers que aún no fueron sincronizados
 export const getUnsyncedAnswers = async (db: SQLiteDatabase): Promise<IAnswer[]> => {
   const results = await db.executeSql('SELECT * FROM answers WHERE isSynced = 0');
   const rows = results[0].rows;
@@ -182,6 +177,49 @@ export const getAnswersByClaimId = async (
       tag: row.tag,
       question: {} as any,
       isSynced: row.isSynced === 1
+    });
+  }
+
+  return answers;
+};
+
+export const getAnswersByClaimId = async (
+  db: SQLiteDatabase,
+  claimId: number
+): Promise<IAnswer[]> => {
+  const results = await db.executeSql(
+  `SELECT * FROM answers WHERE answerable_id = ?`,
+  [claimId]
+);
+
+
+  const rows = results[0].rows;
+  const answers: IAnswer[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows.item(i);
+    answers.push({
+      id: row.id,
+      input_string: row.input_string,
+      input_text: row.input_text,
+      input_date: row.input_date,
+      input_datetime: row.input_datetime,
+      options: JSON.parse(row.options || '[]'),
+      latitude: row.latitude,
+      longitude: row.longitude,
+      item_id: row.item_id,
+      person_id: row.person_id,
+      address_id: row.address_id,
+      question_id: row.question_id,
+      owner_type: row.owner_type,
+      owner_id: row.owner_id,
+      answerable_type: row.answerable_type,
+      answerable_id: row.answerable_id,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      tag: row.tag,
+      isSynced: row.isSynced === 1,
+      question: {} as any
     });
   }
 

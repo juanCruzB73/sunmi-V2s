@@ -116,12 +116,10 @@ export const loginOffline = async (
   console.log('[DEBUG] Usuario encontrado offline:', user);
 
   if (!user) {
-    console.log('[DEBUG] Usuario no existe');
     return false;
   }
 
   const passwordMatch = bcrypt.compareSync(plainPassword, user.password_hash);
-  console.log('[DEBUG] Contraseña válida:', passwordMatch);
 
   if (plainPassword && passwordMatch) {
     return {

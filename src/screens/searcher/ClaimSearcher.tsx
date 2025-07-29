@@ -22,20 +22,8 @@ type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;
 
 const ClaimSearcher = ({ navigation }: Props) => {
   const [searchInput, setSearchInput] = useState("");
-  const { claims, isModified } = useSelector((state: RootState) => state.claim);
-  const [showFloatingMessage, setShowFloatingMessage] = useState(false); // ✅ NUEVO
-
-  // ✅ Mostrar mensaje al volver de edición
-  useEffect(() => {
-    console.log("isModified:", isModified);
-    if (isModified) {
-
-      setShowFloatingMessage(true);
-      const timer = setTimeout(() => setShowFloatingMessage(false), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [isModified]);
-
+  const { claims } = useSelector((state: RootState) => state.claim);
+ 
   return (
     <>
       {showFloatingMessage && (

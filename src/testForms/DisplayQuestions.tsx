@@ -8,11 +8,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { IQuestion } from '../types/form/IQuestion';
 import QuestionInput from '../components/question-option/QuestionInput';
 import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThunk';
-import { startOfflineQuestionsByPanel } from '../redux/slices/offline/questionsOffline';
-import NetInfo from '@react-native-community/netinfo';
 import { startAddClaim, startEditClaim } from '../redux/slices/claims/claimThunk';
-import { onIsMofified } from '../redux/slices/claims/claimSlice';
-
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayQuestions'>;
 
@@ -25,13 +21,12 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const [answers, setAnswers] = useState<Record<number, any>>({});
+    const [mainPanel,setMainPanel]=useState<number|null>(null);
     const [optionSelected, setOptionSelected] = useState<number|null>(null);
 
-    
 
 
     const handleChange = (questionId: number, newValue: any) => {
-      console.log(answers)
       setAnswers((prev) => {
         if (activeClaim) {
           const existing = prev[questionId];
@@ -52,20 +47,12 @@ export const DisplayQuestions = ({ navigation }: Props) => {
       });
     };
 
-
     const handleNextPanel = async (panelId: number|null) => {
-      const netState = await NetInfo.fetch();
-
-      if (netState.isConnected) {
-        panelId&&await dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
-      } else {
-        panelId&&await dispatch(startOfflineQuestionsByPanel(panelId));
-      }
+      panelId&&dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
     };
 
     const handleSaveOptionSelected=(option:number|null)=>{
       setOptionSelected(option);
-      console.log(optionSelected)
     };
 
     const handleSubmit = () => {
@@ -89,8 +76,8 @@ export const DisplayQuestions = ({ navigation }: Props) => {
       claim: {
         form_id: activeForm!.id,
         incident_id: activeForm!.incident_id,
-        //status_type_id: 179,
         area_id: activeForm!.area_id,
+        main_panel_id: mainPanel,
         answers_attributes: answersArray
       }
     }:
@@ -99,42 +86,45 @@ export const DisplayQuestions = ({ navigation }: Props) => {
         id:activeClaim.id,
         form_id: activeForm!.id,
         incident_id: activeForm!.incident_id,
-        //status_type_id: 179,
+        mainPanel:activeClaim.main_panel_id,
         area_id: activeForm!.area_id,
         answers_attributes: answersArray
       }
     };
-
+    console.log('FINAL DATA TO SEND:', JSON.stringify(data, null, 2));
     if (!activeClaim) dispatch(startAddClaim(data));
     if (activeClaim) dispatch(startEditClaim(data));
     dispatch(onIsMofified(true));
 navigation.navigate('ClaimSearcher', { updated: true });  };
 
 
-    useEffect(() => {
-      if (activeClaim) {
-        const mappedAnswers = activeClaim.answers.reduce((acc: Record<number, any>, ans: any) => {
-          acc[ans.question_id] = {
-            id: ans.id,
-            input_string: ans.input_string,
-            question_id: ans.question_id
-          };
-          return acc;
-        }, {});
-        setAnswers(mappedAnswers);
-      }
-    }, [activeClaim]);
+  useEffect(() => {
+    if (activeClaim) {
+      const mappedAnswers = activeClaim.answers.reduce((acc: Record<number, any>, ans: any) => {
+        acc[ans.question_id] = {
+          id: ans.id,
+          input_string: ans.input_string,
+          question_id: ans.question_id
+        };
+        return acc;
+      }, {});
+      setAnswers(mappedAnswers);
+    }
+  }, [activeClaim]);
 
-    if (!Array.isArray(questions)) {
-        return <Text style={{ padding: 20 }}>Loading questions...</Text>;
+  useEffect(()=>{
+    if(questions.length>0){
+      setMainPanel(questions[0].panel_id);
     };
+  },[questions])
 
-    
+  if (!Array.isArray(questions)) {
+      return <Text style={{ padding: 20 }}>Loading questions...</Text>;
+  };
 
-    return (
+  return (
     <ScrollView>
       <TopBar navigation={navigation} />
-
       {questions.map((question: IQuestion) => (
         <View key={question.id} style={{ margin: 10 }}>
           <QuestionInput

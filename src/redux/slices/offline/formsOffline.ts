@@ -4,14 +4,12 @@ import { Form, insertForm } from "../../../localDB/forms/forms";
 
 export const saveFormOffline = async (form: Form): Promise<void> => {
   const db = await getDBConnection();
-  console.log("Saving form: ", form);
   await insertForm(db, form);
 };
 
 export const getOfflineForms = async (): Promise<Form[]> => {
   const db = await getDBConnection();
   const results = await db.executeSql('SELECT * FROM forms;');
-  console.log(results);
   const rows = results[0].rows;
   const forms: Form[] = [];
 
