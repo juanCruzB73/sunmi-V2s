@@ -22,7 +22,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;
 const ClaimSearcher = ({ navigation }: Props) => {
   const [searchInput, setSearchInput] = useState("");
   const { claims } = useSelector((state: RootState) => state.claim);
-
+ 
   return (
     <>
       <TopBar navigation={navigation} />

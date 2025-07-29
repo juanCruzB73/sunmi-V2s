@@ -6,6 +6,9 @@ import { API_BASE_URL7 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
 import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
+import { startOfflineClaims } from "./claimOffLineThunk";
+import NetInfo from '@react-native-community/netinfo';
+import { insertAnswer } from "../../../localDB/claims/answers";
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -21,11 +24,16 @@ const setTokenHeader = (tokenData: IAuthToken) => {
 
 export const startGetClaims=(formId:number)=>{
     return async (dispatch: AppDispatch) =>{
+      const netState = await NetInfo.fetch();
+      const db = await getDBConnection();
+      await dropClaimsTable(db); 
+      await createClaimsTable(db); 
+
+      createClaimsTable(db);
+      if (netState.isConnected){
         try{
-            const db = await getDBConnection();
             dispatch(onCheckingClaims());
-            await dropClaimsTable(db);
-            await createClaimsTable(db);
+            
             const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
             const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
             const tokenData: IAuthToken = {
@@ -38,16 +46,22 @@ export const startGetClaims=(formId:number)=>{
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, claim);
+              if(claim.answers.length){
+                for (const answer of claim.answers) {
+                  console.log(answer);
+                  await insertAnswer(db,answer);
+                }
+              }
             };
-            
-            dispatch(onLoadClaims(data));
-            onSetErrorMessage(null);
         }catch(error){
             const message = error instanceof Error ? error.message : String(error);
             console.log(message);
             dispatch(onSetErrorMessage("Error al cargar formularios"));
-            return false;
         }
+      }
+      await dispatch(startOfflineClaims());
+      dispatch(onSetErrorMessage(null));
+      return; 
     }
 };
 
@@ -72,7 +86,6 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
       };
       
       console.log(`${API_BASE_URL7}/api/v1/forms/visible/claims`);
-      console.log(headers);
 
       const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims`, {
         method: 'POST',
@@ -83,6 +96,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
         console.log("ERROR ON POST CLAIM");
       }
       const data= await response.json();
+      await insertClaim(db,data)
       dispatch(onAddClaim(data));
       dispatch(onSetActiveClaim(data));
       dispatch(onSetErrorMessage(null));
@@ -119,7 +133,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
       });
 
       const data = await response.json();
-
+      
       dispatch(onEditClaim({...data,id:inClaim.claim.id}));
       dispatch(onSetActiveClaim(data.claim));
       dispatch(onSetErrorMessage(null));

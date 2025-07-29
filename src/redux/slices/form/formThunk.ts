@@ -40,7 +40,6 @@ export const startLoadForms = () => {
           const data = await response.json();
 
           for (const form of data) {
-            //console.log(form)
             await saveFormOffline(form);
             for (const question of form.questions) {
               insertQuestionWithOptions(db,question,question.question_options??[]);
@@ -50,7 +49,6 @@ export const startLoadForms = () => {
         }
 
         dispatch(startOfflineForms());
-        //dispatch(onLoadForms(data))
         dispatch(onSetErrorMessage(null));
 
       } catch (error: unknown) {

@@ -35,12 +35,10 @@ const ClaimMenu = ({ navigation }: Props) => {
   
     dispatch(onLoadQuestions(filtered));
   };
-
-  const getClaims=async()=>{
-    dispatch(startGetClaims(activeForm!.id));
+  
+  const getClaims = async () => {
+    await dispatch(startGetClaims(activeForm!.id));
   };
-
-      
 
   useEffect(()=>{
     getClaims()
@@ -54,7 +52,7 @@ const ClaimMenu = ({ navigation }: Props) => {
       <LinearGradient colors={['#f2f6fc', '#dde9f7']} style={styles.gradient}>
         <View style={styles.container}>
           <CommerceButton label={`Generar ${activeForm?.name}`} onPress={()=>{getQuestions();dispatch(onSetActiveClaim(null));navigation.navigate('DisplayQuestions')}} />
-          <CommerceButton label={`Listar  ${activeForm?.name}`} onPress={()=>navigation.navigate('ClaimSearcher')} />
+          <CommerceButton label={`Listar  ${activeForm?.name}`} onPress={()=>{getClaims();navigation.navigate('ClaimSearcher')}} />
         </View>
       </LinearGradient>
     </>
