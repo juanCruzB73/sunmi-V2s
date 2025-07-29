@@ -22,7 +22,6 @@ export const startOfflineQuestions = (formId:number) => {
           show_list: !!q.show_list,
           catalog_id: q.catalog_id === null ? null : q.catalog_id,
         }));
-        console.log("Cargando preguntas desde almacenamiento local")
         
         dispatch(onLoadQuestions(mappedQuestions));
         return { payload: mappedQuestions };
@@ -49,7 +48,6 @@ export const startOfflineQuestionsByPanel = (panelId: number) => {
           show_list: !!q.show_list,
           catalog_id: q.catalog_id === null ? null : q.catalog_id,
         }));
-        console.log(`Cargando preguntas del panel ${panelId} desde almacenamiento local`);
         dispatch(onLoadQuestions(mappedQuestions));
         dispatch(onSetErrorMessage(null));
         return { payload: mappedQuestions };;

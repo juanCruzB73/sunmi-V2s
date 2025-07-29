@@ -25,7 +25,7 @@ const TYPES = {
 type Question = {
   type: keyof typeof TYPES;
   label: string;
-  options?: IQuestionOption[]; // for radio, check, select
+  options?: IQuestionOption[];
   value?: any;
   onChange: (value: any) => void;
   onPressFunction?:(value: any) => void;
@@ -65,8 +65,8 @@ export default function QuestionInput({ question }: { question: Question }) {
           {options.map((option) => (
             <View key={option.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Switch
-                value={value === option}
-                onValueChange={() => {onChange(option);onPressFunction&&onPressFunction(option.panel_id)}}
+                value={value === option.name}
+                onValueChange={() => {onChange(option.name);onPressFunction&&onPressFunction(option.panel_id)}}
               />
               <Text>{option.name}</Text>
             </View>

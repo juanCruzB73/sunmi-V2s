@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { TopBar } from '../../components/top-bar/TopBar';
 import CommerceButton from '../../components/commerce/CommerceButton';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -11,6 +11,7 @@ import { IQuestion } from '../../types/form/IQuestion';
 import { startLoadQuestions } from '../../redux/slices/question/questionThunk';
 import { onLoadQuestions } from '../../redux/slices/question/questionSlice';
 import { startGetClaims } from '../../redux/slices/claims/claimThunk';
+import { onSetActiveClaim } from '../../redux/slices/claims/claimSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimMenu'>;
 
@@ -52,7 +53,7 @@ const ClaimMenu = ({ navigation }: Props) => {
       <TopBar navigation={navigation} />
       <LinearGradient colors={['#f2f6fc', '#dde9f7']} style={styles.gradient}>
         <View style={styles.container}>
-          <CommerceButton label={`Generar ${activeForm?.name}`} onPress={()=>{getQuestions();navigation.navigate('DisplayQuestions')}} />
+          <CommerceButton label={`Generar ${activeForm?.name}`} onPress={()=>{getQuestions();dispatch(onSetActiveClaim(null));navigation.navigate('DisplayQuestions')}} />
           <CommerceButton label={`Listar  ${activeForm?.name}`} onPress={()=>navigation.navigate('ClaimSearcher')} />
         </View>
       </LinearGradient>

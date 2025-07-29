@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL5 } from '@env';
+import { API_BASE_URL7 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
 import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
@@ -34,7 +34,7 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
-            const response = await fetch(`${API_BASE_URL5}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
+            const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, claim);
@@ -54,7 +54,9 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(onCheckingClaims());
+      
       const db = await getDBConnection();
+      
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
       const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
@@ -67,37 +69,23 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
         ...setTokenHeader(tokenData),
         'Content-Type': 'application/json',
       };
+      
+      console.log(`${API_BASE_URL7}/api/v1/forms/visible/claims`);
+      console.log(headers);
 
-      const response = await fetch(`${API_BASE_URL5}/api/v1/forms/visible/claims`, {
+      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims`, {
         method: 'POST',
         headers,
         body: JSON.stringify(inClaim),
       });
-
-      const responseText = await response.text();
-
-      let parsedResponse: any;
-      try {
-        parsedResponse = JSON.parse(responseText);
-      } catch (e) {
-        console.error("Failed to parse JSON:", e);
-        dispatch(onSetErrorMessage("Respuesta del servidor no válida"));
-        return;
+      if(response.ok){
+        console.log("ERROR ON POST CLAIM");
       }
-      //await insertClaim()
-      if (!response.ok || parsedResponse?.msg === "error creating claim") {
-        console.error("Error creating claim:", parsedResponse.errors || parsedResponse.msg);
-        dispatch(
-          onSetErrorMessage(
-            parsedResponse.errors?.join(" | ") || parsedResponse.msg || "Error desconocido"
-          )
-        );
-        return;
-      }
-
-      dispatch(onAddClaim(parsedResponse.claim));
-      dispatch(onSetActiveClaim(parsedResponse.claim));
+      const data= await response.json();
+      dispatch(onAddClaim(data));
+      dispatch(onSetActiveClaim(data));
       dispatch(onSetErrorMessage(null));
+      return;
     } catch (error) {
       console.error("Network or unexpected error:", error);
       dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
@@ -123,35 +111,18 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL5}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
+      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
       });
 
-      const responseText = await response.text();
+      const data = await response.json();
 
-      let parsedResponse: any;
-      try {
-        parsedResponse = JSON.parse(responseText);
-      } catch (e) {
-        console.error("Failed to parse JSON:", e);
-        dispatch(onSetErrorMessage("Respuesta del servidor no válida"));
-        return;
-      }
-
-      if (!response.ok || parsedResponse?.msg === "error creating claim") {
-        console.error("Error creating claim:", parsedResponse.errors || parsedResponse.msg);
-        dispatch(
-          onSetErrorMessage(
-            parsedResponse.errors?.join(" | ") || parsedResponse.msg || "Error desconocido"
-          )
-        );
-        return;
-      }
-      dispatch(onEditClaim({...parsedResponse,id:inClaim.claim.id}));
-      dispatch(onSetActiveClaim(parsedResponse.claim));
+      dispatch(onEditClaim({...data,id:inClaim.claim.id}));
+      dispatch(onSetActiveClaim(data.claim));
       dispatch(onSetErrorMessage(null));
+      return;
     } catch (error) {
       console.error("Network or unexpected error:", error);
       dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
@@ -177,7 +148,7 @@ export const startDeleteClaim=(claimId:number)=>{
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL5}/api/v1/forms/visible/claims/${claimId}`, {
+      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims/${claimId}`, {
         method: 'DELETE',
         headers,
       });

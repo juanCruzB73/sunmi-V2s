@@ -18,8 +18,6 @@ const HomeScreen = ({ navigation }: Props) => {
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
-      console.log('Connection type:', state.type);
-      console.log('Is connected?', state.isConnected);
       setIsConnected(state.isConnected);
     });
 
@@ -38,7 +36,6 @@ const HomeScreen = ({ navigation }: Props) => {
       dispatch(startLoadForms());
     }
     getForms();
-    console.log(forms)
   },[])
 
   return (

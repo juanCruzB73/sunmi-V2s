@@ -7,7 +7,6 @@ import { Form, insertForm } from "../../../localDB/forms/forms";
 
 export const saveFormOffline = async (form: Form): Promise<void> => {
   const db = await getDBConnection();
-  console.log("Saving form: ", form);
   await insertForm(db, form);
 };
 
@@ -36,7 +35,6 @@ export const startOfflineForms=()=>{
     return async(dispatch: AppDispatch) =>{
 
         const offlineForms = await getOfflineForms();
-        console.log(offlineForms);
 
         const mappedForms: IForm[] = offlineForms.map(form => ({
           id: form.id,
@@ -51,7 +49,6 @@ export const startOfflineForms=()=>{
           visible_app: true,
           question: []
         }));
-        console.log(mappedForms);
         dispatch(onLoadForms(mappedForms));
         dispatch(onSetErrorMessage("Cargando formularios desde almacenamiento local"));
         return;
