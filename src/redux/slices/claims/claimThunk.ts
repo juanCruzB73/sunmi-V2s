@@ -39,6 +39,7 @@ export const startGetClaims=(formId:number)=>{
             for (const claim of data) {
               await insertClaim(db, claim);
             };
+            
             dispatch(onLoadClaims(data));
             onSetErrorMessage(null);
         }catch(error){
