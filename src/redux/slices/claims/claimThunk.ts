@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppDispatch } from "../../store";
-import { API_BASE, API_BASE_URL } from '@env';
+import { API, API_BASE, API_BASE_URL } from '@env';
 
 import { IAuthToken } from "../../../types/IAuthToken";
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
@@ -12,16 +12,19 @@ import {
   onDeleteClaim,
   onLoadClaims,
   onSetActiveClaim,
-  onSetErrorMessage
+  onSetErrorMessage,
+  onIsMofified
 } from "./claimSlice";
 
 import {
   insertClaim,
   deleteClaim,
   createClaimsTable,
-  dropClaimsTable} from "../../../localDB/claims/claims";
+  dropClaimsTable,
+  updateClaim} from "../../../localDB/claims/claims";
 
 import { getDBConnection } from "../../../localDB/db";
+import { IClaim } from "../../../types/claims/IClaim";
 
 // 🛡️ Header token builder
 const setTokenHeader = (tokenData: IAuthToken) => ({
@@ -52,7 +55,7 @@ export const startGetClaims = (formId: number) => {
       };
 
       const headers = setTokenHeader(tokenData);
-      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}/claims`, {
+      const response = await fetch(`${API_BASE}/api/v1/forms/visible/${formId}/claims`, {
         headers
       });
 
@@ -83,7 +86,6 @@ export const startLocalDeleteClaim = (claimId: number) => {
 };
 
 
-// 🧾 Crear reclamo desde la app (online)
 export const startAddClaim = (inClaim: ICreateEditClaim) => {
   return async (dispatch: AppDispatch) => {
     try {
@@ -98,10 +100,10 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
       };
 
       const headers = setTokenHeader(tokenData);
-      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims`, {
+      const response = await fetch(`${API_BASE}/api/v1/forms/visible/claims`, {
         method: 'POST',
         headers,
-        body: JSON.stringify(inClaim)
+        body: JSON.stringify(inClaim),
       });
 
       const responseText = await response.text();
@@ -120,12 +122,30 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
         return;
       }
 
+      const db = await getDBConnection();
+      await insertClaim(db, parsedResponse.claim); // ✅ Guardar en SQLite
+
       dispatch(onAddClaim(parsedResponse.claim));
       dispatch(onSetActiveClaim(parsedResponse.claim));
       dispatch(onSetErrorMessage(null));
     } catch (error) {
       console.error("❌ Error en startAddClaim:", error);
       dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
+    }
+  };
+};
+// ✏️ Editar reclamo localmente (SQLite + Redux)
+export const startUpdateClaimLocal = (claim: IClaim) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      const db = await getDBConnection();
+      await updateClaim(db, claim);        // 💾 Actualiza en SQLite
+      dispatch(onEditClaim(claim));        // 🔁 Actualiza estado en Redux
+      dispatch(onIsMofified(true)); // 🔄 Marca como modificad o
+      
+    } catch (error) {
+      console.error("❌ Error al editar reclamo local:", error);
+      dispatch(onSetErrorMessage("No se pudo editar el reclamo local"));
     }
   };
 };

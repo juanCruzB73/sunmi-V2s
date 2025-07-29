@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, act } from "react";
 import {
   StyleSheet,
   TextInput,
   Pressable,
   View,
   FlatList,
-  
+  Text,
+  Dimensions,
 } from "react-native";
 import { TopBar } from "../../components/top-bar/TopBar";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -21,10 +22,28 @@ type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;
 
 const ClaimSearcher = ({ navigation }: Props) => {
   const [searchInput, setSearchInput] = useState("");
-  const { claims } = useSelector((state: RootState) => state.claim);
+  const { claims, isModified } = useSelector((state: RootState) => state.claim);
+  const [showFloatingMessage, setShowFloatingMessage] = useState(false); // ✅ NUEVO
+
+  // ✅ Mostrar mensaje al volver de edición
+  useEffect(() => {
+    console.log("isModified:", isModified);
+    if (isModified) {
+
+      setShowFloatingMessage(true);
+      const timer = setTimeout(() => setShowFloatingMessage(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [isModified]);
 
   return (
     <>
+      {showFloatingMessage && (
+        <View style={styles.toast}>
+          <Text style={styles.toastText}>Modificación exitosa ✅</Text>
+        </View>
+      )}
+
       <TopBar navigation={navigation} />
       <LinearGradient colors={["#f1f5fa", "#d8e4f4"]} style={styles.gradient}>
         <View style={styles.container}>
@@ -46,20 +65,21 @@ const ClaimSearcher = ({ navigation }: Props) => {
             )}
           </View>
 
-      <FlatList
-  data={claims.filter((item) => item && item.id != null)}
-  keyExtractor={(item, index) => item?.id?.toString() ?? index.toString()}
-  contentContainerStyle={styles.list}
-  renderItem={({ item }) =>
-    item ? <InfoCard claim={item} /> : null
-  }
-/>
+          <FlatList
+            data={claims.filter((item) => item && item.id != null)}
+            keyExtractor={(item, index) => item?.id?.toString() ?? index.toString()}
+            contentContainerStyle={styles.list}
+            renderItem={({ item }) =>
+              item ? <InfoCard claim={item} /> : null
+            }
+          />
         </View>
       </LinearGradient>
     </>
   );
 };
 
+const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   gradient: {
@@ -91,6 +111,20 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: 12,
+  },
+  toast: {
+    position: 'absolute',
+    top: 20,
+    left: width / 2 - 150,
+    width: 300,
+    backgroundColor: '#323232',
+    padding: 10,
+    borderRadius: 8,
+    zIndex: 999,
+  },
+  toastText: {
+    color: '#fff',
+    textAlign: 'center',
   },
 });
 

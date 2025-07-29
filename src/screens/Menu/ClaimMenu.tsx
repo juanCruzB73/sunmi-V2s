@@ -14,6 +14,7 @@ import { startOfflineQuestions } from '../../redux/slices/offline/questionsOffli
 import { onLoadQuestions } from '../../redux/slices/question/questionSlice';
 import NetInfo from '@react-native-community/netinfo';
 import { startGetClaims } from '../../redux/slices/claims/claimThunk';
+import { onSetActiveClaim } from '../../redux/slices/claims/claimSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimMenu'>;
 
@@ -67,7 +68,7 @@ const ClaimMenu = ({ navigation }: Props) => {
       <LinearGradient colors={['#f2f6fc', '#dde9f7']} style={styles.gradient}>
         <View style={styles.container}>
           <CommerceButton label={`Generar ${activeForm?.name}`} onPress={()=>{getQuestions();navigation.navigate('DisplayQuestions')}} />
-          <CommerceButton label={`Listar  ${activeForm?.name}`} onPress={()=>navigation.navigate('ClaimSearcher')} />
+          <CommerceButton label={`Listar  ${activeForm?.name}`} onPress={()=>{navigation.navigate('ClaimSearcher');dispatch(onSetActiveClaim(null))}} />
         </View>
       </LinearGradient>
     </>

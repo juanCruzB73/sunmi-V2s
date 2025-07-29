@@ -21,7 +21,7 @@ export type RootStackParamList = {
   Home: undefined;
   ClaimMenu: undefined;
   VehicleScreen: undefined;
-  ClaimSearcher: undefined;
+  ClaimSearcher: { updated?: boolean }; // ✅ APLICADO
   ForgetPassword: undefined;
   Printing: undefined;
   CommerceFineModal: undefined;
@@ -32,8 +32,8 @@ export type RootStackParamList = {
   ClaimScreen: undefined;
   VehicleSearcher: undefined;
   TestDbScreen: undefined;
-  DisplayForms:undefined;
-  DisplayQuestions:undefined;
+  DisplayForms: undefined;
+  DisplayQuestions: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

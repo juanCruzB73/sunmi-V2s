@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
 import { AppDispatch } from "../../store";
 import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
-import {API_BASE_URL } from '@env';
+import {API_BASE, API_BASE_URL } from '@env';
 import { getDBConnection } from "../../../localDB/db";
 import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
 

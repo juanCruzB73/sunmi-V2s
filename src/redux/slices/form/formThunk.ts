@@ -5,7 +5,7 @@ import { onCheckingForms, onLoadForms, onSetErrorMessage } from './formSlice';
 import { getDBConnection } from '../../../localDB/db';
 
 import { saveFormOffline, startOfflineForms } from './offlineFormThunk';
-import { API_BASE_URL } from '@env';
+import { API_BASE, API_BASE_URL } from '@env';
 import { insertQuestionWithOptions } from '../../../localDB/questions/questions';
 
 
@@ -33,7 +33,7 @@ export const startLoadForms = () => {
         uid: tokenObject['uid'] ?? '',
       };
       const headers = setTokenHeader(tokenData);
-      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible`, { headers: headers });
+      const response = await fetch(`${API_BASE}/api/v1/forms/visible`, { headers: headers });
       if(response.ok){
         const data = await response.json();
 

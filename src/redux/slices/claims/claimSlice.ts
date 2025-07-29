@@ -3,6 +3,7 @@ import { IClaim } from "../../../types/claims/IClaim";
 
 export interface IClaimState {
   isSavingClaims: boolean;
+  isModified: boolean;
   claims: IClaim[];
   errorMessage: string | null;
   activeClaim: IClaim | null;
@@ -10,6 +11,7 @@ export interface IClaimState {
 
 const initialState: IClaimState = {
   isSavingClaims: false,
+  isModified: false,
   claims: [],
   errorMessage: null,
   activeClaim: null
@@ -44,6 +46,9 @@ const claimSlice = createSlice({
       state.activeClaim = action.payload;
       state.isSavingClaims = false;
     },
+    onIsMofified: (state, action: PayloadAction<boolean>) => {
+      state.isModified = action.payload;
+    },
     onSetErrorMessage: (state, action: PayloadAction<string | null>) => {
       state.errorMessage = action.payload;
     }
@@ -57,7 +62,9 @@ export const {
   onEditClaim,
   onDeleteClaim,
   onSetActiveClaim,
-  onSetErrorMessage
+  onSetErrorMessage,
+  onIsMofified
+  
 } = claimSlice.actions;
 
 export default claimSlice.reducer;

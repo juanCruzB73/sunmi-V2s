@@ -18,8 +18,9 @@ interface ICardProps {
 
 const InfoCard: FC<ICardProps> = ({ claim }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
   const dispatch = useDispatch<AppDispatch>();
+
+
 
   /*const handlePrint = async () => {
     navigation.navigate('Printing');

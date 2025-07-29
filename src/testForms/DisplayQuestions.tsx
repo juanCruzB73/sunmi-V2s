@@ -11,6 +11,7 @@ import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThun
 import { startOfflineQuestionsByPanel } from '../redux/slices/offline/questionsOffline';
 import NetInfo from '@react-native-community/netinfo';
 import { startAddClaim, startEditClaim } from '../redux/slices/claims/claimThunk';
+import { onIsMofified } from '../redux/slices/claims/claimSlice';
 
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayQuestions'>;
@@ -26,6 +27,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     const [answers, setAnswers] = useState<Record<number, any>>({});
     const [optionSelected, setOptionSelected] = useState<number|null>(null);
 
+    
 
 
     const handleChange = (questionId: number, newValue: any) => {
@@ -105,8 +107,8 @@ export const DisplayQuestions = ({ navigation }: Props) => {
 
     if (!activeClaim) dispatch(startAddClaim(data));
     if (activeClaim) dispatch(startEditClaim(data));
-    navigation.navigate('ClaimSearcher');
-  };
+    dispatch(onIsMofified(true));
+navigation.navigate('ClaimSearcher', { updated: true });  };
 
 
     useEffect(() => {
