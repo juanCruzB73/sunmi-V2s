@@ -1,7 +1,6 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { IAnswer } from '../../types/claims/IAnswer';
 
-//  Crea la tabla 'answers' en SQLite si no existe
 export const createAnswersTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
     CREATE TABLE IF NOT EXISTS answers (
@@ -27,10 +26,9 @@ export const createAnswersTable = async (db: SQLiteDatabase): Promise<void> => {
       isSynced INTEGER DEFAULT 0
     );
   `;
-  await db.executeSql(query); //  Ejecuta la creación de tabla
+  await db.executeSql(query);
 };
 
-// 📥 Inserta o reemplaza una respuesta en la base local
 export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise<void> => {
   try{
     const query = `
@@ -86,7 +84,7 @@ export const getUnsyncedAnswers = async (db: SQLiteDatabase): Promise<IAnswer[]>
       input_text: row.input_text,
       input_date: row.input_date,
       input_datetime: row.input_datetime,
-      options: JSON.parse(row.options), //  Convierte opciones nuevamente a objeto
+      options: JSON.parse(row.options),
       latitude: row.latitude,
       longitude: row.longitude,
       item_id: row.item_id,
@@ -100,12 +98,12 @@ export const getUnsyncedAnswers = async (db: SQLiteDatabase): Promise<IAnswer[]>
       created_at: row.created_at,
       updated_at: row.updated_at,
       tag: row.tag,
-      question: {} as any, //  Placeholder por si querés cargar la pregunta asociada
-      isSynced: row.isSynced === 1 //  Convierte a booleano
+      question: {} as any,
+      isSynced: row.isSynced === 1
     });
   }
 
-  return answers; // Devuelve el array de respuestas pendientes
+  return answers;
 };
 
 export const getAnswersByClaimId = async (

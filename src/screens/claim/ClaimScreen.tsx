@@ -15,6 +15,9 @@ import { AppDispatch, RootState } from '../../redux/store';
 import { IAnswer } from '../../types/claims/IAnswer';
 import { startLoadQuestionsByPanel } from '../../redux/slices/question/questionThunk';
 import { startDeleteClaim } from '../../redux/slices/claims/claimThunk';
+import { IClaim } from '../../types/claims/IClaim';
+import { unSyncedClaim } from '../../types/unSyncedClaim';
+import { unSyncedAnswer } from '../../types/unSyncedAnswer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimScreen'>;
 
@@ -25,16 +28,19 @@ export const ClaimScreen = ({ navigation }: Props) => {
 
   const dispatch = useDispatch<AppDispatch>();
   
+  function isIClaim(claim: IClaim | unSyncedClaim): claim is IClaim {
+    return (claim as IClaim).answers !== undefined;
+  }
+
   if (!activeClaim)return<><TopBar navigation={navigation} /><Text>No se selecciono Solicitud</Text></>
   if (!activeForm)return<><TopBar navigation={navigation} /><Text>No se selecciono Formulario</Text></>
   
   const handleClickEdit=()=>{
-    dispatch(startLoadQuestionsByPanel(activeForm!.id,activeClaim.main_panel_id));
+    if(isIClaim(activeClaim))dispatch(startLoadQuestionsByPanel(activeForm!.id,activeClaim.main_panel_id));
   };
 
   const handleDeleteClaim=()=>{
-    console.log(activeClaim)
-    dispatch(startDeleteClaim(activeClaim.id))
+    if(isIClaim(activeClaim))dispatch(startDeleteClaim(activeClaim.id))
   };
   
   return (
@@ -45,9 +51,18 @@ export const ClaimScreen = ({ navigation }: Props) => {
           <Text style={styles.title}>Datos de solicitud</Text>
 
           <View style={styles.card}>
-            {activeClaim.answers.map((answer:IAnswer)=>(
-              <Text>{answer.question.name}: {answer.input_string}</Text>
-            ))}
+            {isIClaim(activeClaim)
+              ? activeClaim.answers.map((answer: IAnswer) => (
+                  <Text key={answer.id}>
+                    {answer.question?.name ?? 'Pregunta sin nombre'}: {answer.input_string}
+                  </Text>
+                ))
+              : activeClaim.answers_attributes.map((answer: unSyncedAnswer, index) => (
+                  <Text key={index}>
+                    Pregunta {answer.question_id}: {answer.input_string}
+                  </Text>
+                ))
+            }
           </View>
 
           <View style={styles.buttonRow}>

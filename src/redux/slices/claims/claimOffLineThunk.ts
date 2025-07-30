@@ -1,4 +1,5 @@
 import { getAnswersByClaimId } from "../../../localDB/claims/answers";
+import { getOfflineUnsyncedClaims } from "../../../localDB/claims/unSyncedClaim";
 import { getDBConnection } from "../../../localDB/db";
 import { IClaim } from "../../../types/claims/IClaim";
 import { AppDispatch } from "../../store";
@@ -12,11 +13,24 @@ export const getOfflineClaims = async (): Promise<IClaim[]> => {
   const claims: IClaim[] = [];
 
   for (let i = 0; i < rows.length; i++) {
-    
     const claimRow = rows.item(i);
-    console.log(claimRow);
     const answers = await getAnswersByClaimId(db, claimRow.id);
-    console.log("asdw",answers)
+
+    for (let j = 0; j < answers.length; j++) {
+      const param = answers[j].question_id;
+      const questionResult = await db.executeSql(`SELECT * FROM questions WHERE id=?;`, [param]);
+
+      const questionRows = questionResult[0].rows;
+
+      if (questionRows.length > 0) {
+        const question = questionRows.item(0);
+        answers[j] = {
+          ...answers[j],
+          question,
+        };
+      }
+    }
+    
     claims.push({
       ...claimRow,
       answers
@@ -29,8 +43,6 @@ export const getOfflineClaims = async (): Promise<IClaim[]> => {
 export const startOfflineClaims=()=>{  
     return async(dispatch: AppDispatch) =>{
         const offlineClaims = await getOfflineClaims();
-        console.log("claim offline",offlineClaims);
-
         const mappedClaims: IClaim[] = offlineClaims.map(claim => ({
             id: claim.id,
             status: claim.status,
@@ -53,8 +65,12 @@ export const startOfflineClaims=()=>{
             answers: claim.answers || [],
             main_panel_id: claim.main_panel_id || 0
         }));
-        console.log("claims mapped correctly");
-        dispatch(onLoadClaims(mappedClaims));
+        const unsycedClaims=await getOfflineUnsyncedClaims();
+        console.log("claim unsycedClaims",unsycedClaims);
+        const allClaims=[...unsycedClaims,...mappedClaims]
+        console.log(allClaims);
+        console.log(allClaims);
+        dispatch(onLoadClaims(allClaims));
         dispatch(onSetErrorMessage("Cargando claims desde almacenamiento local"));
         return;
     }
