@@ -1,30 +1,29 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { IClaim } from '../../types/claims/IClaim';
-import { getDBConnection } from '../db';
 
 export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
-    await db.executeSql(`
-      CREATE TABLE IF NOT EXISTS claims (
-        id INTEGER PRIMARY KEY NOT NULL,
-        status TEXT,
-        type TEXT,
-        date TEXT,
-        removed_at TEXT,
-        removed INTEGER,
-        reason TEXT,
-        user_id INTEGER,
-        removed_user_id INTEGER,
-        status_type_id INTEGER,
-        form_id INTEGER,
-        panel_id INTEGER,
-        incident_id INTEGER,
-        created_at TEXT,
-        updated_at TEXT,
-        area_id INTEGER,
-        isSynced INTEGER,
-        main_panel_id INTEGER
-      );
-    `);
+  const query = `
+    CREATE TABLE IF NOT EXISTS claims (
+      id INTEGER PRIMARY KEY NOT NULL,
+      status TEXT,
+      type TEXT,
+      date TEXT,
+      removed_at TEXT,
+      removed INTEGER,
+      reason TEXT,
+      user_id INTEGER,
+      removed_user_id INTEGER,
+      status_type_id INTEGER,
+      form_id INTEGER,
+      incident_id INTEGER,
+      created_at TEXT,
+      updated_at TEXT,
+      area_id INTEGER,
+      isSynced INTEGER DEFAULT 0,
+      main_panel_id INTEGER
+    );
+  `;
+  await db.executeSql(query);
 };
 
 export const dropClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
@@ -33,14 +32,12 @@ export const dropClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
 };
 
 export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<void> => {
-  try {
-    const insertQuery = `
-      INSERT OR REPLACE INTO claims (
-        id, status, type, date, removed_at, removed, reason, user_id,
-        removed_user_id, status_type_id, form_id, panel_id, incident_id,
-        created_at, updated_at, area_id, isSynced, main_panel_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-    `;
+  const query = `
+    INSERT OR IGNORE INTO claims (
+      id, status, type, date, removed_at, removed, reason, user_id, removed_user_id,
+      status_type_id, form_id, incident_id, created_at, updated_at, area_id, isSynced, main_panel_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
 
   const params = [
     claim.id,
@@ -119,15 +116,17 @@ export const deleteClaim = async (db: SQLiteDatabase, claimId: number): Promise<
   await db.executeSql(query, [claimId]);
 };
 
-export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> => {
+export const getUnsyncedClaims = async (db: SQLiteDatabase) => {
   const results = await db.executeSql('SELECT * FROM claims WHERE isSynced = 0');
-  const rows: IClaim[] = [];
 
-  for (let i = 0; i < results[0].rows.length; i++) {
+  // `results` is usually an array of [ResultSet], need to extract rows
+  const rows: IClaim[] = [];
+  const len = results[0].rows.length;
+  for (let i = 0; i < len; i++) {
     rows.push(results[0].rows.item(i));
   }
 
-  return rows.map((claim: any) => ({
+  const mappedUnsyncedClaims: IClaim[] = rows.map((claim: any) => ({
     id: claim.id,
     status: claim.status,
     panel_id: claim.panel_id,
@@ -148,4 +147,6 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> =
     answers: claim.answers,
     main_panel_id: claim.main_panel_id,
   }));
+
+  return mappedUnsyncedClaims;
 };

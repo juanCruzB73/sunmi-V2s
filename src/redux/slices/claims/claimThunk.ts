@@ -1,56 +1,31 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL7 } from '@env';
+import { API_BASE_URL, API_BASE_URL7 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
-
-import {
-  onCheckingClaims,
-  onAddClaim,
-  onEditClaim,
-  onDeleteClaim,
-  onLoadClaims,
-  onSetActiveClaim,
-  onSetErrorMessage,
-  onIsMofified
-} from "./claimSlice";
-
-import {
-  insertClaim,
-  deleteClaim,
-  createClaimsTable,
-  dropClaimsTable,
-  updateClaim} from "../../../localDB/claims/claims";
-
+import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
-import { startOfflineClaims } from "./claimOffLineThunk";
-import NetInfo from '@react-native-community/netinfo';
-import { insertAnswer } from "../../../localDB/claims/answers";
-import { IClaim } from "../../../types/claims/IClaim";
-import { IAuthToken } from "../../../types/IAuthToken";
 
-// 🛡️ Header token builder
-const setTokenHeader = (tokenData: IAuthToken) => ({
-  "access-token": tokenData.accessToken ?? "",
-  "client": tokenData.client ?? "",
-  "uid": tokenData.uid ?? "",
-  "token-type": "Bearer",
-  "Accept": "*/*",
-  "Content-Type": "application/json"
-});
+const setTokenHeader = (tokenData: IAuthToken) => {
+  const headers = {
+    "access-token": tokenData.accessToken ?? "",
+    "client": tokenData.client ?? "",
+    "uid": tokenData.uid ?? "",
+    "token-type": "Bearer",
+    "Accept": "*/*",
+    'Content-Type': 'application/json'
+  };
+  return headers;
+};
 
 export const startGetClaims=(formId:number)=>{
     return async (dispatch: AppDispatch) =>{
-      const netState = await NetInfo.fetch();
-      const db = await getDBConnection();
-      await dropClaimsTable(db); 
-      await createClaimsTable(db); 
-
-      createClaimsTable(db);
-      if (netState.isConnected){
         try{
+            const db = await getDBConnection();
             dispatch(onCheckingClaims());
-            
+            await dropClaimsTable(db);
+            await createClaimsTable(db);
             const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
             const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
             const tokenData: IAuthToken = {
@@ -59,41 +34,21 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
-            const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
+            const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, claim);
-              if(claim.answers.length){
-                for (const answer of claim.answers) {
-                  console.log(answer);
-                  await insertAnswer(db,answer);
-                }
-              }
             };
+            dispatch(onLoadClaims(data));
+            onSetErrorMessage(null);
         }catch(error){
             const message = error instanceof Error ? error.message : String(error);
             console.log(message);
             dispatch(onSetErrorMessage("Error al cargar formularios"));
+            return false;
         }
-      }
-      await dispatch(startOfflineClaims());
-      dispatch(onSetErrorMessage(null));
-      return; 
     }
-  };
 };
-export const startLocalDeleteClaim = (claimId: number) => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      const db = await getDBConnection();
-      await deleteClaim(db, claimId);
-      dispatch(onDeleteClaim(claimId));
-    } catch (error) {
-      console.error("❌ Error al eliminar reclamo local:", error);
-    }
-  };
-};
-
 
 export const startAddClaim = (inClaim: ICreateEditClaim) => {
   return async (dispatch: AppDispatch) => {
@@ -103,11 +58,11 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
       const db = await getDBConnection();
       
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-      const tokenObject = Object.fromEntries(values);
+      const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
         accessToken: tokenObject['access-token'] ?? '',
         client: tokenObject['client'] ?? '',
-        uid: tokenObject['uid'] ?? ''
+        uid: tokenObject['uid'] ?? '',
       };
 
       const headers = {
@@ -116,6 +71,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
       };
       
       console.log(`${API_BASE_URL7}/api/v1/forms/visible/claims`);
+      console.log(headers);
 
       const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims`, {
         method: 'POST',
@@ -126,45 +82,28 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
         console.log("ERROR ON POST CLAIM");
       }
       const data= await response.json();
-      await insertClaim(db,data)
       dispatch(onAddClaim(data));
       dispatch(onSetActiveClaim(data));
       dispatch(onSetErrorMessage(null));
       return;
     } catch (error) {
-      console.error("❌ Error en startAddClaim:", error);
+      console.error("Network or unexpected error:", error);
       dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
     }
   };
 };
-// ✏️ Editar reclamo localmente (SQLite + Redux)
-export const startUpdateClaimLocal = (claim: IClaim) => {
-  return async (dispatch: AppDispatch) => {
-    try {
-      const db = await getDBConnection();
-      await updateClaim(db, claim);        // 💾 Actualiza en SQLite
-      dispatch(onEditClaim(claim));        // 🔁 Actualiza estado en Redux
-      dispatch(onIsMofified(true)); // 🔄 Marca como modificad o
-      
-    } catch (error) {
-      console.error("❌ Error al editar reclamo local:", error);
-      dispatch(onSetErrorMessage("No se pudo editar el reclamo local"));
-    }
-  };
-};
 
-// ✏️ Editar reclamo (online)
 export const startEditClaim = (inClaim: ICreateEditClaim) => {
   return async (dispatch: AppDispatch) => {
     try {
       dispatch(onCheckingClaims());
 
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-      const tokenObject = Object.fromEntries(values);
+      const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
         accessToken: tokenObject['access-token'] ?? '',
         client: tokenObject['client'] ?? '',
-        uid: tokenObject['uid'] ?? ''
+        uid: tokenObject['uid'] ?? '',
       };
 
       const headers = {
@@ -175,36 +114,33 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
       const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
-        body: JSON.stringify(inClaim)
+        body: JSON.stringify(inClaim),
       });
 
       const data = await response.json();
-      
+
       dispatch(onEditClaim({...data,id:inClaim.claim.id}));
       dispatch(onSetActiveClaim(data.claim));
       dispatch(onSetErrorMessage(null));
       return;
     } catch (error) {
-      console.error("❌ Error en startEditClaim:", error);
-      dispatch(onSetErrorMessage("Error inesperado al editar el reclamo"));
+      console.error("Network or unexpected error:", error);
+      dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
     }
   };
 };
 
-// 🗑️ Eliminar reclamo (API + SQLite)
-export const startDeleteClaim = (claimId: number) => {
-  return async (dispatch: AppDispatch) => {
+export const startDeleteClaim=(claimId:number)=>{
+  return async (dispatch: AppDispatch) =>{
     try {
       dispatch(onCheckingClaims());
-
       const db = await getDBConnection();
-
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-      const tokenObject = Object.fromEntries(values);
+      const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
         accessToken: tokenObject['access-token'] ?? '',
         client: tokenObject['client'] ?? '',
-        uid: tokenObject['uid'] ?? ''
+        uid: tokenObject['uid'] ?? '',
       };
 
       const headers = {
@@ -212,24 +148,22 @@ export const startDeleteClaim = (claimId: number) => {
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims/${claimId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${claimId}`, {
         method: 'DELETE',
-        headers
+        headers,
       });
 
-      await deleteClaim(db, claimId);
+      await deleteClaim(db,claimId);
 
-      if (!response.ok) {
-        console.log("❌ Error al borrar claim desde API");
+      if(!response.ok){
+        console.log("error borrando claim");
         return;
-      }
-
+      } 
       dispatch(onDeleteClaim(claimId));
-      dispatch(onSetActiveClaim(null));
       dispatch(onSetErrorMessage(null));
     } catch (error) {
-      console.error("❌ Error inesperado en startDeleteClaim:", error);
-      dispatch(onSetErrorMessage("No se pudo eliminar el reclamo"));
+      console.error("Network or unexpected error:", error);
+      dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
     }
-  };
-};
+  }
+}

@@ -7,6 +7,7 @@ import {
   Pressable,
   Modal
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo"; // ✅ Agregalo acá
 import { TopBar } from '../../components/top-bar/TopBar';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
@@ -16,6 +17,7 @@ import { AppDispatch, RootState } from '../../redux/store';
 import { IAnswer } from '../../types/claims/IAnswer';
 import { startLoadQuestionsByPanel } from '../../redux/slices/question/questionThunk';
 import { startDeleteClaim, startLocalDeleteClaim } from '../../redux/slices/claims/claimThunk'; // ✅
+import { startOfflineDeleteClaim } from '../../redux/slices/claims/claimOffLineThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimScreen'>;
 
@@ -40,11 +42,20 @@ export const ClaimScreen = ({ navigation }: Props) => {
 
 
  
-const confirmDelete = () => {
-  dispatch(startDeleteClaim(activeClaim.id)); // 👈 ahora borra en API también
+
+const confirmDelete = async () => {
+  const state = await NetInfo.fetch();
+
+  if (state.isConnected) {
+    dispatch(startDeleteClaim(activeClaim.id)); // 🔗 Elimina vía API
+  } else {
+    dispatch(startOfflineDeleteClaim(activeClaim.id)); // 📱 Elimina localmente
+  }
+
   setConfirmVisible(false);
   navigation.navigate('ClaimSearcher');
 };
+
 
 
   return (

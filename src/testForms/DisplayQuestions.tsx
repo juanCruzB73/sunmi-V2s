@@ -9,6 +9,7 @@ import { IQuestion } from '../types/form/IQuestion';
 import QuestionInput from '../components/question-option/QuestionInput';
 import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThunk';
 import { startAddClaim, startEditClaim } from '../redux/slices/claims/claimThunk';
+import { onIsMofified } from '../redux/slices/claims/claimSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayQuestions'>;
 

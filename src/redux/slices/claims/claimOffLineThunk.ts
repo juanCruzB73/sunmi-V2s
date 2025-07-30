@@ -1,8 +1,11 @@
 import { getAnswersByClaimId } from "../../../localDB/claims/answers";
+import { deleteClaim } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
 import { IClaim } from "../../../types/claims/IClaim";
 import { AppDispatch } from "../../store";
-import { onLoadClaims, onSetErrorMessage } from "./claimSlice";
+import { onDeleteClaim, onLoadClaims, onSetErrorMessage } from "./claimSlice";
+import NetInfo from "@react-native-community/netinfo"; // ✅ Agregalo acá
+
 
 export const getOfflineClaims = async (): Promise<IClaim[]> => {
   const db = await getDBConnection();
@@ -25,7 +28,27 @@ export const getOfflineClaims = async (): Promise<IClaim[]> => {
   
   return claims;
 };
+export const startOfflineDeleteClaim = (claimId: number) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      const netState = await NetInfo.fetch();
 
+      if (netState.isConnected) {
+        console.log("Conectado a internet, omitiendo eliminación offline.");
+        return;
+      }
+
+      const db = await getDBConnection();
+      await deleteClaim(db, claimId);
+
+      dispatch(onDeleteClaim(claimId));
+      dispatch(onSetErrorMessage("Claim eliminado localmente sin conexión."));
+      } catch (error) {
+      console.error("Error al eliminar claim offline:", error);
+      dispatch(onSetErrorMessage("Error al eliminar claim desde la base de datos local."));
+    }
+  };
+}
 export const startOfflineClaims=()=>{  
     return async(dispatch: AppDispatch) =>{
         const offlineClaims = await getOfflineClaims();
@@ -57,5 +80,7 @@ export const startOfflineClaims=()=>{
         dispatch(onLoadClaims(mappedClaims));
         dispatch(onSetErrorMessage("Cargando claims desde almacenamiento local"));
         return;
+        
     }
+    
 }

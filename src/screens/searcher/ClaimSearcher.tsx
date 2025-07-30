@@ -26,11 +26,6 @@ const ClaimSearcher = ({ navigation }: Props) => {
  
   return (
     <>
-      {showFloatingMessage && (
-        <View style={styles.toast}>
-          <Text style={styles.toastText}>Modificación exitosa ✅</Text>
-        </View>
-      )}
 
       <TopBar navigation={navigation} />
       <LinearGradient colors={["#f1f5fa", "#d8e4f4"]} style={styles.gradient}>

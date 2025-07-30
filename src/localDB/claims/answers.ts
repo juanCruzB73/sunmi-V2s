@@ -1,7 +1,7 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { IAnswer } from '../../types/claims/IAnswer';
 
-// 🧱 Crea la tabla 'answers' si no existe
+//  Crea la tabla 'answers' en SQLite si no existe
 export const createAnswersTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
     CREATE TABLE IF NOT EXISTS answers (
@@ -27,53 +27,18 @@ export const createAnswersTable = async (db: SQLiteDatabase): Promise<void> => {
       isSynced INTEGER DEFAULT 0
     );
   `;
-  await db.executeSql(query);
+  await db.executeSql(query); //  Ejecuta la creación de tabla
 };
 
-// 🛠️ Asegura todas las columnas necesarias
-export const fixAnswersTableSchema = async (db: SQLiteDatabase): Promise<void> => {
-  const result = await db.executeSql('PRAGMA table_info(answers)');
-  const columns = result[0].rows.raw().map((col: { name: string }) => col.name);
-
-  const requiredColumns = [
-    { name: 'owner_type', type: 'TEXT' },
-    { name: 'owner_id', type: 'INTEGER' },
-    { name: 'isSynced', type: 'INTEGER DEFAULT 0' },
-    { name: 'input_string', type: 'TEXT' },
-    { name: 'input_text', type: 'TEXT' },
-    { name: 'input_date', type: 'TEXT' },
-    { name: 'input_datetime', type: 'TEXT' },
-    { name: 'options', type: 'TEXT' },
-    { name: 'latitude', type: 'REAL' },
-    { name: 'longitude', type: 'REAL' },
-    { name: 'item_id', type: 'INTEGER' },
-    { name: 'person_id', type: 'INTEGER' },
-    { name: 'address_id', type: 'INTEGER' },
-    { name: 'answerable_type', type: 'TEXT' },
-    { name: 'answerable_id', type: 'INTEGER' },
-    { name: 'created_at', type: 'TEXT' },
-    { name: 'updated_at', type: 'TEXT' },
-    { name: 'tag', type: 'TEXT' } // ✅ Agregada aquí
-  ];
-
-  for (const col of requiredColumns) {
-    if (!columns.includes(col.name)) {
-      await db.executeSql(`ALTER TABLE answers ADD COLUMN ${col.name} ${col.type}`);
-      console.log(`🛠️ Columna ${col.name} agregada`);
-    }
-  }
-};
-
-// 📥 Inserta o reemplaza una respuesta
+// 📥 Inserta o reemplaza una respuesta en la base local
 export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise<void> => {
-  try{
-    const query = `
-      INSERT OR REPLACE INTO answers (
-        id, input_string, input_text, input_date, input_datetime, options, latitude, longitude,
-        item_id, person_id, address_id, question_id, owner_type, owner_id, answerable_type,
-        answerable_id, created_at, updated_at, tag, isSynced
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-    `;
+  const query = `
+    INSERT OR REPLACE INTO answers (
+      id, input_string, input_text, input_date, input_datetime, options, latitude, longitude,
+      item_id, person_id, address_id, question_id, owner_type, owner_id, answerable_type,
+      answerable_id, created_at, updated_at, tag, isSynced
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
 
   const params = [
     answer.id,
@@ -105,8 +70,6 @@ export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise
 export const getUnsyncedAnswers = async (db: SQLiteDatabase): Promise<IAnswer[]> => {
   const results = await db.executeSql('SELECT * FROM answers WHERE isSynced = 0');
   const rows = results[0].rows;
-  console.log("🎯 Respuestas no sincronizadas:", rows.raw());
-
   const answers: IAnswer[] = [];
 
   for (let i = 0; i < rows.length; i++) {
@@ -117,7 +80,7 @@ export const getUnsyncedAnswers = async (db: SQLiteDatabase): Promise<IAnswer[]>
       input_text: row.input_text,
       input_date: row.input_date,
       input_datetime: row.input_datetime,
-      options: row.options ? JSON.parse(row.options) : [],
+      options: JSON.parse(row.options), //  Convierte opciones nuevamente a objeto
       latitude: row.latitude,
       longitude: row.longitude,
       item_id: row.item_id,
@@ -131,97 +94,10 @@ export const getUnsyncedAnswers = async (db: SQLiteDatabase): Promise<IAnswer[]>
       created_at: row.created_at,
       updated_at: row.updated_at,
       tag: row.tag,
-      question: {} as any,
-      isSynced: row.isSynced === 1
+      question: {} as any, //  Placeholder por si querés cargar la pregunta asociada
+      isSynced: row.isSynced === 1 //  Convierte a booleano
     });
   }
 
-  return answers;
-};
-
-// 🔗 Answers por claim
-export const getAnswersByClaimId = async (
-  db: SQLiteDatabase,
-  claimId: number
-): Promise<IAnswer[]> => {
-  const results = await db.executeSql(
-    'SELECT * FROM answers WHERE owner_type = "Claim" AND owner_id = ?',
-    [claimId]
-  );
-  const rows = results[0].rows;
-  console.log(`🔗 Respuestas para claim #${claimId}:`, rows.raw());
-
-  const answers: IAnswer[] = [];
-
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows.item(i);
-    answers.push({
-      id: row.id,
-      input_string: row.input_string,
-      input_text: row.input_text,
-      input_date: row.input_date,
-      input_datetime: row.input_datetime,
-      options: row.options ? JSON.parse(row.options) : [],
-      latitude: row.latitude,
-      longitude: row.longitude,
-      item_id: row.item_id,
-      person_id: row.person_id,
-      address_id: row.address_id,
-      question_id: row.question_id,
-      owner_type: row.owner_type,
-      owner_id: row.owner_id,
-      answerable_type: row.answerable_type,
-      answerable_id: row.answerable_id,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      tag: row.tag,
-      question: {} as any,
-      isSynced: row.isSynced === 1
-    });
-  }
-
-  return answers;
-};
-
-export const getAnswersByClaimId = async (
-  db: SQLiteDatabase,
-  claimId: number
-): Promise<IAnswer[]> => {
-  const results = await db.executeSql(
-  `SELECT * FROM answers WHERE answerable_id = ?`,
-  [claimId]
-);
-
-
-  const rows = results[0].rows;
-  const answers: IAnswer[] = [];
-
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows.item(i);
-    answers.push({
-      id: row.id,
-      input_string: row.input_string,
-      input_text: row.input_text,
-      input_date: row.input_date,
-      input_datetime: row.input_datetime,
-      options: JSON.parse(row.options || '[]'),
-      latitude: row.latitude,
-      longitude: row.longitude,
-      item_id: row.item_id,
-      person_id: row.person_id,
-      address_id: row.address_id,
-      question_id: row.question_id,
-      owner_type: row.owner_type,
-      owner_id: row.owner_id,
-      answerable_type: row.answerable_type,
-      answerable_id: row.answerable_id,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
-      tag: row.tag,
-      isSynced: row.isSynced === 1,
-      question: {} as any
-    });
-  }
-
-  return answers;
+  return answers; // Devuelve el array de respuestas pendientes
 };
