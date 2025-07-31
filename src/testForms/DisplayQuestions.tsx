@@ -27,6 +27,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     const [optionSelected, setOptionSelected] = useState<number|null>(null);
 
     const handleChange = (questionId: number, newValue: any) => {
+      console.log(answers);
       setAnswers((prev) => {
         if (activeClaim) {
           const existing = prev[questionId];
@@ -38,7 +39,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
               question_id: questionId
             }
           };
-        } else {
+        }else {
           return {
             ...prev,
             [questionId]: newValue

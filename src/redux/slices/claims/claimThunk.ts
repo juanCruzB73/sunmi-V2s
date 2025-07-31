@@ -9,10 +9,11 @@ import { getDBConnection } from "../../../localDB/db";
 import { startOfflineClaims, startOfflineDeleteClaim } from "./claimOffLineThunk";
 import NetInfo from '@react-native-community/netinfo';
 import { createAnswersTable, insertAnswer } from "../../../localDB/claims/answers";
-import { createUnsyncedClaimTable, insertUnsyncedClaim } from "../../../localDB/claims/unSyncedClaim";
-import { createUnsyncedAnswerTable, insertUnsyncedAnswer } from "../../../localDB/claims/unSyncedAnswer";
+import { createUnsyncedClaimTable, deleteUnsyncedClaim, getUnsyncedClaimById, insertUnsyncedClaim } from "../../../localDB/claims/unSyncedClaim";
+import { createUnsyncedAnswerTable, insertUnsyncedAnswer, updateUnsyncedAnswer } from "../../../localDB/claims/unSyncedAnswer";
 import { unSyncedClaim } from "../../../types/unSyncedClaim";
 import { IClaim } from "../../../types/claims/IClaim";
+import { IAnswer } from "../../../types/claims/IAnswer";
 
 function isIClaim(claim: IClaim | unSyncedClaim): claim is IClaim {
   return (claim as IClaim).answers !== undefined;
@@ -161,9 +162,11 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
 
 export const startEditClaim = (inClaim: ICreateEditClaim) => {
   return async (dispatch: AppDispatch) => {
-    try {
+    const netState = await NetInfo.fetch();
+    const db = await getDBConnection();
+    if (netState.isConnected){
+      try {
       dispatch(onCheckingClaims());
-
       const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
       const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
       const tokenData: IAuthToken = {
@@ -171,36 +174,45 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         client: tokenObject['client'] ?? '',
         uid: tokenObject['uid'] ?? '',
       };
-
       const headers = {
         ...setTokenHeader(tokenData),
         'Content-Type': 'application/json',
       };
-
       const response = await fetch(`${API_BASE_URL9}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
       });
-
       const data = await response.json();
-      
       dispatch(onEditClaim({...data,id:inClaim.claim.id}));
       dispatch(onSetActiveClaim(data.claim));
       dispatch(onSetErrorMessage(null));
       return;
-    } catch (error) {
-      console.error("Network or unexpected error:", error);
-      dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
-    }
+      }catch (error) {
+        console.error("Network or unexpected error:", error);
+        dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
+      }
+    }else{
+      for (const answer of inClaim.claim.answers_attributes) {
+        await updateUnsyncedAnswer(db,answer);
+      }
+        const data=await getUnsyncedClaimById(db,inClaim.claim.id);
+        dispatch(onEditClaim(data));
+        dispatch(onSetActiveClaim(data));
+        dispatch(onSetErrorMessage(null));
+        return;
+      }
   };
 };
 
 export const startDeleteClaim=(claimId:number)=>{
   return async (dispatch: AppDispatch) =>{
       const netState = await NetInfo.fetch();
+      const db = await getDBConnection();
       if (netState.isConnected){
         try{
+          //when no internet add message, failure this action requieres internet
+          //add verification so if it isnt claim, its calls await deleteUnsyncedClaim(db,claimId);
           dispatch(onCheckingClaims());
           
           const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
@@ -225,7 +237,6 @@ export const startDeleteClaim=(claimId:number)=>{
             console.log("error borrando claim");
             return;
           }
-          console.log("i reached this point");
           
           dispatch(startOfflineDeleteClaim(claimId));
 
@@ -234,7 +245,9 @@ export const startDeleteClaim=(claimId:number)=>{
           dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
         }
       }else{
-        
+        //search claim and verify is unsynqued
+        await deleteUnsyncedClaim(db,claimId);
+        dispatch(startOfflineDeleteClaim(claimId));
       }
     }
 }

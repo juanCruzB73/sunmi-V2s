@@ -67,7 +67,6 @@ export const startOfflineClaims=()=>{
             main_panel_id: claim.main_panel_id || 0
         }));
         const unsycedClaims=await getOfflineUnsyncedClaims();
-        console.log(unsycedClaims);
         const allClaims=[...unsycedClaims,...mappedClaims]
         dispatch(onLoadClaims(allClaims));
         dispatch(onSetErrorMessage("Cargando claims desde almacenamiento local"));
@@ -78,8 +77,6 @@ export const startOfflineClaims=()=>{
 export const startOfflineDeleteClaim = (claimId: number) => {
   return async (dispatch: AppDispatch) => {
     try {
-      console.log("comenzando a bborrar localmente");
-      
       const db = await getDBConnection();
       await deleteClaim(db, claimId);
 

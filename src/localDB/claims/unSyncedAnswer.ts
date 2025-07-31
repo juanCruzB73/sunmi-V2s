@@ -1,6 +1,5 @@
 import { SQLiteDatabase } from "react-native-sqlite-storage";
 import { getQuestionById } from "../questions/questions";
-import { IQuestion } from "../../types/form/IQuestion";
 
 export const createUnsyncedAnswerTable=async(db:SQLiteDatabase):Promise<void>=>{
     //await db.executeSql(`DROP TABLE IF EXISTS unsynced_answers;`);
@@ -24,14 +23,13 @@ export const getUnsycedAnswersByClaimId = async (
   );
 
   const rows = results[0].rows;
-  const answers: { input_string: string; question_id: number, question:any }[] = [];
+  const answers: { id:number,input_string: string; question_id: number, question:any }[] = [];
 
   for (let i = 0; i < rows.length; i++) {
     const item = rows.item(i);
-    console.log(item.question_id);
     const question=await getQuestionById(db,item.question_id)
-    console.log(question);
     answers.push({
+      id:item.id,
       input_string: item.input_string,
       question_id: item.question_id,
       question:question,
@@ -72,4 +70,39 @@ export const insertUnsyncedAnswer=async(db:SQLiteDatabase,unsyncedAnswer:any)=>{
   }catch(err){
     console.error("Error creating unsynced_claims table:", err);
   }
-}
+};
+
+export const updateUnsyncedAnswer = async (
+  db: SQLiteDatabase,
+  unsyncedAnswer: {
+    id: number;
+    input_string: string;
+    question_id: number;
+    answerable_id: number;
+  }
+) => {
+  try {
+    await db.executeSql(
+      `UPDATE unsynced_answers SET input_string = ?, question_id = ? WHERE id = ?;`,
+      [
+        unsyncedAnswer.input_string,
+        unsyncedAnswer.question_id,
+        unsyncedAnswer.id,
+      ]
+    );
+    const result = await db.executeSql(
+      `SELECT * FROM unsynced_answers WHERE id = ?;`,
+      [unsyncedAnswer.id]
+    );
+    const rows = result[0].rows;
+    if (rows.length > 0) {
+      console.log(rows.item(0));
+      return rows.item(0);
+    }
+
+    return null;
+  } catch (err) {
+    console.error("Error updating unsynced_answer:", err);
+    return null;
+  }
+};

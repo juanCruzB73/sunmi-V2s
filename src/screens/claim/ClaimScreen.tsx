@@ -34,7 +34,6 @@ export const ClaimScreen = ({ navigation }: Props) => {
 
   if (!activeClaim)return<><TopBar navigation={navigation} /><Text>No se selecciono Solicitud</Text></>
   if (!activeForm)return<><TopBar navigation={navigation} /><Text>No se selecciono Formulario</Text></>
-  console.log(activeClaim);
   
   const handleClickEdit=()=>{
     if(isIClaim(activeClaim))dispatch(startLoadQuestionsByPanel(activeForm!.id,activeClaim.main_panel_id));
