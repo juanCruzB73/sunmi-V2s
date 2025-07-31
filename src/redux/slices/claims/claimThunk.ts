@@ -19,6 +19,7 @@ const setTokenHeader = (tokenData: IAuthToken) => {
   return headers;
 };
 
+
 export const startGetClaims=(formId:number)=>{
     return async (dispatch: AppDispatch) =>{
         try{
@@ -70,10 +71,10 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
       
-      console.log(`${API_BASE_URL7}/api/v1/forms/visible/claims`);
+      console.log(`${API_BASE_URL}/api/v1/forms/visible/claims`);
       console.log(headers);
 
-      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims`, {
         method: 'POST',
         headers,
         body: JSON.stringify(inClaim),

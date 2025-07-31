@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { IAnswer } from '../../types/claims/IAnswer';
 import { startLoadQuestionsByPanel } from '../../redux/slices/question/questionThunk';
-import { startDeleteClaim, startLocalDeleteClaim } from '../../redux/slices/claims/claimThunk'; // ✅
+import { startDeleteClaim } from '../../redux/slices/claims/claimThunk'; // ✅
 import { startOfflineDeleteClaim } from '../../redux/slices/claims/claimOffLineThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimScreen'>;

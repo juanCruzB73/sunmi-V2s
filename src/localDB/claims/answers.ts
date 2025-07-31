@@ -65,6 +65,50 @@ export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise
 
   await db.executeSql(query, params); //  Guarda en la base
 };
+export const updateAnswers = async (db: SQLiteDatabase, answers: IAnswer[]): Promise<void> => {
+  const deleteQuery = `DELETE FROM answers WHERE answerable_id = ? AND answerable_type = ?;`;
+  const insertQuery = `
+    INSERT INTO answers (
+      id, input_string, input_text, input_date, input_datetime, options, latitude, longitude,
+      item_id, person_id, address_id, question_id, owner_type, owner_id, answerable_type,
+      answerable_id, created_at, updated_at, isSynced, tag
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+  `;
+
+  if (answers.length === 0) return;
+
+  const answerableId = answers[0].answerable_id;
+  const answerableType = answers[0].answerable_type;
+
+  await db.executeSql(deleteQuery, [answerableId, answerableType]);
+
+  for (const answer of answers) {
+    const params = [
+      answer.id,
+      answer.input_string,
+      answer.input_text,
+      answer.input_date,
+      answer.input_datetime,
+      JSON.stringify(answer.options ?? []),
+      answer.latitude,
+      answer.longitude,
+      answer.item_id,
+      answer.person_id,
+      answer.address_id,
+      answer.question_id,
+      answer.owner_type,
+      answer.owner_id,
+      answer.answerable_type,
+      answer.answerable_id,
+      answer.created_at,
+      answer.updated_at,
+      answer.isSynced ? 1 : 0,
+      answer.tag
+    ];
+
+    await db.executeSql(insertQuery, params);
+  }
+};
 
 //  Obtiene todos los answers que aún no fueron sincronizados
 export const getUnsyncedAnswers = async (db: SQLiteDatabase): Promise<IAnswer[]> => {

@@ -1,11 +1,120 @@
-import { getAnswersByClaimId } from "../../../localDB/claims/answers";
-import { deleteClaim } from "../../../localDB/claims/claims";
-import { getDBConnection } from "../../../localDB/db";
-import { IClaim } from "../../../types/claims/IClaim";
+import NetInfo from "@react-native-community/netinfo";
 import { AppDispatch } from "../../store";
-import { onDeleteClaim, onLoadClaims, onSetErrorMessage } from "./claimSlice";
-import NetInfo from "@react-native-community/netinfo"; // ✅ Agregalo acá
+import { getDBConnection } from "../../../localDB/db";
+import { deleteClaim, updateClaim } from "../../../localDB/claims/claims";
+import { updateAnswers } from "../../../localDB/claims/answers";
+import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
+import { IClaim } from "../../../types/claims/IClaim";
+import { IAnswer } from "../../../types/claims/IAnswer";
+import { onEditClaim, onSetActiveClaim, onSetErrorMessage, onDeleteClaim, onLoadClaims } from "./claimSlice";
+import { startEditClaim } from "./claimThunk";
 
+// 🔄 Mapeo correcto de answers_attributes → IAnswer[]
+const mapAnswersAttributesToAnswers = (
+  attributes: { id?: number; input_string: string; question_id: string }[],
+  claimId: number
+): IAnswer[] => {
+  return attributes.map(attr => ({
+    id: attr.id ?? Date.now(),
+    input_string: attr.input_string,
+    input_text: null,
+    input_date: null,
+    input_datetime: null,
+    options: [],
+    latitude: null,
+    longitude: null,
+    item_id: null,
+    person_id: null,
+    address_id: null,
+    question_id: Number(attr.question_id),
+    owner_type: "",
+    owner_id: null,
+    answerable_type: "Claim",
+    answerable_id: claimId,
+    created_at: new Date().toISOString(),
+    isSynced: false,
+    tag: null,
+    question: {
+      id: Number(attr.question_id),
+      label: "",
+      type: "",
+      required: false,
+      order_position: 0,
+      name: "",
+      owner: "", // 👈 cambio clave para evitar el error
+      order: 0,
+      description: "",
+      active: true,
+      form_id: 0,
+      created_at: new Date().toISOString(),
+      filters: {},
+      catalog_id: 0,
+      panel_id: 0,
+      show_list: false
+    }
+  }));
+};
+
+// ✏️ Transformador de ICreateEditClaim a IClaim
+const toClaim = (raw: ICreateEditClaim): IClaim => {
+  const claimId = raw.claim.id ?? Date.now();
+  return {
+    id: claimId,
+    status: raw.claim.status,
+    panel_id: raw.claim.panel_id,
+    main_panel_id: raw.claim.main_panel_id,
+    type: raw.claim.type,
+    date: raw.claim.date,
+    removed_at: raw.claim.removed_at,
+    removed: raw.claim.removed,
+    reason: raw.claim.reason,
+    user_id: raw.claim.user_id,
+    removed_user_id: raw.claim.removed_user_id,
+    status_type_id: raw.claim.status_type_id,
+    form_id: raw.claim.form_id,
+    incident_id: raw.claim.incident_id,
+    created_at: raw.claim.created_at,
+    area_id: raw.claim.area_id,
+    isSynced: false,
+    answers: mapAnswersAttributesToAnswers(raw.claim.answers_attributes, claimId)
+  };
+};
+
+// 🚀 Thunk principal listo para edición offline
+export const startOfflineEditClaim = (inClaim: ICreateEditClaim) => {
+  return async (dispatch: AppDispatch) => {
+    try {
+      const netState = await NetInfo.fetch();
+      if (netState.isConnected) {
+        console.log("Conectado a internet, edición offline omitida.");
+        return;
+      }
+
+      const db = await getDBConnection();
+      const claimToSave = toClaim(inClaim);
+
+      await updateClaim(db, claimToSave);
+      await updateAnswers(db, claimToSave.answers);
+
+      dispatch(onEditClaim(claimToSave));
+      dispatch(onSetActiveClaim(claimToSave));
+      dispatch(onSetErrorMessage("Reclamo editado localmente sin conexión."));
+    } catch (error) {
+      console.error("Error al editar reclamo offline:", error);
+      dispatch(onSetErrorMessage("Error al actualizar el reclamo en SQLite."));
+    }
+  };
+};
+export const editClaimSmart = (inClaim: ICreateEditClaim) => {
+  return async (dispatch: AppDispatch) => {
+    const netState = await NetInfo.fetch();
+    if (netState.isConnected) {
+      dispatch(startEditClaim(inClaim));
+    } else {
+      dispatch(startOfflineEditClaim(inClaim));
+    }
+  };
+};
 
 export const getOfflineClaims = async (): Promise<IClaim[]> => {
   const db = await getDBConnection();
@@ -43,7 +152,7 @@ export const startOfflineDeleteClaim = (claimId: number) => {
 
       dispatch(onDeleteClaim(claimId));
       dispatch(onSetErrorMessage("Claim eliminado localmente sin conexión."));
-      } catch (error) {
+    } catch (error) {
       console.error("Error al eliminar claim offline:", error);
       dispatch(onSetErrorMessage("Error al eliminar claim desde la base de datos local."));
     }

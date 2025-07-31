@@ -8,8 +8,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { IQuestion } from '../types/form/IQuestion';
 import QuestionInput from '../components/question-option/QuestionInput';
 import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThunk';
-import { startAddClaim, startEditClaim } from '../redux/slices/claims/claimThunk';
 import { onIsMofified } from '../redux/slices/claims/claimSlice';
+import { ICreateEditClaim } from '../types/claims/ICreateEditClaim';
+import { editClaimSmart } from '../redux/slices/claims/claimOffLineThunk';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayQuestions'>;
 
@@ -56,47 +57,74 @@ export const DisplayQuestions = ({ navigation }: Props) => {
       setOptionSelected(option);
     };
 
-    const handleSubmit = () => {
-    const answersArray = Object.entries(answers).map(([questionId, value]) => {
-      if (activeClaim) {
-        return {
+    const handleSubmit = async () => {
+  const answersArray = Object.entries(answers).map(([questionId, value]) => {
+    return activeClaim
+      ? {
           id: value.id,
           input_string: String(value.input_string),
           question_id: String(value.question_id)
-        };
-      } else {
-        return {
+        }
+      : {
           input_string: String(value),
           question_id: String(questionId)
         };
-      }
-    });
+  });
 
-    const data = !activeClaim ? 
-    {
-      claim: {
-        form_id: activeForm!.id,
-        incident_id: activeForm!.incident_id,
-        area_id: activeForm!.area_id,
-        main_panel_id: mainPanel,
-        answers_attributes: answersArray
-      }
-    }:
-    {
-      claim: {
-        id:activeClaim.id,
-        form_id: activeForm!.id,
-        incident_id: activeForm!.incident_id,
-        mainPanel:activeClaim.main_panel_id,
-        area_id: activeForm!.area_id,
-        answers_attributes: answersArray
-      }
-    };
-    console.log('FINAL DATA TO SEND:', JSON.stringify(data, null, 2));
-    if (!activeClaim) dispatch(startAddClaim(data));
-    if (activeClaim) dispatch(startEditClaim(data));
-    dispatch(onIsMofified(true));
-navigation.navigate('ClaimSearcher', { updated: true });  };
+  const now = new Date().toISOString();
+
+  const claimPayload: ICreateEditClaim = {
+    claim: activeClaim
+      ? {
+          id: activeClaim.id,
+          form_id: activeForm!.id,
+          incident_id: activeForm!.incident_id,
+          area_id: activeForm!.area_id,
+          panel_id: activeClaim.panel_id,
+          main_panel_id: activeClaim.main_panel_id,
+          type: activeClaim.type,
+          status_type_id: activeClaim.status_type_id,
+          status: activeClaim.status,
+          created_at: activeClaim.created_at,
+          date: activeClaim.date,
+          removed_at: null,
+          removed: false,
+          reason: null,
+          user_id: activeClaim.user_id,
+          removed_user_id: null,
+          answers_attributes: answersArray
+        }
+      : {
+          form_id: activeForm!.id,
+          incident_id: activeForm!.incident_id,
+          area_id: activeForm!.area_id,
+          panel_id: mainPanel!,
+          main_panel_id: mainPanel!,
+          type: "default",
+          status_type_id: 1,
+          status: "pendiente",
+          created_at: now,
+          date: now,
+          removed_at: null,
+          removed: false,
+          reason: null,
+          user_id: 1, // ajustá según usuario activo
+          removed_user_id: null,
+          answers_attributes: answersArray
+        }
+  };
+
+  console.log("FINAL DATA TO SEND:", JSON.stringify(claimPayload, null, 2));
+
+  if (activeClaim) {
+    dispatch(editClaimSmart(claimPayload));
+  } else {
+    dispatch(editClaimSmart(claimPayload));
+  }
+
+  dispatch(onIsMofified(true));
+  navigation.navigate('ClaimSearcher', { updated: true });
+};
 
 
   useEffect(() => {
