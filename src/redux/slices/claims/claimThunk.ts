@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL, API_BASE_URL7 } from '@env';
+import { API, API_BASE_URL, API_BASE_URL7 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
 import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
@@ -35,7 +35,7 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
-            const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
+            const response = await fetch(`${API}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, claim);
@@ -71,7 +71,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
       
-      console.log(`${API_BASE_URL}/api/v1/forms/visible/claims`);
+      console.log(`${API}/api/v1/forms/visible/claims`);
       console.log(headers);
 
       const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims`, {
@@ -112,7 +112,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
