@@ -16,8 +16,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { IAnswer } from '../../types/claims/IAnswer';
 import { startLoadQuestionsByPanel } from '../../redux/slices/question/questionThunk';
-import { startDeleteClaim } from '../../redux/slices/claims/claimThunk'; // ✅
-import { startOfflineDeleteClaim } from '../../redux/slices/claims/claimOffLineThunk';
+import { startDeleteClaim } from '../../redux/slices/claims/claimThunk';
+import { IClaim } from '../../types/claims/IClaim';
+import { unSyncedClaim } from '../../types/unSyncedClaim';
+import { unSyncedAnswer } from '../../types/unSyncedAnswer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ClaimScreen'>;
 
@@ -25,39 +27,22 @@ export const ClaimScreen = ({ navigation }: Props) => {
   const { activeForm } = useSelector((state: RootState) => state.form);
   const { activeClaim } = useSelector((state: RootState) => state.claim);
   const dispatch = useDispatch<AppDispatch>();
-
-  const [confirmVisible, setConfirmVisible] = useState(false); // ✅
-
-  if (!activeClaim) return <><TopBar navigation={navigation} /><Text>No se seleccionó Solicitud</Text></>;
-  if (!activeForm) return <><TopBar navigation={navigation} /><Text>No se seleccionó Formulario</Text></>;
-
-  const handleClickEdit = () => {
-    dispatch(startLoadQuestionsByPanel(activeForm.id, activeClaim.main_panel_id));
-    navigation.navigate('DisplayQuestions');
-  };
-
- const handleDeleteClaim = () => {
-  setConfirmVisible(true);
-};
-
-
- 
-
-const confirmDelete = async () => {
-  const state = await NetInfo.fetch();
-
-  if (state.isConnected) {
-    dispatch(startDeleteClaim(activeClaim.id)); // 🔗 Elimina vía API
-  } else {
-    dispatch(startOfflineDeleteClaim(activeClaim.id)); // 📱 Elimina localmente
+  
+  function isIClaim(claim: IClaim | unSyncedClaim): claim is IClaim {
+    return (claim as IClaim).answers !== undefined;
   }
 
-  setConfirmVisible(false);
-  navigation.navigate('ClaimSearcher');
-};
+  if (!activeClaim)return<><TopBar navigation={navigation} /><Text>No se selecciono Solicitud</Text></>
+  if (!activeForm)return<><TopBar navigation={navigation} /><Text>No se selecciono Formulario</Text></>
+  
+  const handleClickEdit=()=>{
+    if(isIClaim(activeClaim))dispatch(startLoadQuestionsByPanel(activeForm!.id,activeClaim.main_panel_id));
+  };
 
-
-
+  const handleDeleteClaim=()=>{
+    if(isIClaim(activeClaim))dispatch(startDeleteClaim(activeClaim.id))
+  };
+  
   return (
     <>
       <TopBar navigation={navigation} />
@@ -66,11 +51,18 @@ const confirmDelete = async () => {
           <Text style={styles.title}>Datos de solicitud</Text>
 
           <View style={styles.card}>
-            {activeClaim.answers.map((answer: IAnswer) => (
-              <Text key={answer.question.id}>
-                {answer.question.name}: {answer.input_string}
-              </Text>
-            ))}
+            {isIClaim(activeClaim)
+              ? activeClaim.answers.map((answer: IAnswer) => (
+                  <Text key={answer.id}>
+                    {answer.question?.name ?? 'Pregunta sin nombre'}: {answer.input_string}
+                  </Text>
+                ))
+              : activeClaim.answers_attributes.map((answer: unSyncedAnswer, index) => (
+                  <Text key={index}>
+                    Pregunta {answer.question_id}: {answer.input_string}
+                  </Text>
+                ))
+            }
           </View>
 
           <View style={styles.buttonRow}>

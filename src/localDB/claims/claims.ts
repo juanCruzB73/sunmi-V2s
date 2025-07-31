@@ -116,17 +116,15 @@ export const deleteClaim = async (db: SQLiteDatabase, claimId: number): Promise<
   await db.executeSql(query, [claimId]);
 };
 
-export const getUnsyncedClaims = async (db: SQLiteDatabase) => {
+export const getUnsyncedClaims = async (db: SQLiteDatabase): Promise<IClaim[]> => {
   const results = await db.executeSql('SELECT * FROM claims WHERE isSynced = 0');
-
-  // `results` is usually an array of [ResultSet], need to extract rows
   const rows: IClaim[] = [];
-  const len = results[0].rows.length;
-  for (let i = 0; i < len; i++) {
+
+  for (let i = 0; i < results[0].rows.length; i++) {
     rows.push(results[0].rows.item(i));
   }
 
-  const mappedUnsyncedClaims: IClaim[] = rows.map((claim: any) => ({
+  return rows.map((claim: any) => ({
     id: claim.id,
     status: claim.status,
     panel_id: claim.panel_id,
@@ -147,6 +145,4 @@ export const getUnsyncedClaims = async (db: SQLiteDatabase) => {
     answers: claim.answers,
     main_panel_id: claim.main_panel_id,
   }));
-
-  return mappedUnsyncedClaims;
 };

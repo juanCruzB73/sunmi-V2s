@@ -1,11 +1,14 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
-import { onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onLoadClaims, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API, API_BASE_URL, API_BASE_URL7 } from '@env';
+import { ClaimType, onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
+import { API, API_BASE_URL, API_BASE_URL8 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
-import { createClaimsTable, deleteClaim, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
+import {  deleteClaim, insertClaim } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
+import { startOfflineClaims } from "./claimOffLineThunk";
+import NetInfo from '@react-native-community/netinfo';
+import { insertAnswer } from "../../../localDB/claims/answers";
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -22,8 +25,14 @@ const setTokenHeader = (tokenData: IAuthToken) => {
 
 export const startGetClaims=(formId:number)=>{
     return async (dispatch: AppDispatch) =>{
+      const netState = await NetInfo.fetch();
+      const db = await getDBConnection();
+      await dropClaimsTable(db); 
+      await createClaimsTable(db); 
+
+      createClaimsTable(db);
+      if (netState.isConnected){
         try{
-            const db = await getDBConnection();
             dispatch(onCheckingClaims());
             await dropClaimsTable(db);
             await createClaimsTable(db);
@@ -35,13 +44,17 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
-            const response = await fetch(`${API}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
+            const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, claim);
+              if(claim.answers.length){
+                for (const answer of claim.answers) {
+                  console.log(answer);
+                  await insertAnswer(db,answer);
+                }
+              }
             };
-            dispatch(onLoadClaims(data));
-            onSetErrorMessage(null);
         }catch(error){
             const message = error instanceof Error ? error.message : String(error);
             console.log(message);
@@ -53,28 +66,28 @@ export const startGetClaims=(formId:number)=>{
 
 export const startAddClaim = (inClaim: ICreateEditClaim) => {
   return async (dispatch: AppDispatch) => {
-    try {
       dispatch(onCheckingClaims());
-      
+      const netState = await NetInfo.fetch();
       const db = await getDBConnection();
-      
-      const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-      const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
-      const tokenData: IAuthToken = {
-        accessToken: tokenObject['access-token'] ?? '',
-        client: tokenObject['client'] ?? '',
-        uid: tokenObject['uid'] ?? '',
-      };
+
+      if (netState.isConnected){
+        try {
+        const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
+        const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
+        const tokenData: IAuthToken = {
+          accessToken: tokenObject['access-token'] ?? '',
+          client: tokenObject['client'] ?? '',
+          uid: tokenObject['uid'] ?? '',
+        };
 
       const headers = {
         ...setTokenHeader(tokenData),
         'Content-Type': 'application/json',
       };
       
-      console.log(`${API}/api/v1/forms/visible/claims`);
-      console.log(headers);
+      console.log(`${API_BASE_URL7}/api/v1/forms/visible/claims`);
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims`, {
+      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims`, {
         method: 'POST',
         headers,
         body: JSON.stringify(inClaim),
@@ -83,6 +96,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
         console.log("ERROR ON POST CLAIM");
       }
       const data= await response.json();
+      await insertClaim(db,data)
       dispatch(onAddClaim(data));
       dispatch(onSetActiveClaim(data));
       dispatch(onSetErrorMessage(null));
@@ -112,7 +126,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
+      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
@@ -149,7 +163,7 @@ export const startDeleteClaim=(claimId:number)=>{
         'Content-Type': 'application/json',
       };
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${claimId}`, {
+      const response = await fetch(`${API_BASE_URL7}/api/v1/forms/visible/claims/${claimId}`, {
         method: 'DELETE',
         headers,
       });

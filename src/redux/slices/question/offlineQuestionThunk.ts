@@ -1,13 +1,12 @@
 import { AppDispatch } from '../../store';
 import { getOfflineQuestions, getQuestionsByPanel } from '../offline/questionsOffline';
 import { onLoadQuestions, onSetErrorMessage } from './questionSlice';
-import { getDBConnection } from '../../../localDB/db';
+//import { getDBConnection } from '../../../localDB/db';
 
 export const startOfflineQuestions = (formId:number) => {
   return async (dispatch: AppDispatch) => {
       try {
-        const db = await getDBConnection();
-
+        //const db = await getDBConnection();
         //await dropQuestionOptionsTable(db);
         //await dropQuestionsTable(db);
         //await createQuestionOptionsTable(db);

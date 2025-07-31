@@ -16,6 +16,8 @@ import { RootStackParamList } from "../../router/StackNavigator";
 import LinearGradient from "react-native-linear-gradient";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { IClaim } from "../../types/claims/IClaim";
+import { unSyncedClaim } from "../../types/unSyncedClaim";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;

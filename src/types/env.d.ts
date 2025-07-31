@@ -6,5 +6,7 @@ declare module '@env' {
 
 
 
+  export const API_BASE_URL8: string;
+  export const API_URL: string;
 
 }
