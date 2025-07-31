@@ -11,12 +11,11 @@ export interface IFormState {
   activeClaim:ClaimType|null
 }
 
-const initialState: IClaimState = {
+const initialState: IFormState = {
   isSavingClaims: false,
-  isModified: false,
   claims: [],
   errorMessage: null,
-  activeClaim: null
+  activeClaim:null
 };
 
 const claimSlice = createSlice({
@@ -54,16 +53,5 @@ const claimSlice = createSlice({
   },
 });
 
-export const {
-  onCheckingClaims,
-  onLoadClaims,
-  onAddClaim,
-  onEditClaim,
-  onDeleteClaim,
-  onSetActiveClaim,
-  onSetErrorMessage,
-  onIsMofified
-  
-} = claimSlice.actions;
-
+export const { onCheckingClaims, onLoadClaims, onSetErrorMessage,onSetActiveClaim,onAddClaim,onEditClaim,onDeleteClaim } = claimSlice.actions;
 export default claimSlice.reducer;

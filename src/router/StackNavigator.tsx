@@ -37,32 +37,48 @@ export type RootStackParamList = {
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
+//
+//const StackNavigator = () => {
+//
+//  const { status } = useSelector((state: RootState) => state.auth);
+//
+//  return (
+//    <Stack.Navigator screenOptions={{ headerShown: false }}>
+//      {status === "authenticated" ? (
+//        <>
+//          <Stack.Screen name="Home" component={HomeScreen} />
+//          <Stack.Screen name="DisplayForms" component={DisplayForms} />
+//          <Stack.Screen name="DisplayQuestions" component={DisplayQuestions} />
+//          <Stack.Screen name="ClaimMenu" component={ClaimMenu} />
+//          <Stack.Screen name="VehicleScreen" component={VehicleScreen} />
+//          <Stack.Screen name="ClaimSearcher" component={ClaimSearcher} />
+//          <Stack.Screen name="Printing" component={PrintingScreen} />
+//          <Stack.Screen name="profile" component={ProfileScreen} />
+//          <Stack.Screen name="ClaimScreen" component={ClaimScreen} />
+//          <Stack.Screen name="VehicleSearcher" component={VehicleSearcher} />
+//        </>
+//      ) : (
+//        <>
+//          <Stack.Screen name="Login" component={LoginScreen} />
+//          <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} />
+//        </>
+//      )}
+//    </Stack.Navigator>
+//  );
+//};
 const StackNavigator = () => {
-
-  const { status } = useSelector((state: RootState) => state.auth);
-
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {status === "authenticated" ? (
-        <>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="DisplayForms" component={DisplayForms} />
-          <Stack.Screen name="DisplayQuestions" component={DisplayQuestions} />
-          <Stack.Screen name="ClaimMenu" component={ClaimMenu} />
-          <Stack.Screen name="VehicleScreen" component={VehicleScreen} />
-          <Stack.Screen name="ClaimSearcher" component={ClaimSearcher} />
-          <Stack.Screen name="Printing" component={PrintingScreen} />
-          <Stack.Screen name="profile" component={ProfileScreen} />
-          <Stack.Screen name="ClaimScreen" component={ClaimScreen} />
-          <Stack.Screen name="VehicleSearcher" component={VehicleSearcher} />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} />
-        </>
-      )}
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="DisplayForms" component={DisplayForms} />
+      <Stack.Screen name="DisplayQuestions" component={DisplayQuestions} />
+      <Stack.Screen name="ClaimMenu" component={ClaimMenu} />
+      <Stack.Screen name="VehicleScreen" component={VehicleScreen} />
+      <Stack.Screen name="ClaimSearcher" component={ClaimSearcher} />
+      <Stack.Screen name="Printing" component={PrintingScreen} />
+      <Stack.Screen name="profile" component={ProfileScreen} />
+      <Stack.Screen name="ClaimScreen" component={ClaimScreen} />
+      <Stack.Screen name="VehicleSearcher" component={VehicleSearcher} />
     </Stack.Navigator>
   );
 };

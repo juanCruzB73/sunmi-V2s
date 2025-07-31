@@ -8,6 +8,8 @@ import { IClaim } from "../../../types/claims/IClaim";
 import { IAnswer } from "../../../types/claims/IAnswer";
 import { onEditClaim, onSetActiveClaim, onSetErrorMessage, onDeleteClaim, onLoadClaims } from "./claimSlice";
 import { startEditClaim } from "./claimThunk";
+import { AppDispatch } from "../../store";
+import NetInfo from '@react-native-community/netinfo';
 
 // 🔄 Mapeo correcto de answers_attributes → IAnswer[]
 const mapAnswersAttributesToAnswers = (
@@ -32,6 +34,7 @@ const mapAnswersAttributesToAnswers = (
     answerable_type: "Claim",
     answerable_id: claimId,
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
     isSynced: false,
     tag: null,
     question: {
@@ -49,6 +52,7 @@ const mapAnswersAttributesToAnswers = (
       created_at: new Date().toISOString(),
       filters: {},
       catalog_id: 0,
+      updated_at: new Date().toISOString(),
       panel_id: 0,
       show_list: false
     }
@@ -75,6 +79,7 @@ const toClaim = (raw: ICreateEditClaim): IClaim => {
     incident_id: raw.claim.incident_id,
     created_at: raw.claim.created_at,
     area_id: raw.claim.area_id,
+    updated_at: new Date().toISOString(),
     isSynced: false,
     answers: mapAnswersAttributesToAnswers(raw.claim.answers_attributes, claimId)
   };
@@ -105,11 +110,11 @@ export const startOfflineEditClaim = (inClaim: ICreateEditClaim) => {
     }
   };
 };
-export const editClaimSmart = (inClaim: ICreateEditClaim) => {
+export const editClaimSmart = (inClaim: ICreateEditClaim, navigation?: any) => {
   return async (dispatch: AppDispatch) => {
     const netState = await NetInfo.fetch();
     if (netState.isConnected) {
-      dispatch(startEditClaim(inClaim));
+      dispatch(startEditClaim(inClaim, navigation)); // 👉 se pasa navigation al thunk
     } else {
       dispatch(startOfflineEditClaim(inClaim));
     }

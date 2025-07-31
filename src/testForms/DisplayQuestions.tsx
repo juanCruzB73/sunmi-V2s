@@ -117,13 +117,12 @@ export const DisplayQuestions = ({ navigation }: Props) => {
   console.log("FINAL DATA TO SEND:", JSON.stringify(claimPayload, null, 2));
 
   if (activeClaim) {
-    dispatch(editClaimSmart(claimPayload));
-  } else {
-    dispatch(editClaimSmart(claimPayload));
-  }
+  dispatch(editClaimSmart(claimPayload, navigation));
+} else {
+  dispatch(editClaimSmart(claimPayload, navigation));
+}
 
   dispatch(onIsMofified(true));
-  navigation.navigate('ClaimSearcher', { updated: true });
 };
 
 
@@ -181,6 +180,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
         <Button
             title="Enviar"
             onPress={() => handleSubmit()}
+            
           />
       }
     </ScrollView>
