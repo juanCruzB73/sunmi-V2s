@@ -6,5 +6,6 @@ export interface unSyncedClaim{
     incident_id: number;
     area_id: number;
     isSynced: boolean;
+    main_panel_id:number;
     answers_attributes:unSyncedAnswer[];
 }

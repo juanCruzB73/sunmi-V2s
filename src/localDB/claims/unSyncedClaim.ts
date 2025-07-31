@@ -12,6 +12,7 @@ export const createUnsyncedClaimTable = async (db: SQLiteDatabase): Promise<void
         form_id INTEGER,
         incident_id INTEGER,
         area_id INTEGER,
+        main_panel_id INTEGER,
         isSynced INTEGER
       );
     `);
@@ -22,10 +23,8 @@ export const createUnsyncedClaimTable = async (db: SQLiteDatabase): Promise<void
 
 
 export const getOfflineUnsyncedClaims = async ():Promise<unSyncedClaim[]> => {
-    console.log("firing");
     const db = await getDBConnection();
     const results = await db.executeSql(`SELECT * FROM unsynced_claims;`);
-    console.log(results);
     const rows = results[0].rows;
     const claims: any[] = [];
 
@@ -35,8 +34,8 @@ export const getOfflineUnsyncedClaims = async ():Promise<unSyncedClaim[]> => {
     const answersFormatted = answers.map(answer => ({
       input_string: answer.input_string,
       question_id: answer.question_id,
+      question: answer.question
     }));
-    console.log("answers",answersFormatted);
     
     claims.push({
       id: claimRow.id,
@@ -61,19 +60,25 @@ export const getOfflineUnsyncedClaims = async ():Promise<unSyncedClaim[]> => {
       main_panel_id: claimRow.main_panel_id || 0
     });
   }
-  console.log(claims);
   return claims;
 };
 
 export const insertUnsyncedClaim=async(db:SQLiteDatabase,unsyncedClaim:any)=>{
+  console.log(unsyncedClaim.form_id,
+    unsyncedClaim.incident_id,
+    unsyncedClaim.area_id,
+    unsyncedClaim.main_panel_id,
+    unsyncedClaim.isSynced);
+  
     const result=await db.executeSql(
   `INSERT OR REPLACE INTO unsynced_claims(
-    form_id, incident_id, area_id, isSynced
-  ) VALUES (?, ?, ?, ?);`,
+    form_id, incident_id, area_id, main_panel_id, isSynced
+  ) VALUES (?, ?, ?, ?, ?);`,
   [
     unsyncedClaim.form_id,
     unsyncedClaim.incident_id,
     unsyncedClaim.area_id,
+    unsyncedClaim.main_panel_id,
     unsyncedClaim.isSynced
   ]
 );
@@ -88,6 +93,8 @@ export const insertUnsyncedClaim=async(db:SQLiteDatabase,unsyncedClaim:any)=>{
   );
 
   const rows = selectResult[0].rows;
+  console.log(rows);
+  
   if (rows.length > 0) {
     return rows.item(0); 
   }

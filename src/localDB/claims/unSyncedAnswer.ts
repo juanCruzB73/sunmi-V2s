@@ -1,4 +1,6 @@
 import { SQLiteDatabase } from "react-native-sqlite-storage";
+import { getQuestionById } from "../questions/questions";
+import { IQuestion } from "../../types/form/IQuestion";
 
 export const createUnsyncedAnswerTable=async(db:SQLiteDatabase):Promise<void>=>{
     //await db.executeSql(`DROP TABLE IF EXISTS unsynced_answers;`);
@@ -10,7 +12,6 @@ export const createUnsyncedAnswerTable=async(db:SQLiteDatabase):Promise<void>=>{
             answerable_id INTEGER
         );
     `);
-    console.log("created");
 };
 
 export const getUnsycedAnswersByClaimId = async (
@@ -23,13 +24,17 @@ export const getUnsycedAnswersByClaimId = async (
   );
 
   const rows = results[0].rows;
-  const answers: { input_string: string; question_id: number }[] = [];
+  const answers: { input_string: string; question_id: number, question:any }[] = [];
 
   for (let i = 0; i < rows.length; i++) {
     const item = rows.item(i);
+    console.log(item.question_id);
+    const question=await getQuestionById(db,item.question_id)
+    console.log(question);
     answers.push({
       input_string: item.input_string,
       question_id: item.question_id,
+      question:question,
     });
   }
 
@@ -39,7 +44,6 @@ export const getUnsycedAnswersByClaimId = async (
 
 export const insertUnsyncedAnswer=async(db:SQLiteDatabase,unsyncedAnswer:any)=>{
   try{
-    console.log(unsyncedAnswer);
     const result=await db.executeSql(
       `INSERT OR REPLACE INTO unsynced_answers(
         input_string, question_id, answerable_id

@@ -9,6 +9,8 @@ import { IQuestion } from '../types/form/IQuestion';
 import QuestionInput from '../components/question-option/QuestionInput';
 import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThunk';
 import { startAddClaim, startEditClaim } from '../redux/slices/claims/claimThunk';
+import { ClaimType } from '../redux/slices/claims/claimSlice';
+import { IClaim } from '../types/claims/IClaim';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayQuestions'>;
 
@@ -95,9 +97,19 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     navigation.navigate('ClaimSearcher');
   };
 
-
+  function isIClaim(claim: ClaimType): claim is IClaim {
+  return (claim as IClaim).answers !== undefined;
+}
+  useEffect(()=>{
+    if(questions.length>0){
+      setMainPanel(questions[0].panel_id);
+    };
+  },[questions])
+  
   useEffect(() => {
-    if (activeClaim) {
+    if (!activeClaim) return;
+
+    if (isIClaim(activeClaim)) {
       const mappedAnswers = activeClaim.answers.reduce((acc: Record<number, any>, ans: any) => {
         acc[ans.question_id] = {
           id: ans.id,
@@ -107,14 +119,17 @@ export const DisplayQuestions = ({ navigation }: Props) => {
         return acc;
       }, {});
       setAnswers(mappedAnswers);
+    } else {
+      const mappedAnswers = activeClaim.answers_attributes.reduce((acc: Record<number, any>, ans: any) => {
+        acc[ans.question_id] = {
+          input_string: ans.input_string,
+          question_id: ans.question_id
+        };
+        return acc;
+      }, {});
+      setAnswers(mappedAnswers);
     }
   }, [activeClaim]);
-
-  useEffect(()=>{
-    if(questions.length>0){
-      setMainPanel(questions[0].panel_id);
-    };
-  },[questions])
 
   if (!Array.isArray(questions)) {
       return <Text style={{ padding: 20 }}>Loading questions...</Text>;

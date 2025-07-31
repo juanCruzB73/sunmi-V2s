@@ -65,9 +65,8 @@ export const insertClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
 
     await db.executeSql(insertQuery, params);
 
-    console.log(`✅ Claim ${claim.id} inserted into DB`);
   } catch (e) {
-    console.log(`❌ Error inserting claim ${claim.id}:`, e);
+    console.log(`Error inserting claim ${claim.id}:`);
   }
 };
 
@@ -118,8 +117,12 @@ export const updateClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
   await db.executeSql(query, params);
 };
 
-export const deleteClaim = async (db: SQLiteDatabase, claimId: number) => {
-  return db.executeSql(`DELETE FROM claims WHERE id = ?;`, [claimId]);
+export const deleteClaim = async (db: SQLiteDatabase, claimId: number): Promise<void> => {
+  const query = `
+    DELETE FROM claims WHERE id = ?;
+  `;
+
+  await db.executeSql(query, [claimId]);
 };
 
 export const removeClaimOffline = async (claimId: number): Promise<void> => {

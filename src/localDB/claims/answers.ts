@@ -1,5 +1,6 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { IAnswer } from '../../types/claims/IAnswer';
+import { getQuestionById } from '../questions/questions';
 
 export const createAnswersTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
@@ -64,9 +65,8 @@ export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise
 
     await db.executeSql(query, params);
 
-    console.log(`✅ Aswer ${answer.id} inserted into DB`);
   }catch(err){
-    console.log(`❌ Error inserting claim ${answer.id}:`, err);
+    console.log(`Error inserting claim ${answer.id}:`, err);
 
   }
 };
@@ -75,7 +75,6 @@ export const getUnsyncedAnswers = async (db: SQLiteDatabase): Promise<IAnswer[]>
   const results = await db.executeSql('SELECT * FROM answers WHERE isSynced = 0');
   const rows = results[0].rows;
   const answers: IAnswer[] = [];
-
   for (let i = 0; i < rows.length; i++) {
     const row = rows.item(i);
     answers.push({

@@ -33,6 +33,26 @@ export const dropQuestionsTable = async (db: SQLiteDatabase): Promise<void> => {
   await db.executeSql(query);
 };
 
+export const getQuestionById=async(db:SQLiteDatabase,questionId:number)=>{
+  try {
+    const results = await db.executeSql(
+      'SELECT * FROM questions WHERE id = ?;',
+      [questionId]
+    );
+
+    const rows = results[0].rows;
+
+    if (rows.length > 0) {
+      const question = rows.item(0);
+      return question as IQuestion; // Cast to your interface if needed
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error getting question by ID:', error);
+    return null;
+  }
+}
 
 export const insertQuestion = async (db: SQLiteDatabase, question: IQuestion): Promise<void> => {
   const query = `
