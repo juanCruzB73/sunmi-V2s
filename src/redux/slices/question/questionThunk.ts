@@ -2,10 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onCheckingForms, onSetErrorMessage } from "../form/formSlice";
-import { API_BASE_URL8 } from '@env';
+import { API_BASE_URL1 } from '@env';
 import NetInfo from '@react-native-community/netinfo';
 import { startOfflineQuestionsByPanel } from "../offline/questionsOffline";
 import { startOfflineQuestions } from "./offlineQuestionThunk";
+import { createQuestionsTable } from "../../../localDB/questions/questions";
+import { getDBConnection } from "../../../localDB/db";
+import { createElement } from "react";
+import { createQuestionOptionsTable } from "../../../localDB/questions/questionOptions";
 
 const setTokenHeader = (tokenData: IAuthToken) => {
   const headers = {
@@ -25,22 +29,19 @@ export const startLoadQuestions=(formId:number)=>{
       if (netState.isConnected){
         try{
             dispatch(onCheckingForms());
-            //const db = await getDBConnection();
             const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
             const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
             
-            const response=await fetch(`${API_BASE_URL8}/api/v1/forms/visible/${formId}`,{headers:headers});
+            const response=await fetch(`${API_BASE_URL1}/api/v1/forms/visible/${formId}`,{headers:headers});
 
             if (response.ok) {
               const data=await response.json();
-              console.log(data);
-              
             };
             
             //dispatch(onLoadQuestions(data.questions));
-            const data=dispatch(startOfflineQuestions(formId));
+            const data=await dispatch(startOfflineQuestions(formId));
             dispatch(onSetErrorMessage(null));
             return data ;
 
@@ -71,7 +72,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
           uid: tokenObject['uid'] ?? '',
         };
         const headers = setTokenHeader(tokenData);
-        const response = await fetch(`${API_BASE_URL8}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
+        const response = await fetch(`${API_BASE_URL1}/api/v1/forms/visible/${formId}/panel/${panelId}`, { headers });
 
         if (response.ok) {
           const data = await response.json();

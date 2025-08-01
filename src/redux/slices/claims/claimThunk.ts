@@ -157,6 +157,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
 };
 
 export const startEditClaim = (inClaim: ICreateEditClaim) => {
+  console.log(inClaim);
   return async (dispatch: AppDispatch) => {
     const netState = await NetInfo.fetch();
     const db = await getDBConnection();

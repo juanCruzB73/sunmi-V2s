@@ -34,6 +34,7 @@ export const insertQuestionOption = async (db: SQLiteDatabase, option: IQuestion
       id, form_id, name, panel_id, question_id, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?);
   `;
+   console.log(option);
   const params = [
     option.id,
     option.form_id,

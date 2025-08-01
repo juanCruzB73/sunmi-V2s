@@ -25,45 +25,61 @@ const InfoCard: FC<ICardProps> = ({ claim }) => {
   function isIClaim(claim: IClaim | unSyncedClaim): claim is IClaim {
     return (claim as IClaim).answers !== undefined;
   }
+const handlePrint = async () => {
+  navigation.navigate('Printing');
 
-  /*const handlePrint = async () => {
-    navigation.navigate('Printing');
-    setTimeout(async () => {
-      try {
-        await SunmiPrinterLibrary.prepare();
-        await SunmiPrinterLibrary.printText('OFFICIAL TICKET\n');
-        await SunmiPrinterLibrary.printText('----------------\n');
-        await SunmiPrinterLibrary.printText(`Document #: ${item.nroMulta}\n`);
-        await SunmiPrinterLibrary.printText(`Type: ${item.type}\n`);
-        if (item.type === "Automovil") {
-          await SunmiPrinterLibrary.printText(`License Plate: ${item.plateOrRut}\n`);
-        } else {
-          await SunmiPrinterLibrary.printText(`RUT: ${item.plateOrRut}\n`);
-        }
-        await SunmiPrinterLibrary.printText(`Status: `);
-        await SunmiPrinterLibrary.printText(`${item.status.toUpperCase()}\n`);
-        await SunmiPrinterLibrary.printText('----------------\n');
-        await SunmiPrinterLibrary.printText('Thank you\n\n\n');
-        Alert.alert('Print Successful', 'Print Successful', [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(), // Vuelve a InfoCard después de imprimir
-          },
-        ]);
-      } catch (err) {
-        let errorMessage = 'Failed to print';
-        if (err instanceof Error) {
-          errorMessage = err.message;
-        }
-        Alert.alert('Error', errorMessage, [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(), // Vuelve a InfoCard si falla
-          },
-        ]);
+  setTimeout(async () => {
+    try {
+      await SunmiPrinterLibrary.prepare();
+      await SunmiPrinterLibrary.printText('OFFICIAL TICKET\n');
+      await SunmiPrinterLibrary.printText('----------------\n');
+      await SunmiPrinterLibrary.printText(`Claim ID: ${claim.id}\n`);
+      await SunmiPrinterLibrary.printText(`Type: ${claim.type}\n`);
+      await SunmiPrinterLibrary.printText(`Date: ${claim.date}\n`);
+      await SunmiPrinterLibrary.printText(`Status: ${claim.status?.toUpperCase() ?? 'N/A'}\n`);
+
+      // Si tiene patente o RUT, imprimimos
+      if ('plateOrRut' in claim && claim.plateOrRut) {
+        await SunmiPrinterLibrary.printText(`Identificador: ${claim.plateOrRut}\n`);
       }
+
+      await SunmiPrinterLibrary.printText('----------------\n');
+
+      // Imprimir respuestas
+      if (isIClaim(claim)) {
+        for (const answer of claim.answers) {
+          await SunmiPrinterLibrary.printText(
+            `${answer.question?.name ?? 'Pregunta'}: ${answer.input_string}\n`
+          );
+        }
+      } else {
+        for (const answer of claim.answers_attributes) {
+          await SunmiPrinterLibrary.printText(
+            `Pregunta ${answer.question_id}: ${answer.input_string}\n`
+          );
+        }
+      }
+
+      await SunmiPrinterLibrary.printText('----------------\n');
+      await SunmiPrinterLibrary.printText('Gracias\n\n\n');
+
+      Alert.alert('Impresión exitosa', 'El ticket fue impreso correctamente', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      Alert.alert('Error de impresión', errorMessage, [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    }
   }, 300);
-  }*/
+};
   return (
     <TouchableOpacity
       style={claim.isSynced ? styles.container : styles.containerNotSync}
@@ -97,12 +113,13 @@ const InfoCard: FC<ICardProps> = ({ claim }) => {
       </View>
 
       <TouchableOpacity
-        style={styles.printButton}
-        onPress={() => console.log("print function")}
-      >
-        <FontAwesome name="print" size={20} color="#fff" />
+  style={styles.printButton}
+  onPress={handlePrint}
+>
+  <FontAwesome name="print" size={20} color="#fff" />
+</TouchableOpacity>
       </TouchableOpacity>
-    </TouchableOpacity>
+    
   );
 };
 

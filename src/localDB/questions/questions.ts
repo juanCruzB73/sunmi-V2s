@@ -69,7 +69,7 @@ export const insertQuestion = async (db: SQLiteDatabase, question: IQuestion): P
     question.required ? 1 : 0,
     question.order,
     question.description,
-    question.filters,
+    typeof question.filters === 'string' ? question.filters : JSON.stringify(question.filters ?? {}),
     question.catalog_id,
     question.panel_id,
     question.show_list ? 1 : 0,
@@ -78,6 +78,8 @@ export const insertQuestion = async (db: SQLiteDatabase, question: IQuestion): P
   ];
 
   await db.executeSql(query, params);
+  console.log("PARAMS", params);
+
 };
 
 export const insertQuestionWithOptions = async (
@@ -85,10 +87,20 @@ export const insertQuestionWithOptions = async (
   question: IQuestion,
   options: IQuestionOption[]
 ): Promise<void> => {
-  await insertQuestion(db, question);
+  try{
+    await insertQuestion(db, question);
+    console.log("inserted question", question.id, "with form_id", question.form_id);
+    console.log("OPTIONS:", options);
+    console.log("OPTIONS LENGTH:", options?.length);
 
-  for (const option of options) {
-    await insertQuestionOption(db, option);
-  }
+    for (const option of options) {
+      console.log("firing inster option");
+      
+      await insertQuestionOption(db, option);
+    }
+    
+    }catch(err){
+      console.log(err);
+    }
 };
 
