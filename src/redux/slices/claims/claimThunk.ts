@@ -1,15 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
-import { ClaimType, onAddClaim, onCheckingClaims, onDeleteClaim, onEditClaim, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL1 } from '@env';
+import { onAddClaim, onCheckingClaims, onEditClaim, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
+import { API_BASE_URL1, API_URL } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
-import {  createClaimsTable, insertClaim } from "../../../localDB/claims/claims";
+import {  createClaimsTable, dropClaimsTable, insertClaim } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
 import { startOfflineClaims, startOfflineDeleteClaim } from "./claimOffLineThunk";
 import NetInfo from '@react-native-community/netinfo';
-import { createAnswersTable, insertAnswer } from "../../../localDB/claims/answers";
-import { createUnsyncedClaimTable, deleteUnsyncedClaim, getOfflineUnsyncedClaims, getUnsyncedClaimById, getUnsyncedClaimsToFetch, insertUnsyncedClaim } from "../../../localDB/claims/unSyncedClaim";
+import { insertAnswer } from "../../../localDB/claims/answers";
+import { createUnsyncedClaimTable, deleteUnsyncedClaim, getUnsyncedClaimById, getUnsyncedClaimsToFetch, insertUnsyncedClaim } from "../../../localDB/claims/unSyncedClaim";
 import { createUnsyncedAnswerTable, insertUnsyncedAnswer, updateUnsyncedAnswer } from "../../../localDB/claims/unSyncedAnswer";
 import { unSyncedClaim } from "../../../types/unSyncedClaim";
 import { IClaim } from "../../../types/claims/IClaim";
@@ -53,7 +53,7 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
-            const response = await fetch(`${API_BASE_URL1}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
+            const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/${formId}/claims`,{headers:headers});
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, {...claim,isSynced:true});
@@ -96,8 +96,8 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
           ...setTokenHeader(tokenData),
           'Content-Type': 'application/json',
         };
-
-        const response = await fetch(`${API_BASE_URL1}/api/v1/forms/visible/claims`, {
+console.log(`${API_URL}/api/v1/forms/visible/claims`);
+        const response = await fetch(`${API_URL}/api/v1/forms/visible/claims`, {
           method: 'POST',
           headers,
           body: JSON.stringify(inClaim),
@@ -174,7 +174,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         ...setTokenHeader(tokenData),
         'Content-Type': 'application/json',
       };
-      const response = await fetch(`${API_BASE_URL1}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
@@ -223,8 +223,8 @@ export const startDeleteClaim=(claimId:number)=>{
             ...setTokenHeader(tokenData),
             'Content-Type': 'application/json',
           };
-          console.log(`${API_BASE_URL1}/api/v1/forms/visible/claims/${claimId}`);
-          const response = await fetch(`${API_BASE_URL1}/api/v1/forms/visible/claims/${claimId}`, {
+          console.log(`${API_BASE_URL}/api/v1/forms/visible/claims/${claimId}`);
+          const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims/${claimId}`, {
             method: 'DELETE',
             headers,
           });
