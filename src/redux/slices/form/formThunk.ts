@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onCheckingForms, onSetErrorMessage } from './formSlice';
 import { getDBConnection } from '../../../localDB/db';
 import { insertQuestionWithOptions } from '../../../localDB/questions/questions';
-import { API_BASE_URL9 } from '@env';
+import { API_BASE_URL1 } from '@env';
 import { saveFormOffline, startOfflineForms } from './offlineFormThunk';
 import NetInfo from '@react-native-community/netinfo';
 
@@ -35,7 +35,7 @@ export const startLoadForms = () => {
           uid: tokenObject['uid'] ?? '',
         };
         const headers = setTokenHeader(tokenData);
-        const response = await fetch(`${API_BASE_URL9}/api/v1/forms/visible`, { headers: headers });
+        const response = await fetch(`${API_BASE_URL1}/api/v1/forms/visible`, { headers: headers });
         if(response.ok){
           const data = await response.json();
 
