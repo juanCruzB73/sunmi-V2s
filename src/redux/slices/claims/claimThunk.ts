@@ -97,7 +97,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
           'Content-Type': 'application/json',
         };
 console.log(`${API_URL}/api/v1/forms/visible/claims`);
-        const response = await fetch(`${API_URL}/api/v1/forms/visible/claims`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/forms/visible/claims`, {
           method: 'POST',
           headers,
           body: JSON.stringify(inClaim),
