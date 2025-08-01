@@ -5,6 +5,7 @@ import {
   Pressable,
   View,
   FlatList,
+  Text,
   
 } from "react-native";
 import { TopBar } from "../../components/top-bar/TopBar";
@@ -13,8 +14,9 @@ import InfoCard from "../cards/InfoCard";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../router/StackNavigator";
 import LinearGradient from "react-native-linear-gradient";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../redux/store";
+import { uploadUnsyncedClaims } from "../../redux/slices/claims/claimThunk";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;
@@ -22,6 +24,12 @@ type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;
 const ClaimSearcher = ({ navigation }: Props) => {
   const [searchInput, setSearchInput] = useState("");
   const { claims } = useSelector((state: RootState) => state.claim);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleSyncClaims=()=>{
+    dispatch(uploadUnsyncedClaims());
+  };
  
   return (
     <>
@@ -45,7 +53,9 @@ const ClaimSearcher = ({ navigation }: Props) => {
               </Pressable>
             )}
           </View>
-
+            <Pressable onPress={() => handleSyncClaims()} style={styles.clearButton}>
+                <Text>Subir reclamos</Text>
+              </Pressable>
           <FlatList
             data={claims}
             keyExtractor={(item) => item.id.toString()}
@@ -86,6 +96,7 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     paddingLeft: 8,
+    color:"#999"
   },
   list: {
     gap: 12,

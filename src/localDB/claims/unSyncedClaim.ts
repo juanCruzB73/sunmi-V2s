@@ -21,6 +21,36 @@ export const createUnsyncedClaimTable = async (db: SQLiteDatabase): Promise<void
   }
 };
 
+export const getUnsyncedClaimsToFetch = async ():Promise<unSyncedClaim[]> => {
+    const db = await getDBConnection();
+    const results = await db.executeSql(`SELECT * FROM unsynced_claims;`);
+    const rows = results[0].rows;
+    const claims: any[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const claimRow = rows.item(i);
+    const answers = await getUnsycedAnswersByClaimId(db, claimRow.id);
+    const formatedAnswers:{input_string:string,question_id:string}[]=[];
+    for (const answer of answers) {
+      formatedAnswers.push({
+        input_string:answer.input_string,
+        question_id:String(answer.question_id)
+      })
+    }
+    const data={
+      id:claimRow.id,
+      form_id:claimRow.form_id,
+      incident_id:claimRow.incident_id,
+      area_id:claimRow.area_id,
+      main_panel_id:claimRow.main_panel_id,
+      answers_attributes:formatedAnswers
+    }
+    claims.push(data)
+  }
+  console.log(claims);
+  
+  return claims;
+};
 
 export const getOfflineUnsyncedClaims = async ():Promise<unSyncedClaim[]> => {
     const db = await getDBConnection();
@@ -98,10 +128,17 @@ export const insertUnsyncedClaim=async(db:SQLiteDatabase,unsyncedClaim:any)=>{
 }
 
 export const deleteUnsyncedClaim=async(db:SQLiteDatabase,claimId:number)=>{
-  await db.executeSql(
+  try{
+    await db.executeSql(
       `DELETE FROM unsynced_claims WHERE id = ?;`,
     [claimId]
     );
+    console.log("se borro claim local");
+    
+  }catch(err){
+    console.log(err);
+    
+  }
 }
 
 export const getUnsyncedClaimById=async(db:SQLiteDatabase,claimId:number)=>{
