@@ -65,6 +65,7 @@ const StackNavigator = () => {
       )}
     </Stack.Navigator>
   );
+  
 };
 
 export default StackNavigator;
