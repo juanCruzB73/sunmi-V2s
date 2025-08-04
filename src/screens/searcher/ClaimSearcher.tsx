@@ -6,7 +6,8 @@ import {
   View,
   FlatList,
   Text,
-  
+  Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { TopBar } from "../../components/top-bar/TopBar";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -18,19 +19,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { uploadUnsyncedClaims } from "../../redux/slices/claims/claimThunk";
 
-
 type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;
 
 const ClaimSearcher = ({ navigation }: Props) => {
   const [searchInput, setSearchInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const { claims } = useSelector((state: RootState) => state.claim);
-
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleSyncClaims=()=>{
-    dispatch(uploadUnsyncedClaims());
+  const handleSyncClaims = async () => {
+    setLoading(true);
+    await dispatch(uploadUnsyncedClaims());
+    setLoading(false);
   };
- 
+
   return (
     <>
       <TopBar navigation={navigation} />
@@ -53,9 +55,11 @@ const ClaimSearcher = ({ navigation }: Props) => {
               </Pressable>
             )}
           </View>
-            <Pressable onPress={() => handleSyncClaims()} style={styles.clearButton}>
-                <Text>Subir reclamos</Text>
-              </Pressable>
+
+          <Pressable onPress={handleSyncClaims} style={styles.syncButton}>
+            <Text style={styles.syncButtonText}>Subir reclamos</Text>
+          </Pressable>
+
           <FlatList
             data={claims}
             keyExtractor={(item) => item.id.toString()}
@@ -63,11 +67,19 @@ const ClaimSearcher = ({ navigation }: Props) => {
             renderItem={({ item }) => <InfoCard claim={item} />}
           />
         </View>
+
+        {loading && (
+          <View style={styles.overlay}>
+            <ActivityIndicator size="large" color="#ff0000ff" />
+            <Text style={styles.loadingText}>Subiendo reclamos...</Text>
+          </View>
+        )}
       </LinearGradient>
     </>
   );
 };
 
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   gradient: {
@@ -81,10 +93,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    borderRadius: 10,
-    elevation: 3,
+    borderRadius: 12,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
   searchIcon: {
     marginRight: 8,
@@ -96,10 +112,43 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     paddingLeft: 8,
-    color:"#999"
+  },
+  syncButton: {
+    backgroundColor: "#007bff",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  syncButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
   list: {
-    gap: 12,
+    gap: 16,
+    paddingBottom: 40,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width,
+    height,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10,
+  },
+  loadingText: {
+    marginTop: 12,
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
 

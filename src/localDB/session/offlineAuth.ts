@@ -1,4 +1,5 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
+import * as Keychain from 'react-native-keychain';
 import bcrypt from 'bcryptjs';
 
 bcrypt.setRandomFallback(() => {
@@ -98,7 +99,7 @@ export const printAllOfflineUsers = async (db: SQLiteDatabase) => {
   try {
     const [results] = await db.executeSql(`SELECT * FROM offlineAuth`);
     for (let i = 0; i < results.rows.length; i++) {
-      console.log('👤 Usuario offline registrado:', results.rows.item(i));
+      console.log('Usuario offline registrado:', results.rows.item(i));
     }
   } catch (error) {
     console.error('Error al listar usuarios offline:', error);
@@ -119,6 +120,8 @@ export const loginOffline = async (
     return false;
   }
 
+  await Keychain.setGenericPassword(email, plainPassword);
+
   const passwordMatch = bcrypt.compareSync(plainPassword, user.password_hash);
 
   if (plainPassword && passwordMatch) {
@@ -130,26 +133,4 @@ export const loginOffline = async (
   }
 
   return false;
-};
-
-
-// Obtiene la última fecha de login
-export const getLastLogin = async (
-  db: SQLiteDatabase,
-  username: string
-): Promise<string | null> => {
-  try {
-    const normalizedUsername = username.trim().toLowerCase();
-    const [results] = await db.executeSql(
-      `SELECT last_login FROM offlineAuth WHERE username = ?`,
-      [normalizedUsername]
-    );
-    if (results.rows.length > 0) {
-      return results.rows.item(0).last_login;
-    }
-    return null;
-  } catch (error) {
-    console.error('Error al obtener fecha de último login:', error);
-    return null;
-  }
 };

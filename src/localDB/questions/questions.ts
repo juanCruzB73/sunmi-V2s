@@ -78,7 +78,6 @@ export const insertQuestion = async (db: SQLiteDatabase, question: IQuestion): P
   ];
 
   await db.executeSql(query, params);
-  console.log("PARAMS", params);
 
 };
 
@@ -89,13 +88,8 @@ export const insertQuestionWithOptions = async (
 ): Promise<void> => {
   try{
     await insertQuestion(db, question);
-    console.log("inserted question", question.id, "with form_id", question.form_id);
-    console.log("OPTIONS:", options);
-    console.log("OPTIONS LENGTH:", options?.length);
 
     for (const option of options) {
-      console.log("firing inster option");
-      
       await insertQuestionOption(db, option);
     }
     
