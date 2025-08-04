@@ -2,7 +2,9 @@ import { AppDispatch } from '../../store';
 import { onLoadForms, onSetErrorMessage } from './formSlice';
 import { IForm } from '../../../types/form/IForm';
 import { getDBConnection } from "../../../localDB/db";
-import { Form, insertForm } from "../../../localDB/forms/forms";
+import { createFormsTable, dropFormsTable, Form, insertForm } from "../../../localDB/forms/forms";
+import { createQuestionOptionsTable, dropQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
+import { createQuestionsTable, dropQuestionsTable } from '../../../localDB/questions/questions';
 
 
 export const saveFormOffline = async (form: Form): Promise<void> => {
@@ -12,13 +14,6 @@ export const saveFormOffline = async (form: Form): Promise<void> => {
 
 export const getOfflineForms = async (): Promise<Form[]> => {
   const db = await getDBConnection();
-
-  //await dropFormsTable(db)
-  //await dropQuestionOptionsTable(db);
-  //await dropQuestionsTable(db);
-  //await createQuestionOptionsTable(db);
-  //await createQuestionsTable(db);
-  //await createFormsTable(db);
 
   const results = await db.executeSql('SELECT * FROM forms;');
   const rows = results[0].rows;

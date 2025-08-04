@@ -3,10 +3,12 @@ import { IAuthToken } from '../../../types/IAuthToken';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onCheckingForms, onSetErrorMessage } from './formSlice';
 import { getDBConnection } from '../../../localDB/db';
-import { insertQuestionWithOptions } from '../../../localDB/questions/questions';
-import { API_BASE_URL1 } from '@env';
+import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions } from '../../../localDB/questions/questions';
+import { API_BASE_URL2 } from '@env';
 import { saveFormOffline, startOfflineForms } from './offlineFormThunk';
 import NetInfo from '@react-native-community/netinfo';
+import { createFormsTable, dropFormsTable } from '../../../localDB/forms/forms';
+import { createQuestionOptionsTable, dropQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
 
 
 const setTokenHeader = (tokenData: IAuthToken) => {
@@ -27,6 +29,10 @@ export const startLoadForms = () => {
         try {
         dispatch(onCheckingForms());
         const db = await getDBConnection();
+       
+          await createQuestionOptionsTable(db);
+          await createQuestionsTable(db);
+          await createFormsTable(db);
         const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
         const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
         const tokenData: IAuthToken = {
@@ -35,14 +41,16 @@ export const startLoadForms = () => {
           uid: tokenObject['uid'] ?? '',
         };
         const headers = setTokenHeader(tokenData);
-        const response = await fetch(`${API_BASE_URL1}/api/v1/forms/visible`, { headers: headers });
+        const response = await fetch(`${API_BASE_URL2}/api/v1/forms/visible`, { headers: headers });
         if(response.ok){
           const data = await response.json();
 
           for (const form of data) {
-            await saveFormOffline(form);
+            await saveFormOffline(form);  
+            
             for (const question of form.questions) {
-              insertQuestionWithOptions(db,question,question.question_options??[]);
+              const questionWithFormId = { ...question, form_id: form.id };
+              await insertQuestionWithOptions(db, questionWithFormId, question.question_options ?? []);
             }
           }
 

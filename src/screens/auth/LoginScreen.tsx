@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, Image, ActivityIndicator, Text } from 'react-native';
 import InputField from '../../components/login/InputField';
 import LoginButton from '../../components/login/LoginButton';
 import ForgetPassword from '../../components/login/ForgetPassword';
@@ -14,17 +14,25 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('fcasteller@gmail.com');
   const [password, setPassword] = useState('2668765');
-  
-  const dispatch = useDispatch<AppDispatch>()
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleLogin = async () => {
+    setIsLoading(true);
+    setErrorMessage('');
     try {
       const success = await dispatch(startOnLogIn({ email, password }));
-      
+
+      if (!success) {
+        setErrorMessage('Usuario o contraseña incorrectos');
+      }
     } catch (err) {
-      const errorMessage = (err as Error).message || "Ha ocurrido un error inesperado";
-      console.log("Error", errorMessage);
+      const message = (err as Error).message || 'Ha ocurrido un error inesperado';
+      setErrorMessage(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -37,9 +45,18 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.logoContainer}>
         <Image source={require('../../assets/logotopbar.jpeg')} style={styles.logo} />
       </View>
+
       <InputField placeholder="Usuario" value={email} onChangeText={setEmail} />
       <InputField placeholder="Contraseña" secureTextEntry value={password} onChangeText={setPassword} />
-      <LoginButton label="Ingresar" onPress={handleLogin} />
+
+      {errorMessage !== '' && <Text style={styles.errorText}>{errorMessage}</Text>}
+
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
+      ) : (
+        <LoginButton label="Ingresar" onPress={handleLogin} />
+      )}
+
       <ForgetPassword onPress={handleForgotPassword} />
     </View>
   );
@@ -61,9 +78,13 @@ const styles = StyleSheet.create({
     height: 150,
     resizeMode: 'contain',
   },
-  loginButton: {
-    width: '100%',
-    marginBottom: 8,
+  loader: {
+    marginVertical: 20,
+  },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
 });
 

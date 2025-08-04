@@ -1,76 +1,96 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, View, Text, StyleSheet, Dimensions } from 'react-native';
-import { TopBar } from '../../components/top-bar/TopBar'
+import {
+  Pressable,
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
+import { TopBar } from '../../components/top-bar/TopBar';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
 import { AppDispatch, RootState } from '../../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import { startLoadForms } from '../../redux/slices/form/formThunk';
 import NetInfo from '@react-native-community/netinfo';
+
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const HomeScreen = ({ navigation }: Props) => {
-
   const dispatch = useDispatch<AppDispatch>();
   const { forms } = useSelector((state: RootState) => state.form);
-  
   const [isConnected, setIsConnected] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsConnected(state.isConnected);
     });
 
-    // Optional: Get current state immediately
     NetInfo.fetch().then(state => {
       setIsConnected(state.isConnected);
     });
 
     return () => {
-      unsubscribe(); // Cleanup the listener on unmount
+      unsubscribe();
     };
   }, []);
 
-  useEffect(()=>{
-    const getForms=async()=>{
-      dispatch(startLoadForms());
-    }
-    getForms();
-  },[])
+  useEffect(() => {
+    dispatch(startLoadForms());
+  }, []);
+
+  const handleNavigate = async (route: keyof RootStackParamList | undefined) => {
+    if (!route) return;
+    setLoading(true);
+    // Optional delay to show spinner clearly
+    setTimeout(() => {
+      navigation.navigate(route);
+      setLoading(false);
+    }, 500);
+  };
 
   return (
     <>
       <TopBar navigation={navigation} />
-      <Text>
+      <Text style={{ textAlign: 'center', marginVertical: 10 }}>
         {isConnected === null
           ? 'Checking connection...'
           : isConnected
           ? 'You are online ✅'
           : 'No internet connection ❌'}
       </Text>
+
       <View style={styles.container}>
         {[
           { label: 'Formularios', route: 'DisplayForms' },
-          //{ label: 'Multas', route: 'FineSearcher' },
-          { label: 'Otros', route: undefined }
+          { label: 'Otros', route: undefined },
         ].map((item, index) => (
           <Pressable
             key={index}
             style={({ pressed }) => [
               styles.button,
-              pressed && styles.buttonPressed
+              pressed && styles.buttonPressed,
             ]}
-            onPress={() => item.route && navigation.navigate({ name: item.route as any, params: undefined })}
+            onPress={() => handleNavigate(item.route)}
           >
             <Text style={styles.text}>{item.label}</Text>
           </Pressable>
         ))}
       </View>
-    </>
-  )
-}
 
-const { width } = Dimensions.get('window');
+      {loading && (
+        <View style={styles.overlay}>
+          <ActivityIndicator size="large" color="#ffffff" />
+        </View>
+      )}
+    </>
+  );
+};
+
+const { width, height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-evenly',
@@ -100,6 +120,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width,
+    height,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
 });
 
-export default HomeScreen
+export default HomeScreen;

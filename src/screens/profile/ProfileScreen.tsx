@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
-  Dimensions, Alert,
-  ScrollView
+  Dimensions,
+  ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import ProfileHeader from '../../components/profile/ProfileHeader';
 import ProfileOption from '../../components/profile/ProfileOption';
@@ -19,45 +20,54 @@ type Props = NativeStackScreenProps<RootStackParamList, 'profile'>;
 const ProfileScreen = ({ navigation }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  console.log(user)
-    return (
-      <>
-        <TopBar navigation={navigation} isProfileScreen />
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <TopBar navigation={navigation} isProfileScreen />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
-          <ProfileHeader
-            name={user.name}
-            email={user.email}
-          />
+          <ProfileHeader name={user.name} email={user.email} />
+
           <View style={styles.optionBox}>
             <ProfileOption icon="bell" label="Notificaciones" onPress={() => {}} />
             <ProfileOption icon="question-circle" label="Ayuda" onPress={() => {}} />
             <ProfileOption icon="cog" label="Configuraciones" onPress={() => {}} />
           </View>
-        </View>
+
           <LogoutButton />
-    </>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-  gradient: {
+  safeArea: {
     flex: 1,
+    backgroundColor: '#f5f6fa',
+  },
+  scrollContainer: {
+    paddingBottom: 40,
   },
   container: {
     alignItems: 'center',
     paddingVertical: 32,
-    gap: 20,
+    gap: 24,
   },
   optionBox: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     width: width * 0.9,
     paddingVertical: 24,
-    paddingHorizontal: 16,
-    borderRadius: 16,
-    elevation: 3,
-    gap: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+    gap: 16,
   },
 });
 

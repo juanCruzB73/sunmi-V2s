@@ -8,32 +8,34 @@ export const FormCard: FC<{ form: IForm }> = ({ form }) => {
       <Text style={styles.title}>{form.name}</Text>
       <Text style={styles.description}>{form.description}</Text>
 
+      <View style={styles.divider} />
+
       <View style={styles.row}>
         <Text style={styles.label}>ID:</Text>
         <Text style={styles.value}>{form.id}</Text>
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Area ID:</Text>
+        <Text style={styles.label}>Área:</Text>
         <Text style={styles.value}>{form.area_id}</Text>
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Published:</Text>
+        <Text style={styles.label}>Publicado:</Text>
         <Text style={[styles.value, form.publish ? styles.published : styles.unpublished]}>
-          {form.publish ? 'Yes' : 'No'}
+          {form.publish ? 'Sí' : 'No'}
         </Text>
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Visible in App:</Text>
+        <Text style={styles.label}>Visible en App:</Text>
         <Text style={[styles.value, form.visible_app ? styles.published : styles.unpublished]}>
-          {form.visible_app ? 'Yes' : 'No'}
+          {form.visible_app ? 'Sí' : 'No'}
         </Text>
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.label}>Created:</Text>
+        <Text style={styles.label}>Creado:</Text>
         <Text style={styles.value}>{new Date(form.created_at).toLocaleDateString()}</Text>
       </View>
     </View>
@@ -42,46 +44,52 @@ export const FormCard: FC<{ form: IForm }> = ({ form }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    marginVertical: 8,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 20,
+    marginVertical: 10,
     marginHorizontal: 16,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
-    marginBottom: 8,
-    color: '#333',
+    color: '#2c3e50',
+    marginBottom: 6,
   },
   description: {
-    fontSize: 14,
+    fontSize: 15,
+    color: '#7f8c8d',
     marginBottom: 12,
-    color: '#666',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#ecf0f1',
+    marginBottom: 12,
   },
   row: {
     flexDirection: 'row',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   label: {
     fontWeight: '600',
-    color: '#555',
-    width: 120,
+    color: '#34495e',
+    width: 140,
   },
   value: {
-    color: '#333',
+    color: '#2c3e50',
+    fontSize: 15,
   },
   published: {
-    color: 'green',
+    color: '#27ae60',
     fontWeight: '700',
   },
   unpublished: {
-    color: 'red',
+    color: '#c0392b',
     fontWeight: '700',
   },
 });
