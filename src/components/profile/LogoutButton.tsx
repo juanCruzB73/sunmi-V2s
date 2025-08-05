@@ -10,8 +10,8 @@ const LogoutButton: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handleLogOut=()=>{
-       dispatch(startLogOut())
-    }
+     dispatch(startLogOut());
+  };
 
   return (
     <TouchableOpacity style={styles.button} onPress={handleLogOut}>

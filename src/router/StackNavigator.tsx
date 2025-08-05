@@ -21,6 +21,7 @@ import { IAuthToken } from "../types/IAuthToken";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { startOnLogIn } from "../redux/slices/auth/authThunk";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { onLogOut } from "../redux/slices/auth/authSlice";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -48,8 +49,9 @@ const StackNavigator = () => {
 
   const { status } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
-
-  const [isConnected, setIsConnected] = useState<boolean | null>(null);
+  console.log(status);
+  
+  const [isConnected, setIsConnected] = useState<boolean | null>(false);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -76,7 +78,9 @@ const StackNavigator = () => {
           client: tokenObject['client'] ?? '',
           uid: tokenObject['uid'] ?? '',
         };
-        if(!tokenData.accessToken||!tokenData.client||!tokenData.uid && netState.isConnected){
+        console.log(tokenData,status);
+        
+        if((!tokenData.accessToken||!tokenData.client||!tokenData.uid) && netState.isConnected && status!=="checking"){
           const credentials = await Keychain.getGenericPassword();
           if (credentials) {
             const { username: email, password } = credentials;
@@ -87,7 +91,8 @@ const StackNavigator = () => {
       }
     }
     reLoginOnline();
-  },[isConnected])
+  },[isConnected,status])
+  console.log(status);
   
   if (status === 'checking') {
     return (
@@ -97,6 +102,7 @@ const StackNavigator = () => {
       </View>
     );
   }
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {status === "authenticated" ? (

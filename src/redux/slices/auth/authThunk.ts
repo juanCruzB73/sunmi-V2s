@@ -6,6 +6,7 @@ import {API_BASE_URL2} from '@env';
 import { getDBConnection } from "../../../localDB/db";
 import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
 import { startOffLineLogin } from "./offLineAuthThunk";
+import * as Keychain from 'react-native-keychain';
 
 export interface ILogin {
   email: string;
@@ -28,9 +29,9 @@ const storeAuthTokens = async (
   }
 };
 
-
 export const restoreAuthState = () => {
   return async (dispatch: AppDispatch) => {
+    await AsyncStorage.multiRemove(['access-token', 'client', 'uid']);
     dispatch(onCheckingAuth());
     const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
     const tokenData = Object.fromEntries(values);
@@ -63,7 +64,7 @@ export const restoreAuthState = () => {
 export const startOnLogIn = (payload: ILogin) => {
   return async (dispatch: AppDispatch) => {
     dispatch(onCheckingAuth());
-
+    await AsyncStorage.multiRemove(['access-token', 'client', 'uid']);
     const db = await getDBConnection();
     //await dropOfflineAuthTable(db);
     //await createOfflineAuthTable(db);
@@ -88,15 +89,6 @@ export const startOnLogIn = (payload: ILogin) => {
           const accessToken = response.headers.get('access-token');
           const client = response.headers.get('client');
           const uid = response.headers.get('uid');
-
-          const authData = {
-            name: data.data.name,
-            email: data.data.email,
-            userId: data.data.id,
-            accessToken,
-            client,
-            uid,
-          };
           
           await storeAuthTokens(accessToken, client, uid);
           await registerOfflineUser(db, {
@@ -122,10 +114,9 @@ export const startOnLogIn = (payload: ILogin) => {
 
 export const startLogOut = () => {
   return async (dispatch: AppDispatch) => {
-    dispatch(onCheckingAuth());
-
     try {
       await AsyncStorage.multiRemove(['access-token', 'client', 'uid']);
+      await Keychain.resetGenericPassword();
     } catch (error) {
       console.error("Failed to clear auth tokens:", error);
     }

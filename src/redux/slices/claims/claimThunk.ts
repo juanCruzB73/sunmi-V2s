@@ -13,7 +13,6 @@ import { createUnsyncedClaimTable, deleteUnsyncedClaim, getOfflineUnsyncedClaims
 import { createUnsyncedAnswerTable, insertUnsyncedAnswer, updateUnsyncedAnswer } from "../../../localDB/claims/unSyncedAnswer";
 import { unSyncedClaim } from "../../../types/unSyncedClaim";
 import { IClaim } from "../../../types/claims/IClaim";
-import { IAnswer } from "../../../types/claims/IAnswer";
 
 function isIClaim(claim: IClaim | unSyncedClaim): claim is IClaim {
   return (claim as IClaim).answers !== undefined;
@@ -181,7 +180,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         body: JSON.stringify(inClaim),
       });
       const data = await response.json();
-      dispatch(onEditClaim({...data,id:inClaim.claim.id}));
+      dispatch(onEditClaim({...data,id:inClaim.claim.id,isSynced:true}));
       dispatch(onSetActiveClaim(data.claim));
       dispatch(onSetErrorMessage(null));
       return;
