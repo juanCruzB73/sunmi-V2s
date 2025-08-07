@@ -15,11 +15,10 @@ import { DisplayForms } from "../testForms/DisplayForms";
 import { DisplayQuestions } from "../testForms/DisplayQuestions";
 import ClaimMenu from "../screens/Menu/ClaimMenu";
 import { ClaimScreen } from "../screens/claim/ClaimScreen";
-
 import * as Keychain from 'react-native-keychain';
 import { IAuthToken } from "../types/IAuthToken";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { startOnLogIn } from "../redux/slices/auth/authThunk";
+import { reLoginOnline, startOnLogIn } from "../redux/slices/auth/authThunk";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { onLogOut } from "../redux/slices/auth/authSlice";
 
@@ -65,35 +64,15 @@ const StackNavigator = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  },[]);
   
   useEffect(()=>{
-    const reLoginOnline=async()=>{
-      const netState = await NetInfo.fetch();
-      if (netState.isConnected){
-        const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-        const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
-        const tokenData: IAuthToken = {
-          accessToken: tokenObject['access-token'] ?? '',
-          client: tokenObject['client'] ?? '',
-          uid: tokenObject['uid'] ?? '',
-        };
-        console.log(tokenData,status);
-        
-        if((!tokenData.accessToken||!tokenData.client||!tokenData.uid) && netState.isConnected && status!=="checking"){
-          const credentials = await Keychain.getGenericPassword();
-          if (credentials) {
-            const { username: email, password } = credentials;
-          
-            await dispatch(startOnLogIn({ email, password }))
-          }
-        }
-      }
+    const reLogin=async()=>{
+      dispatch(await reLoginOnline(status))
     }
-    reLoginOnline();
-  },[isConnected,status])
+    reLogin();
+  },[isConnected])
   console.log(status);
-  
   if (status === 'checking') {
     return (
       <View style={styles.checkingContainer}>
