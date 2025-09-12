@@ -16,7 +16,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { IQuestion } from '../types/form/IQuestion';
 import QuestionInput from '../components/question-option/QuestionInput';
 import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThunk';
-import { startAddClaim, startEditClaim } from '../redux/slices/claims/claimThunk';
+import { startAddClaim, startEditClaim, startEditClaimUnsync } from '../redux/slices/claims/claimThunk';
 import { ClaimType } from '../redux/slices/claims/claimSlice';
 import { IClaim } from '../types/claims/IClaim';
 
@@ -103,7 +103,8 @@ export const DisplayQuestions = ({ navigation }: Props) => {
         };
 
     if (!activeClaim) await dispatch(startAddClaim(data));
-    if (activeClaim) await dispatch(startEditClaim(data));
+    if (activeClaim && activeClaim.isSynced) await dispatch(startEditClaim(data));
+    if (activeClaim && !activeClaim.isSynced) await dispatch(startEditClaimUnsync(data))
 
     setLoading(false);
     navigation.navigate('ClaimSearcher');

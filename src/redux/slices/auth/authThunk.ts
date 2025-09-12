@@ -71,7 +71,8 @@ export const startOnLogIn = (payload: ILogin) => {
     //await createOfflineAuthTable(db);
     //const normalizedEmail = payload.email.trim().toLowerCase();
     const netState = await NetInfo.fetch();
-
+    console.log(`${API_BASE_URL1}/api/v1/auth/sign_in`);
+    
     if (netState.isConnected) {
       try {
         const response = await fetch(`${API_BASE_URL1}/api/v1/auth/sign_in`, {
@@ -137,7 +138,8 @@ export const reLoginOnline=async(status:string)=>{
           client: tokenObject['client'] ?? '',
           uid: tokenObject['uid'] ?? '',
       };
-
+      console.log(tokenData);
+      
       if(netState.isConnected && status!=="checking"){
 
         if (credentials) {

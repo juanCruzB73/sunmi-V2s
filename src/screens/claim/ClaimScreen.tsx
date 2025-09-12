@@ -59,12 +59,18 @@ export const ClaimScreen = ({ navigation }: Props) => {
     }
   };
 
+  const isSynced = isIClaim(activeClaim) && Boolean(activeClaim.isSynced);
+
   return (
     <>
       <TopBar navigation={navigation} />
       <LinearGradient colors={['#eef2f7', '#d6e0f0']} style={styles.gradient}>
         <View style={styles.wrapper}>
           <Text style={styles.title}>Datos de la solicitud</Text>
+
+          {isSynced && (
+            <Text style={styles.syncedLabel}>✅ Reclamo sincronizado</Text>
+          )}
 
           <View style={styles.card}>
             <ScrollView contentContainerStyle={styles.answersContainer}>
@@ -95,28 +101,40 @@ export const ClaimScreen = ({ navigation }: Props) => {
               style={({ pressed }) => [
                 styles.button,
                 styles.editButton,
-                pressed && styles.buttonPressed,
+                isSynced && styles.disabledButton,
+                pressed && !isSynced && styles.buttonPressed,
               ]}
               onPress={() => {
-                handleClickEdit();
-                navigation.navigate('DisplayQuestions');
+                if (!isSynced) {
+                  handleClickEdit();
+                  navigation.navigate('DisplayQuestions');
+                }
               }}
+              disabled={isSynced}
             >
-              <Text style={styles.buttonText}>Editar</Text>
+              <Text style={styles.buttonText}>
+                {isSynced ? 'No editable' : 'Editar'}
+              </Text>
             </Pressable>
 
             <Pressable
               style={({ pressed }) => [
                 styles.button,
                 styles.deleteButton,
-                pressed && styles.buttonPressed,
+                isSynced && styles.disabledButton,
+                pressed && !isSynced && styles.buttonPressed,
               ]}
               onPress={() => {
-                handleDeleteClaim();
-                navigation.navigate('ClaimSearcher');
+                if (!isSynced) {
+                  handleDeleteClaim();
+                  navigation.navigate('ClaimSearcher');
+                }
               }}
+              disabled={isSynced}
             >
-              <Text style={styles.buttonText}>Eliminar</Text>
+              <Text style={styles.buttonText}>
+                {isSynced ? 'Sincronizado' : 'Eliminar'}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -142,6 +160,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#2c3e50',
     marginTop: 20,
+  },
+  syncedLabel: {
+    fontSize: 16,
+    color: '#27ae60',
+    fontWeight: '600',
+    marginBottom: -10,
   },
   emptyText: {
     fontSize: 18,
@@ -191,6 +215,9 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: '#e74c3c',
+  },
+  disabledButton: {
+    backgroundColor: '#bdc3c7',
   },
   buttonPressed: {
     opacity: 0.85,

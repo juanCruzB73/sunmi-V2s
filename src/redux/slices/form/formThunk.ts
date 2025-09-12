@@ -41,7 +41,7 @@ export const startLoadForms = () => {
           uid: tokenObject['uid'] ?? '',
         };
         const headers = setTokenHeader(tokenData);
-        const response = await fetch(`${API_BASE_URL1}/api/v1/forms/visible`, { headers: headers });
+        const response = await fetch(`${API_BASE_URL1}/api/v1/forms`, { headers: headers });
         if(response.ok){
           const data = await response.json();
 
