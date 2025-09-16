@@ -39,7 +39,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require('../../assets/logotopbar.jpeg')} style={styles.logo} />
+        <Image source={require('../../assets/rlinklogo.png')} style={styles.logo} />
       </View>
 
       <InputField placeholder="Usuario" value={email} onChangeText={setEmail} />
@@ -67,8 +67,8 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   logo: {
-    width: 1000,
-    height: 150,
+    width: 800,
+    height: 100,
     resizeMode: 'contain',
   },
   loader: {

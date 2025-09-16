@@ -48,15 +48,11 @@ export const ClaimScreen = ({ navigation }: Props) => {
     );
 
   const handleClickEdit = () => {
-    if (isIClaim(activeClaim)) {
-      dispatch(startLoadQuestionsByPanel(activeForm.id, activeClaim.main_panel_id));
-    }
+    dispatch(startLoadQuestionsByPanel(activeForm.id, activeClaim.main_panel_id));
   };
 
   const handleDeleteClaim = () => {
-    if (isIClaim(activeClaim)) {
-      dispatch(startDeleteClaim(activeClaim.id));
-    }
+    dispatch(startDeleteClaim(activeClaim.id,activeForm.id));
   };
 
   const isSynced = isIClaim(activeClaim) && Boolean(activeClaim.isSynced);
@@ -101,19 +97,19 @@ export const ClaimScreen = ({ navigation }: Props) => {
               style={({ pressed }) => [
                 styles.button,
                 styles.editButton,
-                isSynced && styles.disabledButton,
+                
                 pressed && !isSynced && styles.buttonPressed,
               ]}
               onPress={() => {
-                if (!isSynced) {
+                
                   handleClickEdit();
                   navigation.navigate('DisplayQuestions');
-                }
+                
               }}
-              disabled={isSynced}
+              
             >
               <Text style={styles.buttonText}>
-                {isSynced ? 'No editable' : 'Editar'}
+                {'Editar'}
               </Text>
             </Pressable>
 
@@ -121,19 +117,19 @@ export const ClaimScreen = ({ navigation }: Props) => {
               style={({ pressed }) => [
                 styles.button,
                 styles.deleteButton,
-                isSynced && styles.disabledButton,
+                
                 pressed && !isSynced && styles.buttonPressed,
               ]}
               onPress={() => {
-                if (!isSynced) {
+                
                   handleDeleteClaim();
                   navigation.navigate('ClaimSearcher');
-                }
+                
               }}
-              disabled={isSynced}
+              
             >
               <Text style={styles.buttonText}>
-                {isSynced ? 'Sincronizado' : 'Eliminar'}
+                {'Eliminar'}
               </Text>
             </Pressable>
           </View>
