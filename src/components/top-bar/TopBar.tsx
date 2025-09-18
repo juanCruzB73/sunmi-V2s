@@ -56,8 +56,8 @@ export const TopBar = ({ navigation, isProfileScreen = false }: TopBarProps) => 
       {/* Logo */}
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>
         <Image
-          source={require('../../assets/logoOriginal.jpeg')}
-          style={{ width: 140, height: 50 }}
+          source={require('../../assets/rlinklogo.png')}
+          style={{width: 100, height: 40}}
         />
       </TouchableOpacity>
 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
     alignSelf: 'stretch',
-    maxHeight: height * 0.2,
+    height: height * 0.1,
     minWidth: width,
   },
   icon: {

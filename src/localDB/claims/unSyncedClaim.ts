@@ -52,6 +52,41 @@ export const getUnsyncedClaimsToFetch = async ():Promise<unSyncedClaim[]> => {
   return claims;
 };
 
+export const getUnsyncedClaimByIdToFetch = async (claimId: number): Promise<unSyncedClaim | null> => {
+  const db = await getDBConnection();
+
+  const results = await db.executeSql(
+    `SELECT * FROM unsynced_claims WHERE id = ?;`,
+    [claimId]
+  );
+
+  const rows = results[0].rows;
+
+  if (rows.length === 0) {
+    return null; // Not found
+  }
+
+  const claimRow = rows.item(0);
+  const answers = await getUnsycedAnswersByClaimId(db, claimRow.id);
+
+  const formattedAnswers: { input_string: string; question_id: string }[] = answers.map(answer => ({
+    input_string: answer.input_string,
+    question_id: String(answer.question_id),
+  }));
+
+  const data: unSyncedClaim = {
+    id: claimRow.id,
+    form_id: claimRow.form_id,
+    incident_id: claimRow.incident_id,
+    area_id: claimRow.area_id,
+    main_panel_id: claimRow.main_panel_id,
+    answers_attributes: formattedAnswers,
+  };
+
+  return data;
+};
+
+
 export const getOfflineUnsyncedClaims = async ():Promise<unSyncedClaim[]> => {
     const db = await getDBConnection();
     const results = await db.executeSql(`SELECT * FROM unsynced_claims;`);

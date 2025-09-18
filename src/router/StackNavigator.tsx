@@ -15,12 +15,12 @@ import { DisplayForms } from "../testForms/DisplayForms";
 import { DisplayQuestions } from "../testForms/DisplayQuestions";
 import ClaimMenu from "../screens/Menu/ClaimMenu";
 import { ClaimScreen } from "../screens/claim/ClaimScreen";
-
 import * as Keychain from 'react-native-keychain';
 import { IAuthToken } from "../types/IAuthToken";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { startOnLogIn } from "../redux/slices/auth/authThunk";
+import { reLoginOnline, startOnLogIn } from "../redux/slices/auth/authThunk";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { onLogOut } from "../redux/slices/auth/authSlice";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -48,8 +48,9 @@ const StackNavigator = () => {
 
   const { status } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
-
-  const [isConnected, setIsConnected] = useState<boolean | null>(null);
+  console.log(status);
+  
+  const [isConnected, setIsConnected] = useState<boolean | null>(false);
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -63,32 +64,15 @@ const StackNavigator = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  },[]);
   
   useEffect(()=>{
-    const reLoginOnline=async()=>{
-      const netState = await NetInfo.fetch();
-      if (netState.isConnected){
-        const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-        const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
-        const tokenData: IAuthToken = {
-          accessToken: tokenObject['access-token'] ?? '',
-          client: tokenObject['client'] ?? '',
-          uid: tokenObject['uid'] ?? '',
-        };
-        if(!tokenData.accessToken||!tokenData.client||!tokenData.uid && netState.isConnected){
-          const credentials = await Keychain.getGenericPassword();
-          if (credentials) {
-            const { username: email, password } = credentials;
-          
-            await dispatch(startOnLogIn({ email, password }))
-          }
-        }
-      }
+    const reLogin=async()=>{
+      dispatch(await reLoginOnline(status))
     }
-    reLoginOnline();
+    reLogin();
   },[isConnected])
-  
+  console.log(status);
   if (status === 'checking') {
     return (
       <View style={styles.checkingContainer}>
@@ -97,6 +81,7 @@ const StackNavigator = () => {
       </View>
     );
   }
+
   return (
     <Stack.Navigator
       initialRouteName="Home"

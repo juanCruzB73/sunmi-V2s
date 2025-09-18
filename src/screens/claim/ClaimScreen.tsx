@@ -48,16 +48,14 @@ export const ClaimScreen = ({ navigation }: Props) => {
     );
 
   const handleClickEdit = () => {
-    if (isIClaim(activeClaim)) {
-      dispatch(startLoadQuestionsByPanel(activeForm.id, activeClaim.main_panel_id));
-    }
+    dispatch(startLoadQuestionsByPanel(activeForm.id, activeClaim.main_panel_id));
   };
 
   const handleDeleteClaim = () => {
-    if (isIClaim(activeClaim)) {
-      dispatch(startDeleteClaim(activeClaim.id));
-    }
+    dispatch(startDeleteClaim(activeClaim.id,activeForm.id));
   };
+
+  const isSynced = isIClaim(activeClaim) && Boolean(activeClaim.isSynced);
 
   return (
     <>
@@ -65,6 +63,10 @@ export const ClaimScreen = ({ navigation }: Props) => {
       <LinearGradient colors={['#eef2f7', '#d6e0f0']} style={styles.gradient}>
         <View style={styles.wrapper}>
           <Text style={styles.title}>Datos de la solicitud</Text>
+
+          {isSynced && (
+            <Text style={styles.syncedLabel}>✅ Reclamo sincronizado</Text>
+          )}
 
           <View style={styles.card}>
             <ScrollView contentContainerStyle={styles.answersContainer}>
@@ -95,28 +97,40 @@ export const ClaimScreen = ({ navigation }: Props) => {
               style={({ pressed }) => [
                 styles.button,
                 styles.editButton,
-                pressed && styles.buttonPressed,
+                
+                pressed && !isSynced && styles.buttonPressed,
               ]}
               onPress={() => {
-                handleClickEdit();
-                navigation.navigate('DisplayQuestions');
+                
+                  handleClickEdit();
+                  navigation.navigate('DisplayQuestions');
+                
               }}
+              
             >
-              <Text style={styles.buttonText}>Editar</Text>
+              <Text style={styles.buttonText}>
+                {'Editar'}
+              </Text>
             </Pressable>
 
             <Pressable
               style={({ pressed }) => [
                 styles.button,
                 styles.deleteButton,
-                pressed && styles.buttonPressed,
+                
+                pressed && !isSynced && styles.buttonPressed,
               ]}
               onPress={() => {
-                handleDeleteClaim();
-                navigation.navigate('ClaimSearcher');
+                
+                  handleDeleteClaim();
+                  navigation.navigate('ClaimSearcher');
+                
               }}
+              
             >
-              <Text style={styles.buttonText}>Eliminar</Text>
+              <Text style={styles.buttonText}>
+                {'Eliminar'}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -142,6 +156,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#2c3e50',
     marginTop: 20,
+  },
+  syncedLabel: {
+    fontSize: 16,
+    color: '#27ae60',
+    fontWeight: '600',
+    marginBottom: -10,
   },
   emptyText: {
     fontSize: 18,
@@ -191,6 +211,9 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: '#e74c3c',
+  },
+  disabledButton: {
+    backgroundColor: '#bdc3c7',
   },
   buttonPressed: {
     opacity: 0.85,

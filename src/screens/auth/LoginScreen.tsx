@@ -14,13 +14,11 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('fcasteller@gmail.com');
   const [password, setPassword] = useState('2668765');
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const dispatch = useDispatch<AppDispatch>();
 
   const handleLogin = async () => {
-    setIsLoading(true);
     setErrorMessage('');
     try {
       const success = await dispatch(startOnLogIn({ email, password }));
@@ -31,8 +29,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     } catch (err) {
       const message = (err as Error).message || 'Ha ocurrido un error inesperado';
       setErrorMessage(message);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -43,7 +39,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require('../../assets/logotopbar.jpeg')} style={styles.logo} />
+        <Image source={require('../../assets/rlinklogo.png')} style={styles.logo} />
       </View>
 
       <InputField placeholder="Usuario" value={email} onChangeText={setEmail} />
@@ -51,11 +47,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
       {errorMessage !== '' && <Text style={styles.errorText}>{errorMessage}</Text>}
 
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" style={styles.loader} />
-      ) : (
+      
         <LoginButton label="Ingresar" onPress={handleLogin} />
-      )}
 
       <ForgetPassword onPress={handleForgotPassword} />
     </View>
@@ -74,8 +67,8 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   logo: {
-    width: 1000,
-    height: 150,
+    width: 800,
+    height: 100,
     resizeMode: 'contain',
   },
   loader: {
