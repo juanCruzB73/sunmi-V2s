@@ -1,6 +1,7 @@
 import { IAnswer } from "./IAnswer";
 
 export interface IClaim{
+    local_id?: number;
     id: number;
     status: string;
     panel_id:number;

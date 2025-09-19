@@ -1,6 +1,7 @@
 declare module 'react-native-sqlite-storage' {
   export interface ResultSet {
     rows: {
+      [x: string]: any;
       length: number;
       item: (index: number) => any;
     };

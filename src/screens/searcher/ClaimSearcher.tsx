@@ -19,9 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store";
 import { uploadUnsyncedClaims } from "../../redux/slices/claims/claimThunk";
 import { ClaimType } from "../../redux/slices/claims/claimSlice";
-import { unSyncedClaim } from "../../types/unSyncedClaim";
 import { searchClaim } from "../../utlis/searchClaim";
-import { IClaim } from "../../types/claims/IClaim";
 
 type Props = NativeStackScreenProps<RootStackParamList, "ClaimSearcher">;
 
@@ -43,11 +41,10 @@ const ClaimSearcher = ({ navigation }: Props) => {
     setLoading(false);
   };
 
-  const handleSearch=(keyword:string)=>{
-    const claimsFound=searchClaim(claims,keyword);
+  const handleSearch = (keyword: string) => {
+    const claimsFound = searchClaim(claims, keyword);
     setFilteredClaims(claimsFound);
-  }
-  
+  };
 
   return (
     <>
@@ -56,7 +53,12 @@ const ClaimSearcher = ({ navigation }: Props) => {
         <FlatList
           ListHeaderComponent={
             <View style={styles.searchContainer}>
-              <FontAwesome name="search" size={20} color="#555" style={styles.searchIcon} />
+              <FontAwesome
+                name="search"
+                size={20}
+                color="#555"
+                style={styles.searchIcon}
+              />
               <TextInput
                 style={styles.input}
                 placeholder="Buscar Reclamo"
@@ -73,7 +75,7 @@ const ClaimSearcher = ({ navigation }: Props) => {
               {searchInput.length > 0 && (
                 <Pressable
                   onPress={() => {
-                    handleSearch(searchInput)
+                    handleSearch(searchInput);
                   }}
                   style={styles.clearButton}
                 >
@@ -83,7 +85,14 @@ const ClaimSearcher = ({ navigation }: Props) => {
             </View>
           }
           data={filteredClaims}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => {
+            if (item.id) {
+              // Reclamo sincronizado → clave con remote_id
+              return `remote-${item.id}`;
+            }
+            // Reclamo offline → clave con local_id
+            return `local-${(item as any).local_id}`;
+          }}
           renderItem={({ item }) => (
             <InfoCard claim={item} onSync={handleSyncClaims} />
           )}
