@@ -40,7 +40,7 @@ const ClaimMenu = ({ navigation }: Props) => {
       (q) => Array.isArray(q.question_options) && q.question_options.length > 0
     );
 
-    dispatch(onLoadQuestions(filtered));
+    filtered.length<1 ? dispatch(onLoadQuestions(loadedQuestions)) : dispatch(onLoadQuestions(filtered));
     dispatch(onSetActiveClaim(null));
     navigation.navigate('DisplayQuestions');
     setLoading(false);

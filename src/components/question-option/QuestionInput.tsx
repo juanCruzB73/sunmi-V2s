@@ -2,6 +2,8 @@ import React from 'react';
 import { View, TextInput, Text, Switch, Button } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { IQuestionOption } from '../../types/form/IQuestionOption';
+import pickMedia from '../../utlis/ImagePickerService';
+import { fetchLocation } from '../../utlis/getLocatiom';
 
 const TYPES = {
   string: {},
@@ -32,9 +34,8 @@ type Question = {
 };
 
 export default function QuestionInput({ question }: { question: Question }) {
-  const { type, label, options = [], value,onPressFunction, onChange } = question;
+  const { type, label, options = [], value, onPressFunction, onChange } = question;
 
-  // Render input based on type
   switch (type) {
     case 'string':
       return (
@@ -66,7 +67,10 @@ export default function QuestionInput({ question }: { question: Question }) {
             <View key={option.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Switch
                 value={value === option.name}
-                onValueChange={() => {onChange(option.name);onPressFunction&&onPressFunction(option.panel_id)}}
+                onValueChange={() => {
+                  onChange(option.name);
+                  onPressFunction && onPressFunction(option.panel_id);
+                }}
               />
               <Text>{option.name}</Text>
             </View>
@@ -81,11 +85,12 @@ export default function QuestionInput({ question }: { question: Question }) {
           {options.map((option) => (
             <View key={option.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Switch
-                value={Array.isArray(value) ? value.includes(option) : false}
+                value={Array.isArray(value) ? value.includes(option.name) : false}
                 onValueChange={(isChecked) => {
-                  if (!Array.isArray(value)) onChange([option]);
-                  else {
-                    if (isChecked) onChange([...value, option]);
+                  if (!Array.isArray(value)) {
+                    onChange([option.name]);
+                  } else {
+                    if (isChecked) onChange([...value, option.name]);
                     else onChange(value.filter((v: string) => v !== option.name));
                   }
                 }}
@@ -100,27 +105,68 @@ export default function QuestionInput({ question }: { question: Question }) {
       return (
         <View>
           <Text>{label}</Text>
-          <Picker
-            selectedValue={value}
-            onValueChange={(itemValue) => onChange(itemValue)}
-          >
+          <Picker selectedValue={value} onValueChange={(itemValue) => onChange(itemValue)}>
             {options.map((option) => (
-              <Picker.Item key={option} label={option} value={option} />
+              <Picker.Item key={option.id} label={option.name} value={option.name} />
             ))}
           </Picker>
         </View>
       );
 
     case 'date':
-      // For date, you can use DatePicker from a library, but here is a simple placeholder
       return (
         <View>
           <Text>{label}</Text>
-          <Button title={value ? value.toString() : 'Select Date'} onPress={() => {/* show date picker */}} />
+          <Button
+            title={value ? value.toString() : 'Seleccionar fecha'}
+            onPress={() => {
+              // implementar date picker
+            }}
+          />
         </View>
       );
 
-    // Add more types as needed...
+  case 'files':
+    return (
+      <View>
+        <Text>{label}</Text>
+        <Button
+          title="Subir archivo"
+          onPress={async () => {
+            const asset = await pickMedia('gallery', 'photo'); // or 'camera'
+            if (asset) {
+              const newFiles = Array.isArray(value?.files)
+                ? [...value.files, asset]
+                : [asset];
+              onChange({ files: newFiles }); // ✅ always wrap in { files: [...] }
+            }
+          }}
+        />
+        {value?.files && value.files.length > 0 && (
+          <Text>Archivos seleccionados: {value.files.length}</Text>
+        )}
+      </View>
+    );
+    
+    case 'geolocation':
+      return (
+        <View>
+          <Text>{label}</Text>
+          <Button
+            title="Obtener ubicación"
+            onPress={async () => {
+              await fetchLocation(value, (loc) => onChange(loc)); // loc = { latitude, longitude }
+            }}
+          />
+          {value?.latitude && value?.longitude && (
+            <View>
+              <Text>Lat: {value.latitude}</Text>
+              <Text>Lng: {value.longitude}</Text>
+            </View>
+          )}
+        </View>
+    );
+
 
     default:
       return (
