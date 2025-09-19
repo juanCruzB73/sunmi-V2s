@@ -6,8 +6,8 @@ export const createClaimsTable = async (db: SQLiteDatabase): Promise<void> => {
   // Crear tabla si no existe
   await db.executeSql(`
     CREATE TABLE IF NOT EXISTS claims (
-      id INTEGER PRIMARY KEY NOT NULL,   -- remote_id
-      local_id INTEGER,                  -- 🔑 id local (puede ser null si fue creado online)
+      id INTEGER PRIMARY KEY NOT NULL,   
+      local_id INTEGER,                  
       status TEXT,
       type TEXT,
       date TEXT,
@@ -113,7 +113,7 @@ export const updateClaim = async (db: SQLiteDatabase, claim: IClaim): Promise<vo
   try {
     const query = `
       UPDATE claims SET
-        local_id = ?,          -- 🔑 mantenemos el id local
+        local_id = ?,          
         status = ?,
         type = ?,
         date = ?,

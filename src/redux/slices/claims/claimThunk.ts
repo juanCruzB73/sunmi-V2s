@@ -300,12 +300,13 @@ export const uploadUnsyncedClaims = () => {
 
           const data = await response.json();
 
-          // Guardamos en claims con ambos IDs
-          await insertClaim(db, {
-            ...data,
-            local_id: unsyncedClaim.id, // 🔑 persistimos el local_id
-            isSynced: true,
-          });
+         console.log("➡️ Insertando con local_id:", unsyncedClaim.id, "y data.id:", data.id);
+
+await insertClaim(db, {
+  ...data,
+  isSynced: true,
+  local_id: unsyncedClaim.local_id, // 🔑 debería ser el id local
+});
 
           // Eliminamos de la tabla unsynced
           await deleteUnsyncedClaim(db, unsyncedClaim.id);
@@ -376,7 +377,13 @@ export const uploadSingleUnsyncedClaim = (unsyncedClaim: unSyncedClaim) => {
         const data = await response.json();
 
         // Guardamos en claims con ambos IDs
-        await insertClaim(db, { ...data, local_id: unsyncedClaim.id, isSynced: true });
+       console.log("➡️ Insertando con local_id:", unsyncedClaim.id, "y data.id:", data.id);
+
+await insertClaim(db, {
+  ...data,
+  isSynced: true,
+  local_id: unsyncedClaim.local_id, // 🔑 debería ser el id local
+});
 
 // 🔎 Debug: ver qué quedó en la DB
 const res = await db.executeSql("SELECT id, local_id FROM claims;");
