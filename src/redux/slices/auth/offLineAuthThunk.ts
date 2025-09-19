@@ -6,7 +6,6 @@ import { ILogin } from "./authThunk"
 
 export const startOffLineLogin=(payload: ILogin)=>{
     return async (dispatch: AppDispatch) =>{
-        console.log("offline login firing");
         const db = await getDBConnection();
         const offlineValid = await loginOffline(db, payload.email, payload.password);
         if(offlineValid){

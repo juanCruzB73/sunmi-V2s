@@ -1,6 +1,7 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 
 export const createFormsTable = async (db: SQLiteDatabase): Promise<void> => {
+
   const query = `
     CREATE TABLE IF NOT EXISTS forms (
       id INTEGER PRIMARY KEY NOT NULL,

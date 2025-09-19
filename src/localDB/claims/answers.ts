@@ -1,6 +1,5 @@
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
 import { IAnswer } from '../../types/claims/IAnswer';
-import { getQuestionById } from '../questions/questions';
 
 export const createAnswersTable = async (db: SQLiteDatabase): Promise<void> => {
   const query = `
@@ -29,6 +28,10 @@ export const createAnswersTable = async (db: SQLiteDatabase): Promise<void> => {
   `;
   await db.executeSql(query);
 };
+
+export const dropAnswerTable=async(db:SQLiteDatabase):Promise<void>=>{
+  await db.executeSql(`DROP TABLE IF EXISTS answers;`);
+}
 
 export const insertAnswer = async (db: SQLiteDatabase, answer: IAnswer): Promise<void> => {
   try{

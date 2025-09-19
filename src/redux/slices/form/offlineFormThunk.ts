@@ -2,10 +2,7 @@ import { AppDispatch } from '../../store';
 import { onLoadForms, onSetErrorMessage } from './formSlice';
 import { IForm } from '../../../types/form/IForm';
 import { getDBConnection } from "../../../localDB/db";
-import { createFormsTable, dropFormsTable, Form, insertForm } from "../../../localDB/forms/forms";
-import { createQuestionOptionsTable, dropQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
-import { createQuestionsTable, dropQuestionsTable } from '../../../localDB/questions/questions';
-
+import { Form, insertForm } from "../../../localDB/forms/forms";
 
 export const saveFormOffline = async (form: Form): Promise<void> => {
   const db = await getDBConnection();

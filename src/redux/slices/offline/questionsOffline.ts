@@ -8,7 +8,6 @@ import { onLoadQuestions } from "../question/questionSlice";
 
 export const saveQuestionOffline = async (question: IQuestion): Promise<void> => {
   const db = await getDBConnection();
-  console.log("Saving question: ", question);
   await insertQuestion(db, question);
 };
 
@@ -17,7 +16,6 @@ export const getOfflineQuestions = async (formId:number): Promise<IQuestion[]> =
   const db = await getDBConnection();
   const results = await db.executeSql('SELECT * FROM questions WHERE form_id = ?;', [formId]);
   const rows = results[0].rows;
-  console.log("ROWS",rows);
   
   const questions: IQuestion[] = [];
 

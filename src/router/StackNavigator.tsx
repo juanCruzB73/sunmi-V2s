@@ -15,12 +15,8 @@ import { DisplayForms } from "../testForms/DisplayForms";
 import { DisplayQuestions } from "../testForms/DisplayQuestions";
 import ClaimMenu from "../screens/Menu/ClaimMenu";
 import { ClaimScreen } from "../screens/claim/ClaimScreen";
-import * as Keychain from 'react-native-keychain';
-import { IAuthToken } from "../types/IAuthToken";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { reLoginOnline, startOnLogIn } from "../redux/slices/auth/authThunk";
+import { reLoginOnline } from "../redux/slices/auth/authThunk";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import { onLogOut } from "../redux/slices/auth/authSlice";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -48,7 +44,6 @@ const StackNavigator = () => {
 
   const { status } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
-  console.log(status);
   
   const [isConnected, setIsConnected] = useState<boolean | null>(false);
 
@@ -72,7 +67,6 @@ const StackNavigator = () => {
     }
     reLogin();
   },[isConnected])
-  console.log(status);
   if (status === 'checking') {
     return (
       <View style={styles.checkingContainer}>

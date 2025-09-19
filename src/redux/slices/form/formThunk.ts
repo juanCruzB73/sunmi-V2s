@@ -3,12 +3,12 @@ import { IAuthToken } from '../../../types/IAuthToken';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onCheckingForms, onSetErrorMessage } from './formSlice';
 import { getDBConnection } from '../../../localDB/db';
-import { createQuestionsTable, dropQuestionsTable, insertQuestionWithOptions } from '../../../localDB/questions/questions';
-import { API_BASE_URL5 } from '@env';
+import { createQuestionsTable, insertQuestionWithOptions } from '../../../localDB/questions/questions';
+import { API_BASE_URL } from '@env';
 import { saveFormOffline, startOfflineForms } from './offlineFormThunk';
 import NetInfo from '@react-native-community/netinfo';
-import { createFormsTable, dropFormsTable } from '../../../localDB/forms/forms';
-import { createQuestionOptionsTable, dropQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
+import { createFormsTable } from '../../../localDB/forms/forms';
+import { createQuestionOptionsTable } from '../../../localDB/questions/questionOptions';
 
 
 const setTokenHeader = (tokenData: IAuthToken) => {
@@ -41,11 +41,10 @@ export const startLoadForms = () => {
           uid: tokenObject['uid'] ?? '',
         };
         const headers = setTokenHeader(tokenData);
-        const response = await fetch(`${API_BASE_URL5}/api/v1/forms`, { headers: headers });
+        
+        const response = await fetch(`${API_BASE_URL}/api/v1/forms`, { headers: headers });
         if(response.ok){
-          const data = await response.json();
-          console.log("by panel",data);
-          
+          const data = await response.json();          
           for (const form of data) {
             await saveFormOffline(form);  
             
@@ -62,7 +61,6 @@ export const startLoadForms = () => {
 
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        console.log(message);
         dispatch(onSetErrorMessage("Error al cargar formularios"));
         return false;
       }

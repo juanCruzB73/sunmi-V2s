@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from './src/redux/store';
+import { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from './src/redux/store';
 import StackNavigator from './src/router/StackNavigator';
 import { restoreAuthState } from './src/redux/slices/auth/authThunk';
-import { createTables, getDBConnection } from './src/localDB/db';
+import { createTables, dropTables, getDBConnection } from './src/localDB/db';
 
 export const Main = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { status } = useSelector((state: RootState) => state.auth); // 'checking' | 'authenticated' | 'not-authenticated'
 
   useEffect(() => {
     dispatch(restoreAuthState());
@@ -18,6 +17,8 @@ export const Main = () => {
     const initDB = async () => {
       try {
         const db = await getDBConnection();
+        //await dropTables(db);
+        //console.log('Database droped');
         await createTables(db);
         console.log('Database initialized');
       } catch (e) {

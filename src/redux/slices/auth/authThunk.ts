@@ -2,12 +2,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
 import { AppDispatch } from "../../store";
 import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
-import {API_BASE_URL5} from '@env';
+import {API_BASE_URL} from '@env';
 import { getDBConnection } from "../../../localDB/db";
-import { createOfflineAuthTable, loginOffline, registerOfflineUser } from "../../../localDB/session/offlineAuth";
+import { registerOfflineUser } from "../../../localDB/session/offlineAuth";
 import { startOffLineLogin } from "./offLineAuthThunk";
 import * as Keychain from 'react-native-keychain';
-import { IAuthToken } from "../../../types/IAuthToken";
 
 export interface ILogin {
   email: string;
@@ -37,7 +36,7 @@ export const restoreAuthState = () => {
     const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
     const tokenData = Object.fromEntries(values);
 
-    const response = await fetch(`${API_BASE_URL5}/api/v1/auth/validate_token`, {
+    const response = await fetch(`${API_BASE_URL}/api/v1/auth/validate_token`, {
       headers: {
         "access-token": tokenData["access-token"] ?? "",
         "client": tokenData.client ?? "",
@@ -67,15 +66,11 @@ export const startOnLogIn = (payload: ILogin) => {
     dispatch(onCheckingAuth());
     await AsyncStorage.multiRemove(['access-token', 'client', 'uid']);
     const db = await getDBConnection();
-    //await dropOfflineAuthTable(db);
-    //await createOfflineAuthTable(db);
-    //const normalizedEmail = payload.email.trim().toLowerCase();
     const netState = await NetInfo.fetch();
-    console.log(`${API_BASE_URL5}/api/v1/auth/sign_in`);
     
     if (netState.isConnected) {
       try {
-        const response = await fetch(`${API_BASE_URL5}/api/v1/auth/sign_in`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/auth/sign_in`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -88,7 +83,7 @@ export const startOnLogIn = (payload: ILogin) => {
         if (response.ok) {
           const data = await response.json();
 
-          const accessToken = response.headers.get('access-token');
+          const accessToken = response.headers.get('Access-Token');
           const client = response.headers.get('client');
           const uid = response.headers.get('uid');
           
@@ -105,7 +100,6 @@ export const startOnLogIn = (payload: ILogin) => {
 
       }catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
-        console.log(message);
       }
     }
     dispatch(startOffLineLogin(payload))
@@ -131,26 +125,18 @@ export const reLoginOnline=async(status:string)=>{
       const netState = await NetInfo.fetch();
       const credentials = await Keychain.getGenericPassword();
       if (netState.isConnected){
-        const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-        const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
-        const tokenData: IAuthToken = {
-          accessToken: tokenObject['access-token'] ?? '',
-          client: tokenObject['client'] ?? '',
-          uid: tokenObject['uid'] ?? '',
-      };
-      console.log(tokenData);
       
-      if(netState.isConnected && status!=="checking"){
+        if(netState.isConnected && status!=="checking"){
 
+          if (credentials) {
+            const { username: email, password } = credentials;  
+            await dispatch(startOnLogIn({ email, password }))
+          }else{
+            dispatch(onLogOut())
+          };
+        }
+      }else{
         if (credentials) {
-          const { username: email, password } = credentials;  
-          await dispatch(startOnLogIn({ email, password }))
-        }else{
-          dispatch(onLogOut())
-        };
-      }
-    }else{
-      if (credentials) {
           const { username: email, password } = credentials;  
           await dispatch(startOnLogIn({ email, password }))
         }else{
