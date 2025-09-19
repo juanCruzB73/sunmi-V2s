@@ -17,7 +17,8 @@ export const Main = () => {
     const initDB = async () => {
       try {
         const db = await getDBConnection();
-        await dropTables(db);
+        //await dropTables(db);
+        //console.log('Database droped');
         await createTables(db);
         console.log('Database initialized');
       } catch (e) {

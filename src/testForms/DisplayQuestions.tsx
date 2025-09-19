@@ -19,8 +19,6 @@ import { startLoadQuestionsByPanel } from '../redux/slices/question/questionThun
 import { startAddClaim, startEditClaim, startEditClaimUnsync } from '../redux/slices/claims/claimThunk';
 import { ClaimType } from '../redux/slices/claims/claimSlice';
 import { IClaim } from '../types/claims/IClaim';
-import pickMedia from '../utlis/ImagePickerService';
-import { fetchLocation } from '../utlis/getLocatiom';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DisplayQuestions'>;
 
@@ -44,8 +42,8 @@ export const DisplayQuestions = ({ navigation }: Props) => {
           ...prev,
           [questionId]: {
             id: existing?.id,
+            input_string: newValue,
             question_id: questionId,
-            ...mapAnswer(newValue, String(questionId)),
           },
         };
       } else {
@@ -61,24 +59,27 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     panelId && dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
   };
 
+  const handleSaveOptionSelected = (option: number | null) => {
+    setOptionSelected(option);
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
 
     const answersArray = Object.entries(answers).map(([questionId, value]) => {
-    if (activeClaim) {
-      // already stored, just return with id
-      return {
-        id: value.id,
-        ...mapAnswer(value, questionId),
-        question_id: String(value.question_id),
-      };
-    } else {
-      return {
-        ...mapAnswer(value, questionId),
-        question_id: String(questionId),
-      };
-    }
-  });
+      if (activeClaim) {
+        return {
+          id: value.id,
+          input_string: String(value.input_string),
+          question_id: String(value.question_id),
+        };
+      } else {
+        return {
+          input_string: String(value),
+          question_id: String(questionId),
+        };
+      }
+    });
 
     const data = !activeClaim
       ? {
@@ -150,49 +151,6 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     }
   }, [activeClaim]);
 
-    function mapAnswer(question: any) {
-      const { type, value } = question;
-
-      // skip empty values
-      if (value === null || value === undefined || value === "" || 
-          (Array.isArray(value) && value.length === 0)) {
-        return null;
-      }
-    
-      switch (type) {
-        case "string":
-        case "text":
-        case "radio":
-        case "select":
-          return {
-            question_id: question.id,
-            input_string: value,
-          };
-        
-        case "check":
-          return {
-            question_id: question.id,
-            input_string: Array.isArray(value) ? value.join(",") : value,
-          };
-        
-        case "files":
-          return {
-            question_id: question.id,
-            files: Array.isArray(value) ? value : [value],
-          };
-        
-        case "geolocation":
-          return {
-            question_id: question.id,
-            latitude: value.latitude,
-            longitude: value.longitude,
-          };
-        
-        default:
-          return null;
-      }
-    }
-
   if (!Array.isArray(questions)) {
     return <Text style={{ padding: 20 }}>Loading questions...</Text>;
   }
@@ -203,27 +161,20 @@ export const DisplayQuestions = ({ navigation }: Props) => {
       <View style={styles.container}>
         {questions.map((question: IQuestion) => (
           <View key={question.id} style={styles.card}>
-          <QuestionInput
-            question={{
-              type: question.type,
-              label: question.name,
-              options: question.question_options ?? [],
-              value: activeClaim
-                ? answers[question.id]?.input_string ?? ''
-                : answers[question.id] ?? '',
-              onChange: (val) => handleChange(question.id, val),
-              onPressFunction: async (type) => {
-                if (type === 'file') {
-                  const asset = await pickMedia('gallery', 'photo'); // or 'camera'
-                  if (asset) handleChange(question.id, [asset]);
-                }
-                if (type === 'location') {
-                  await fetchLocation(answers[question.id] ?? null, (loc) => handleChange(question.id, loc));
-                }
-              },
-            }}
-          />
-
+            <QuestionInput
+              question={{
+                type: question.type,
+                label: question.name,
+                options: question.question_options ?? [],
+                value: activeClaim
+                  ? answers[question.id]?.input_string ?? ''
+                  : answers[question.id] ?? '',
+                onChange: (val) => handleChange(question.id, val),
+                onPressFunction: (val) => {
+                  handleSaveOptionSelected(val);
+                },
+              }}
+            />
             {question.question_options &&
               question.question_options.length > 0 && (
                 <TouchableOpacity

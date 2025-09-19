@@ -6,13 +6,13 @@ import { IClaim } from "../../../types/claims/IClaim";
 import { AppDispatch } from "../../store";
 import { onDeleteClaim, onLoadClaims, onSetErrorMessage } from "./claimSlice";
 
-export const getOfflineClaims = async (): Promise<IClaim[]> => {
+export const getOfflineClaims = async (form_id:number): Promise<IClaim[]> => {
   const db = await getDBConnection();
-
-  const results = await db.executeSql('SELECT * FROM claims;');
+  console.log(form_id);
+  const results = await db.executeSql('SELECT * FROM claims WHERE form_id=?;',[form_id]);
   const rows = results[0].rows;
   const claims: IClaim[] = [];
-
+  console.log(rows);
   for (let i = 0; i < rows.length; i++) {
     const claimRow = rows.item(i);
     const answers = await getAnswersByClaimId(db, claimRow.id);
@@ -41,9 +41,9 @@ export const getOfflineClaims = async (): Promise<IClaim[]> => {
   return claims;
 };
 
-export const startOfflineClaims=()=>{  
+export const startOfflineClaims=(form_id:number)=>{  
     return async(dispatch: AppDispatch) =>{
-        const offlineClaims = await getOfflineClaims();
+        const offlineClaims = await getOfflineClaims(form_id);
         const mappedClaims: IClaim[] = offlineClaims.map(claim => ({
             id: claim.id,
             status: claim.status,

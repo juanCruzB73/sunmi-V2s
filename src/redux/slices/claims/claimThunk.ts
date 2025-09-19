@@ -68,7 +68,7 @@ export const startGetClaims=(formId:number)=>{
             dispatch(onSetErrorMessage("Error al cargar formularios"));
         }
       }
-      await dispatch(startOfflineClaims());
+      await dispatch(startOfflineClaims(formId));
       dispatch(onSetErrorMessage(null));
       return; 
     }
