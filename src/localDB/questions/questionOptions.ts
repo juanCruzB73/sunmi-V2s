@@ -3,7 +3,6 @@ import { IQuestionOption } from '../../types/form/IQuestionOption';
 
 export const createQuestionOptionsTable = async (db: SQLiteDatabase): Promise<void> => {
   await db.executeSql('PRAGMA foreign_keys = ON;');
-
   const query = `
     CREATE TABLE IF NOT EXISTS question_options (
       id INTEGER PRIMARY KEY NOT NULL,

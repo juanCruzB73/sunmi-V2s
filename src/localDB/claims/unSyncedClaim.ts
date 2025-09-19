@@ -5,7 +5,6 @@ import { unSyncedClaim } from "../../types/unSyncedClaim";
 
 export const createUnsyncedClaimTable = async (db: SQLiteDatabase): Promise<void> => {
   try {
-    //await db.executeSql(`DROP TABLE IF EXISTS unsynced_claims;`);
     await db.executeSql(`
       CREATE TABLE IF NOT EXISTS unsynced_claims (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,6 +19,10 @@ export const createUnsyncedClaimTable = async (db: SQLiteDatabase): Promise<void
     console.error("Error creating unsynced_claims table:", err);
   }
 };
+
+export const dropUnsyncquedClaimTable = async(db:SQLiteDatabase):Promise<void>=>{
+  await db.executeSql(`DROP TABLE IF EXISTS unsynced_claims;`);
+}
 
 export const getUnsyncedClaimsToFetch = async ():Promise<unSyncedClaim[]> => {
     const db = await getDBConnection();
@@ -47,7 +50,6 @@ export const getUnsyncedClaimsToFetch = async ():Promise<unSyncedClaim[]> => {
     }
     claims.push(data)
   }
-  console.log(claims);
   
   return claims;
 };

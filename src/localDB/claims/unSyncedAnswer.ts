@@ -2,7 +2,6 @@ import { SQLiteDatabase } from "react-native-sqlite-storage";
 import { getQuestionById } from "../questions/questions";
 
 export const createUnsyncedAnswerTable=async(db:SQLiteDatabase):Promise<void>=>{
-    //await db.executeSql(`DROP TABLE IF EXISTS unsynced_answers;`);
     await db.executeSql(`
         CREATE TABLE IF NOT EXISTS unsynced_answers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -13,6 +12,11 @@ export const createUnsyncedAnswerTable=async(db:SQLiteDatabase):Promise<void>=>{
     `);
 };
 
+
+export const dropUnsyncedAnswerTable=async(db:SQLiteDatabase):Promise<void>=>{
+  await db.executeSql(`DROP TABLE IF EXISTS unsynced_answers;`);
+
+}
 export const getUnsycedAnswersByClaimId = async (
   db: SQLiteDatabase,
   claimId: number

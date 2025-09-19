@@ -67,9 +67,8 @@ export const registerOfflineUser = async (
       uid,
     ]);
 
-    console.log("🟢 Usuario offline registrado");
   } catch (error) {
-    console.error('🔴 Error al registrar usuario offline:', error);
+    console.error(' Error al registrar usuario offline:', error);
   }
 };
 
@@ -114,8 +113,6 @@ export const loginOffline = async (
   plainPassword: string
 ): Promise<false | { userId: number; name: string; email: string }> => {
   const user = await getOfflineUser(db, email);
-  console.log('[DEBUG] Usuario encontrado offline:', user);
-
   if (!user) {
     return false;
   }
