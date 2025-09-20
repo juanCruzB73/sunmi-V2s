@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ScrollView,
-  Text,
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
+import {ScrollView,Text,View,StyleSheet,Dimensions,TouchableOpacity,ActivityIndicator} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
 import { TopBar } from '../components/top-bar/TopBar';
@@ -34,26 +26,63 @@ export const DisplayQuestions = ({ navigation }: Props) => {
   const [optionSelected, setOptionSelected] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (questionId: number, newValue: any) => {
+  const handleQustionType = (type: string) => {
+    switch (type) {
+      case "string":
+      case "text":
+      case "radio":
+      case "check":
+      case "select":
+        return "input_string";
+      case "date":
+        return "date";
+      case "file":
+        return "files";
+      case "geolocation":
+        return ["latitude", "longitude"];
+      default:
+        return "input_string";
+    }
+  };
+
+  const handleChange = (questionId: number, newValue: any, question_type: string) => {
+    const key = handleQustionType(question_type);
+
     setAnswers((prev) => {
       if (activeClaim) {
         const existing = prev[questionId];
-        return {
-          ...prev,
-          [questionId]: {
-            id: existing?.id,
-            input_string: newValue,
-            question_id: questionId,
-          },
-        };
-      } else {
-        return {
-          ...prev,
-          [questionId]: newValue,
-        };
+
+        if (typeof key === "string") {
+          return {
+            ...prev,
+            [questionId]: {
+              id: existing?.id,
+              [key]: newValue,
+              question_id: questionId,
+            },
+          };
+        }
+
+        if (Array.isArray(key)) {
+          const obj: any = { id: existing?.id, question_id: questionId };
+          key.forEach((k, idx) => {
+            obj[k] = newValue[idx];
+          });
+          return {
+            ...prev,
+            [questionId]: obj,
+          };
+        }
       }
+      console.log(answers);
+      
+      return {
+        ...prev,
+        [questionId]: newValue,
+      };
     });
   };
+
 
   const handleNextPanel = async (panelId: number | null) => {
     panelId && dispatch(startLoadQuestionsByPanel(activeForm!.id, panelId));
@@ -63,52 +92,71 @@ export const DisplayQuestions = ({ navigation }: Props) => {
     setOptionSelected(option);
   };
 
-  const handleSubmit = async () => {
-    setLoading(true);
+const handleSubmit = async () => {
+  setLoading(true);
 
-    const answersArray = Object.entries(answers).map(([questionId, value]) => {
-      if (activeClaim) {
-        return {
-          id: value.id,
-          input_string: String(value.input_string),
-          question_id: String(value.question_id),
-        };
-      } else {
-        return {
-          input_string: String(value),
-          question_id: String(questionId),
-        };
+  const answersArray = Object.entries(answers).map(([questionId, value]: any) => {
+    // Check if it's a "files" type
+    if (value?.files && Array.isArray(value.files)) {
+      // Map each file to your backend expected format
+      const fileStrings = value.files.map((file: any) => {
+        // Replace this with your actual file-to-string conversion (e.g., base64 or upload ID)
+        return file.fileName; // for now, just using fileName as a placeholder
+      });
+
+      return {
+        files: fileStrings,
+        question_id: String(questionId),
+      };
+    }
+
+    // Check if it's a latitude/longitude type
+    if (value.latitude !== undefined && value.longitude !== undefined) {
+      return {
+        latitude: value.latitude,
+        longitude: value.longitude,
+        question_id: String(questionId),
+      };
+    }
+
+    // Default: treat as string input
+    return {
+      input_string: String(value?.input_string ?? value ?? ""),
+      question_id: String(questionId),
+    };
+  });
+
+  const data = !activeClaim
+    ? {
+        claim: {
+          form_id: activeForm!.id,
+          incident_id: activeForm!.incident_id,
+          area_id: activeForm!.area_id,
+          main_panel_id: mainPanel,
+          answers_attributes: answersArray,
+        },
       }
-    });
+    : {
+        claim: {
+          id: activeClaim.id,
+          form_id: activeForm!.id,
+          incident_id: activeForm!.incident_id,
+          mainPanel: activeClaim.main_panel_id,
+          area_id: activeForm!.area_id,
+          answers_attributes: answersArray,
+        },
+      };
 
-    const data = !activeClaim
-      ? {
-          claim: {
-            form_id: activeForm!.id,
-            incident_id: activeForm!.incident_id,
-            area_id: activeForm!.area_id,
-            main_panel_id: mainPanel,
-            answers_attributes: answersArray,
-          },
-        }
-      : {
-          claim: {
-            id: activeClaim.id,
-            form_id: activeForm!.id,
-            incident_id: activeForm!.incident_id,
-            mainPanel: activeClaim.main_panel_id,
-            area_id: activeForm!.area_id,
-            answers_attributes: answersArray,
-          },
-        };
-
+  console.log(data);
     if (!activeClaim) await dispatch(startAddClaim(data));
     if (activeClaim && activeClaim.isSynced) await dispatch(startEditClaim(data));
-    if (activeClaim && !activeClaim.isSynced) await dispatch(startEditClaimUnsync(data))
+    if (activeClaim && !activeClaim.isSynced) await dispatch(startEditClaimUnsync(data));
+    setLoading(false);    
+    navigation.navigate("ClaimSearcher");  
+  
+};
 
-    setLoading(false);
-    navigation.navigate('ClaimSearcher');
-  };
+
 
   function isIClaim(claim: ClaimType): claim is IClaim {
     return (claim as IClaim).answers !== undefined;
@@ -169,7 +217,7 @@ export const DisplayQuestions = ({ navigation }: Props) => {
                 value: activeClaim
                   ? answers[question.id]?.input_string ?? ''
                   : answers[question.id] ?? '',
-                onChange: (val) => handleChange(question.id, val),
+                onChange: (val) => handleChange(question.id, val,question.type),
                 onPressFunction: (val) => {
                   handleSaveOptionSelected(val);
                 },
