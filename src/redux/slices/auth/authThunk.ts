@@ -30,6 +30,8 @@ const storeAuthTokens = async (
 };
 
 export const restoreAuthState = () => {
+  console.log("FIRING RESTORE");
+  
   return async (dispatch: AppDispatch) => {
     await AsyncStorage.multiRemove(['access-token', 'client', 'uid']);
     dispatch(onCheckingAuth());
@@ -47,7 +49,8 @@ export const restoreAuthState = () => {
     });
 
     const data: any = await response.json();
-
+    console.log(tokenData["access-token"], tokenData.client, tokenData.uid);
+    
     if (tokenData["access-token"] && tokenData.client && tokenData.uid && response.ok) {
       dispatch(onLogin({
         userId: data.data.id,
@@ -62,6 +65,7 @@ export const restoreAuthState = () => {
 
 
 export const startOnLogIn = (payload: ILogin) => {
+  console.log(`${API_BASE_URL}/api/v1/auth/sign_in`);
   return async (dispatch: AppDispatch) => {
     dispatch(onCheckingAuth());
     await AsyncStorage.multiRemove(['access-token', 'client', 'uid']);
@@ -108,6 +112,7 @@ export const startOnLogIn = (payload: ILogin) => {
 };
 
 export const startLogOut = () => {
+  console.log("FIRING LOGOUT");
   return async (dispatch: AppDispatch) => {
     try {
       await AsyncStorage.multiRemove(['access-token', 'client', 'uid']);
@@ -121,6 +126,8 @@ export const startLogOut = () => {
 };
 
 export const reLoginOnline=async(status:string)=>{
+  console.log("FIRING relogin");
+  
     return async (dispatch: AppDispatch) =>{
       const netState = await NetInfo.fetch();
       const credentials = await Keychain.getGenericPassword();
@@ -136,12 +143,7 @@ export const reLoginOnline=async(status:string)=>{
           };
         }
       }else{
-        if (credentials) {
-          const { username: email, password } = credentials;  
-          await dispatch(startOnLogIn({ email, password }))
-        }else{
-          dispatch(onLogOut())
-        };
+      dispatch(onLogOut());
     }
   }
 };

@@ -17,6 +17,7 @@ import ClaimMenu from "../screens/Menu/ClaimMenu";
 import { ClaimScreen } from "../screens/claim/ClaimScreen";
 import { reLoginOnline } from "../redux/slices/auth/authThunk";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { onLogOut } from "../redux/slices/auth/authSlice";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -67,14 +68,17 @@ const StackNavigator = () => {
     }
     reLogin();
   },[isConnected])
-  if (status === 'checking') {
-    return (
-      <View style={styles.checkingContainer}>
-        <ActivityIndicator size="large" color="#3498db" />
-        <Text style={styles.checkingText}>Verificando...</Text>
-      </View>
-    );
-  }
+
+  //useEffect(() => {
+  //  let timer: ReturnType<typeof setTimeout>;
+  //  if (status === 'checking') {
+  //    timer = setTimeout(() => {
+  //      console.log('Status stuck on checking for 8s, logging out...');
+  //      dispatch({ type: 'auth/logout' }); // change to your logout action
+  //    }, 8000);
+  //  }
+  //  return () => clearTimeout(timer);
+  //}, [status]);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

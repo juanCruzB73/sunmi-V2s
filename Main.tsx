@@ -24,7 +24,6 @@ export const Main = () => {
         console.error('DB init failed', e);
       }
     };
-
     initDB();
   }, []);
 

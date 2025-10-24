@@ -5,9 +5,9 @@ import LoginButton from '../../components/login/LoginButton';
 import ForgetPassword from '../../components/login/ForgetPassword';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../router/StackNavigator';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { startOnLogIn } from '../../redux/slices/auth/authThunk';
-import { AppDispatch } from '../../redux/store';
+import { AppDispatch, RootState } from '../../redux/store';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -15,6 +15,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('fcasteller@gmail.com');
   const [password, setPassword] = useState('2668765');
   const [errorMessage, setErrorMessage] = useState('');
+  const { status } = useSelector((state: RootState) => state.auth);
+
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -38,6 +40,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Text>{status}</Text>
       <View style={styles.logoContainer}>
         <Image source={require('../../assets/rlinklogo.png')} style={styles.logo} />
       </View>

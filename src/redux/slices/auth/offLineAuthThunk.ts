@@ -1,7 +1,7 @@
 import { getDBConnection } from "../../../localDB/db";
 import { loginOffline } from "../../../localDB/session/offlineAuth";
 import { AppDispatch } from "../../store"
-import { onLogin } from "./authSlice";
+import { onLogin, onLogOut } from "./authSlice";
 import { ILogin } from "./authThunk"
 
 export const startOffLineLogin=(payload: ILogin)=>{
@@ -14,6 +14,8 @@ export const startOffLineLogin=(payload: ILogin)=>{
                 name: offlineValid.name,
                 email: offlineValid.email,
             }));
+        }else{
+            dispatch(onLogOut())
         }
     }
 }
