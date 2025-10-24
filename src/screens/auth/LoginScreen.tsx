@@ -40,7 +40,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text>{status}</Text>
       <View style={styles.logoContainer}>
         <Image source={require('../../assets/rlinklogo.png')} style={styles.logo} />
       </View>
