@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../redux/store';
 import { IAnswer } from '../../types/claims/IAnswer';
 import { startLoadQuestionsByPanel } from '../../redux/slices/question/questionThunk';
-import { startDeleteClaim } from '../../redux/slices/claims/claimThunk';
+import { startDeleteClaim, startDeleteUnsycClaim } from '../../redux/slices/claims/claimThunk';
 import { IClaim } from '../../types/claims/IClaim';
 import { unSyncedClaim } from '../../types/unSyncedClaim';
 import { unSyncedAnswer } from '../../types/unSyncedAnswer';
@@ -48,12 +48,20 @@ export const ClaimScreen = ({ navigation }: Props) => {
     );
 
   const handleClickEdit = () => {
-    dispatch(startLoadQuestionsByPanel(activeForm.id, activeClaim.main_panel_id));
-  };
+  console.log("🧪 Editar claim:", activeClaim);
+  dispatch(startLoadQuestionsByPanel(activeForm.id, activeClaim.main_panel_id));
+};
 
   const handleDeleteClaim = () => {
-    dispatch(startDeleteClaim(activeClaim.id,activeForm.id));
-  };
+  const isSynced = isIClaim(activeClaim) && Boolean(activeClaim.isSynced);
+
+  if (isSynced) {
+    dispatch(startDeleteClaim(activeClaim.id, activeForm.id));
+  } else {
+    dispatch(startDeleteUnsycClaim(activeClaim.id));
+  }
+};
+
 
   const isSynced = isIClaim(activeClaim) && Boolean(activeClaim.isSynced);
 

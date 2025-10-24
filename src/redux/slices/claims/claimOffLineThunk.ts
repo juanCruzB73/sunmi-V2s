@@ -1,6 +1,6 @@
 import { getAnswersByClaimId } from "../../../localDB/claims/answers";
 import { deleteClaim } from "../../../localDB/claims/claims";
-import { getOfflineUnsyncedClaims } from "../../../localDB/claims/unSyncedClaim";
+import { deleteUnsyncedClaim, getOfflineUnsyncedClaims } from "../../../localDB/claims/unSyncedClaim";
 import { getDBConnection } from "../../../localDB/db";
 import { IClaim } from "../../../types/claims/IClaim";
 import { AppDispatch } from "../../store";
@@ -82,15 +82,19 @@ export const startOfflineClaims = (form_id:number) => {
 
 export const startOfflineDeleteClaim = (claimId: number) => {
   return async (dispatch: AppDispatch) => {
+    console.log("🔥 Ejecutando startOfflineDeleteClaim con ID:", claimId);
+
     try {
       const db = await getDBConnection();
-      await deleteClaim(db, claimId);
+
+      // 🔥 Solo borramos de la tabla de reclamos no sincronizados
+      await deleteUnsyncedClaim(db, claimId);
 
       dispatch(onDeleteClaim(claimId));
-      dispatch(onSetErrorMessage("Claim eliminado localmente sin conexión."));
+      dispatch(onSetErrorMessage("Claim local eliminado correctamente."));
     } catch (error) {
-      console.error("Error al eliminar claim offline:", error);
-      dispatch(onSetErrorMessage("Error al eliminar claim desde la base de datos local."));
+      console.error("Error al eliminar claim local:", error);
+      dispatch(onSetErrorMessage("No se pudo eliminar el claim local."));
     }
   };
 };

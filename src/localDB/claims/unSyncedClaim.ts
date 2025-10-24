@@ -166,16 +166,23 @@ export const insertUnsyncedClaim=async(db:SQLiteDatabase,unsyncedClaim:any)=>{
   return null;
 };
 
-export const deleteUnsyncedClaim=async(db:SQLiteDatabase,claimId:number)=>{
-  try{
+export const deleteUnsyncedClaim = async (db: SQLiteDatabase, claimId: number) => {
+  try {
+    // 🔥 Primero borramos las respuestas asociadas
+    await db.executeSql(
+      `DELETE FROM unsynced_answers WHERE answerable_id = ?;`,
+      [claimId]
+    );
+
+    // 🧹 Luego borramos el reclamo
     await db.executeSql(
       `DELETE FROM unsynced_claims WHERE id = ?;`,
       [claimId]
     );
-    console.log("se borro claim local");
-    
-  }catch(err){
-    console.log(err);
+
+    console.log("Se borró el claim local y sus respuestas asociadas.");
+  } catch (err) {
+    console.log("Error al borrar claim local:", err);
   }
 };
 

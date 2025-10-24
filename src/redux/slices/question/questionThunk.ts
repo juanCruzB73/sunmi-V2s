@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onCheckingForms, onSetErrorMessage } from "../form/formSlice";
-import { API_BASE_URL, API_BASE_URL2 } from '@env';
+import { API_BASE_URL, API_BASE_URL2, API_BASE_URL3 } from '@env';
 import NetInfo from '@react-native-community/netinfo';
 import { startOfflineQuestionsByPanel } from "../offline/questionsOffline";
 import { startOfflineQuestions } from "./offlineQuestionThunk";
@@ -30,7 +30,7 @@ export const startLoadQuestions=(formId:number)=>{
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
             
-            const response=await fetch(`${API_BASE_URL2}/api/v1/forms/${formId}`,{headers:headers});
+            const response=await fetch(`${API_BASE_URL3}/api/v1/forms/${formId}`,{headers:headers});
 
             if (response.ok) {
               const data=await response.json();
@@ -56,7 +56,8 @@ export const startLoadQuestions=(formId:number)=>{
 export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
   return async (dispatch: AppDispatch) => {
     const netState = await NetInfo.fetch();
-    if (netState.isConnected){
+
+    if (netState.isConnected) {
       try {
         dispatch(onCheckingForms());
 
@@ -67,25 +68,28 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
           client: tokenObject['client'] ?? '',
           uid: tokenObject['uid'] ?? '',
         };
+
         const headers = setTokenHeader(tokenData);
-        const response = await fetch(`${API_BASE_URL2}/api/v1/forms/${formId}/panels/${panelId}`, { headers });
+        const response = await fetch(`${API_BASE_URL3}/api/v1/forms/${formId}/panels/${panelId}`, { headers });
 
         if (response.ok) {
-          const data = await response.json();
-        };
+          const dataFromAPI = await response.json();
+          // Si querés usar las preguntas del backend:
+          // dispatch(onLoadQuestions(dataFromAPI.questions));
+        }
 
-        //dispatch(onLoadQuestions(data.questions));
-        const data=dispatch(startOfflineQuestionsByPanel(panelId));
+        // ✅ FIX: ahora esperamos correctamente la carga offline
+        const data = await dispatch(startOfflineQuestionsByPanel(panelId));
         dispatch(onSetErrorMessage(null));
         return data;
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : String(error);
         console.log('Error loading questions:', JSON.stringify(error, null, 2));
-
         dispatch(onSetErrorMessage("Error al cargar preguntas por panel"));
       }
-    }else{
-      const data=dispatch(startOfflineQuestionsByPanel(panelId));
+    } else {
+      // ✅ FIX también aplicado en modo offline
+      const data = await dispatch(startOfflineQuestionsByPanel(panelId));
       dispatch(onSetErrorMessage(null));
       return data;
     }

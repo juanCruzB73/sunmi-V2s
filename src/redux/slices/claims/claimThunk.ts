@@ -13,6 +13,7 @@ import { createUnsyncedClaimTable, deleteUnsyncedClaim, getOfflineUnsyncedClaims
 import { createUnsyncedAnswerTable, insertUnsyncedAnswer, updateUnsyncedAnswer } from "../../../localDB/claims/unSyncedAnswer";
 import { unSyncedClaim } from "../../../types/unSyncedClaim";
 import { IClaim } from "../../../types/claims/IClaim";
+import { API_BASE_URL } from "../../../config/config";
 
 function isIClaim(claim: IClaim | unSyncedClaim): claim is IClaim {
   return (claim as IClaim).answers !== undefined;
@@ -77,12 +78,12 @@ export const startGetClaims=(formId:number)=>{
 export const startAddClaim = (inClaim: ICreateEditClaim) => {
   console.log(inClaim);
   return async (dispatch: AppDispatch) => {
-      dispatch(onCheckingClaims());
-      const netState = await NetInfo.fetch();
-      const db = await getDBConnection();
-  
-      if (netState.isConnected){
-        try {
+    dispatch(onCheckingClaims());
+    const netState = await NetInfo.fetch();
+    const db = await getDBConnection();
+
+    if (netState.isConnected) {
+      try {
         const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
         const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
         const tokenData: IAuthToken = {
@@ -101,30 +102,30 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
           headers,
           body: JSON.stringify(inClaim),
         });
-        const data= await response.json();
+        const data = await response.json();
         await insertClaim(db, data);
-        if(data.answers.length){
+        if (data.answers.length) {
           for (const answer of data.answers) {
-            await insertAnswer(db,answer);
+            await insertAnswer(db, answer);
           }
         }
-        dispatch(onAddClaim({...data,isSynced:true}));
+        dispatch(onAddClaim({ ...data, isSynced: true }));
         dispatch(onSetActiveClaim(data));
         dispatch(onSetErrorMessage(null));
       } catch (error) {
         console.error("Network or unexpected error:", error);
         dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
       }
-    }else{
+    } else {
       const unsyncedClaim = await insertUnsyncedClaim(db, {
         form_id: inClaim.claim.form_id,
         incident_id: inClaim.claim.incident_id,
         area_id: inClaim.claim.area_id,
-        main_panel_id:inClaim.claim.main_panel_id,
+        main_panel_id: inClaim.claim.main_panel_id,
         isSynced: 0
       });
       console.log(unsyncedClaim);
-      
+
       if (!unsyncedClaim?.id) {
         console.error("unsyncedClaim is undefined or has no id");
         return;
@@ -138,19 +139,41 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
           question_id: answerAtribute.question_id,
           answerable_id: unsyncedClaim.id
         });
-      
+
         if (unsyncedAnswer) {
           unsyncedAnswers.push(unsyncedAnswer);
         }
       }
 
-      const finalUnsyncedClaim: unSyncedClaim = {
-        ...unsyncedClaim,
-        answers_attributes: unsyncedAnswers
+      const enrichedClaim: IClaim = {
+        id: unsyncedClaim.id,
+        local_id: unsyncedClaim.local_id ?? null,
+        status: undefined,
+        form_id: unsyncedClaim.form_id,
+        panel_id: undefined,
+        type: 'default',
+        date: new Date().toISOString(),
+        removed_at: null,
+        removed: false,
+        reason: null,
+        user_id: undefined,
+        removed_user_id: null,
+        status_type_id: 0,
+        claim_id: unsyncedClaim.id,
+        incident_id: unsyncedClaim.incident_id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        area_id: unsyncedClaim.area_id,
+        isSynced: false,
+        answers: unsyncedAnswers.map(a => ({
+          ...a,
+          question: undefined
+        })),
+        main_panel_id: unsyncedClaim.main_panel_id
       };
 
-    dispatch(onAddClaim(finalUnsyncedClaim));
-
+      dispatch(onAddClaim(enrichedClaim));
+      dispatch(onSetActiveClaim(enrichedClaim)); // ✅ Esto activa el claim para edición inmediata
     }
   };
 };
@@ -207,51 +230,56 @@ export const startEditClaimUnsync = (inClaim: ICreateEditClaim) => {
       }
 };
 
-export const startDeleteClaim=(claimId:number,formId:number)=>{
-  return async (dispatch: AppDispatch) =>{
-      const netState = await NetInfo.fetch();
-      if (netState.isConnected){
-        try{
-          dispatch(onCheckingClaims());
-          
-          const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
-          const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
-          const tokenData: IAuthToken = {
-            accessToken: tokenObject['access-token'] ?? '',
-            client: tokenObject['client'] ?? '',
-            uid: tokenObject['uid'] ?? '',
-          };
+export const startDeleteClaim = (claimId: number, formId: number) => {
+  return async (dispatch: AppDispatch) => {
+    const netState = await NetInfo.fetch();
+    if (netState.isConnected) {
+      try {
+        dispatch(onCheckingClaims());
 
-          const headers = {
-            ...setTokenHeader(tokenData),
-            'Content-Type': 'application/json',
-          };
-          const response = await fetch(`${API_BASE_URL3}/api/v1/forms/${formId}/claims/${claimId}`, {
-            method: 'DELETE',
-            headers,
-          });
+        const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
+        const tokenObject: { [key: string]: string | null } = Object.fromEntries(values);
+        const tokenData: IAuthToken = {
+          accessToken: tokenObject['access-token'] ?? '',
+          client: tokenObject['client'] ?? '',
+          uid: tokenObject['uid'] ?? '',
+        };
 
-          if(!response.ok){
-            console.log("error borrando claim");
-            return;
-          }
-          
-          dispatch(startOfflineDeleteClaim(claimId));
-          
-        }catch (error) {
-          console.error("Network or unexpected error:", error);
-          dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
+        const headers = {
+          ...setTokenHeader(tokenData),
+          'Content-Type': 'application/json',
+        };
+
+        // 🔍 Log para depuración
+        console.log("Intentando borrar claim:", { claimId, formId });
+        console.log("Headers enviados:", headers);
+
+        const response = await fetch(`${API_BASE_URL3}/api/v1/forms/${formId}/claims/${claimId}`, {
+          method: 'DELETE',
+          headers,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.log("Error al borrar claim:", response.status, errorText);
+          dispatch(onSetErrorMessage(`Error ${response.status}: ${errorText}`));
+          return;
         }
+
+        dispatch(startOfflineDeleteClaim(claimId));
+      } catch (error) {
+        console.error("Network or unexpected error:", error);
+        dispatch(onSetErrorMessage("Error inesperado al enviar el reclamo"));
       }
     }
-}
-export const startDeleteUnsycClaim=(claimId:number)=>{
-  return async (dispatch: AppDispatch) =>{
-        const db = await getDBConnection();
-        await deleteUnsyncedClaim(db,claimId);
-        dispatch(startOfflineDeleteClaim(claimId));
-  }
-}
+  };
+};
+export const startDeleteUnsycClaim = (claimId: number) => {
+  return async (dispatch: AppDispatch) => {
+    console.log("🔥 Ejecutando startDeleteUnsycClaim con ID:", claimId);
+    dispatch(startOfflineDeleteClaim(claimId));
+  };
+};
 
 export const uploadUnsyncedClaims = () => {
   return async (dispatch: AppDispatch) => {
@@ -290,7 +318,7 @@ export const uploadUnsyncedClaims = () => {
           };
 
           const response = await fetch(
-            `${API_BASE_URL2}/api/v1/forms/${unsyncedClaim.form_id}/claims`,
+            `${API_BASE_URL3}/api/v1/forms/${unsyncedClaim.form_id}/claims`,
             {
               method: "POST",
               headers,
@@ -366,7 +394,7 @@ export const uploadSingleUnsyncedClaim = (unsyncedClaim: unSyncedClaim) => {
 
         // Subimos el reclamo al servidor
         const response = await fetch(
-          `${API_BASE_URL2}/api/v1/forms/${unsyncedClaim.form_id}/claims`,
+          `${API_BASE_URL3}/api/v1/forms/${unsyncedClaim.form_id}/claims`,
           {
             method: "POST",
             headers,
