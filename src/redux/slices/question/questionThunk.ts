@@ -30,7 +30,7 @@ export const startLoadQuestions=(formId:number)=>{
             const tokenData:IAuthToken={accessToken: tokenObject['access-token'] ?? '',client: tokenObject['client'] ?? '',uid: tokenObject['uid'] ?? '',}
             const headers=setTokenHeader(tokenData);
             
-            const response=await fetch(`${API_BASE_URL3}/api/v1/forms/${formId}`,{headers:headers});
+            const response=await fetch(`${API_BASE_URL2}/api/v1/forms/${formId}`,{headers:headers});
 
             if (response.ok) {
               const data=await response.json();
@@ -70,7 +70,7 @@ export const startLoadQuestionsByPanel = (formId: number, panelId: number) => {
         };
 
         const headers = setTokenHeader(tokenData);
-        const response = await fetch(`${API_BASE_URL3}/api/v1/forms/${formId}/panels/${panelId}`, { headers });
+        const response = await fetch(`${API_BASE_URL2}/api/v1/forms/${formId}/panels/${panelId}`, { headers });
 
         if (response.ok) {
           const dataFromAPI = await response.json();

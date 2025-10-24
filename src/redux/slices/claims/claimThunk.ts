@@ -53,7 +53,7 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
-            const response = await fetch(`${API_BASE_URL3}/api/v1/forms/${formId}/claims`,{headers:headers});
+            const response = await fetch(`${API_BASE_URL2}/api/v1/forms/${formId}/claims`,{headers:headers});
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, {...claim,isSynced:true});
@@ -97,7 +97,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
           'Content-Type': 'application/json',
         };
 
-        const response = await fetch(`${API_BASE_URL3}/api/v1/forms/${inClaim.claim.form_id}/claims`, {
+        const response = await fetch(`${API_BASE_URL2}/api/v1/forms/${inClaim.claim.form_id}/claims`, {
           method: 'POST',
           headers,
           body: JSON.stringify(inClaim),
@@ -197,7 +197,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         ...setTokenHeader(tokenData),
         'Content-Type': 'application/json',
       };
-      const response = await fetch(`${API_BASE_URL3}/api/v1/forms/${inClaim.claim.form_id}/claims/${inClaim.claim.id}`, {
+      const response = await fetch(`${API_BASE_URL2}/api/v1/forms/${inClaim.claim.form_id}/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
@@ -254,7 +254,7 @@ export const startDeleteClaim = (claimId: number, formId: number) => {
         console.log("Intentando borrar claim:", { claimId, formId });
         console.log("Headers enviados:", headers);
 
-        const response = await fetch(`${API_BASE_URL3}/api/v1/forms/${formId}/claims/${claimId}`, {
+        const response = await fetch(`${API_BASE_URL2}/api/v1/forms/${formId}/claims/${claimId}`, {
           method: 'DELETE',
           headers,
         });
@@ -318,7 +318,7 @@ export const uploadUnsyncedClaims = () => {
           };
 
           const response = await fetch(
-            `${API_BASE_URL3}/api/v1/forms/${unsyncedClaim.form_id}/claims`,
+            `${API_BASE_URL2}/api/v1/forms/${unsyncedClaim.form_id}/claims`,
             {
               method: "POST",
               headers,
@@ -394,7 +394,7 @@ export const uploadSingleUnsyncedClaim = (unsyncedClaim: unSyncedClaim) => {
 
         // Subimos el reclamo al servidor
         const response = await fetch(
-          `${API_BASE_URL3}/api/v1/forms/${unsyncedClaim.form_id}/claims`,
+          `${API_BASE_URL2}/api/v1/forms/${unsyncedClaim.form_id}/claims`,
           {
             method: "POST",
             headers,

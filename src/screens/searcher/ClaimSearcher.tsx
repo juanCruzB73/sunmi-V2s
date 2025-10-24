@@ -27,8 +27,10 @@ const ClaimSearcher = ({ navigation }: Props) => {
   const [searchInput, setSearchInput] = useState("");
   const [filteredClaims, setFilteredClaims] = useState<ClaimType[]>([]);
   const [loading, setLoading] = useState(false);
-  const { claims } = useSelector((state: RootState) => state.claim);
+  const [currentPage, setCurrentPage] = useState(1);
+  const claimsPerPage = 8;
 
+  const { claims } = useSelector((state: RootState) => state.claim);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -44,7 +46,14 @@ const ClaimSearcher = ({ navigation }: Props) => {
   const handleSearch = (keyword: string) => {
     const claimsFound = searchClaim(claims, keyword);
     setFilteredClaims(claimsFound);
+    setCurrentPage(1); // 🔁 Reiniciar a la primera página
   };
+
+  // 🔢 Paginación local
+  const indexOfLastClaim = currentPage * claimsPerPage;
+  const indexOfFirstClaim = indexOfLastClaim - claimsPerPage;
+  const paginatedClaims = filteredClaims.slice(indexOfFirstClaim, indexOfLastClaim);
+  const totalPages = Math.ceil(filteredClaims.length / claimsPerPage);
 
   return (
     <>
@@ -84,13 +93,11 @@ const ClaimSearcher = ({ navigation }: Props) => {
               )}
             </View>
           }
-          data={filteredClaims}
+          data={paginatedClaims}
           keyExtractor={(item) => {
             if (item.id) {
-              // Reclamo sincronizado → clave con remote_id
               return `remote-${item.id}`;
             }
-            // Reclamo offline → clave con local_id
             return `local-${(item as any).local_id}`;
           }}
           renderItem={({ item }) => (
@@ -98,6 +105,29 @@ const ClaimSearcher = ({ navigation }: Props) => {
           )}
           contentContainerStyle={styles.listContainer}
         />
+
+        {/* 🔁 Controles de paginación */}
+        <View style={styles.paginationContainer}>
+          <Pressable
+            style={[styles.pageButton, currentPage === 1 && styles.disabledButton]}
+            onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            <Text style={styles.pageButtonText}>Anterior</Text>
+          </Pressable>
+
+          <Text style={styles.pageIndicator}>
+            Página {currentPage} de {totalPages}
+          </Text>
+
+          <Pressable
+            style={[styles.pageButton, currentPage === totalPages && styles.disabledButton]}
+            onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            <Text style={styles.pageButtonText}>Siguiente</Text>
+          </Pressable>
+        </View>
 
         {loading && (
           <View style={styles.overlay}>
@@ -162,6 +192,31 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "500",
+  },
+  paginationContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+    marginBottom: 20,
+  },
+  pageButton: {
+    backgroundColor: "#3498db",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  disabledButton: {
+    backgroundColor: "#bdc3c7",
+  },
+  pageButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  pageIndicator: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#2c3e50",
   },
 });
 
