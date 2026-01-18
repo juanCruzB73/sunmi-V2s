@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from '@react-native-community/netinfo';
 import { AppDispatch } from "../../store";
 import { onCheckingAuth, onLogin, onLogOut } from "./authSlice";
-import {API_BASE_URL} from '@env';
+import {API_BASE_URL1} from '@env';
 import { getDBConnection } from "../../../localDB/db";
 import { registerOfflineUser } from "../../../localDB/session/offlineAuth";
 import { startOffLineLogin } from "./offLineAuthThunk";
@@ -37,8 +37,8 @@ export const restoreAuthState = () => {
     dispatch(onCheckingAuth());
     const values = await AsyncStorage.multiGet(['access-token', 'client', 'uid']);
     const tokenData = Object.fromEntries(values);
-    console.log(API_BASE_URL);
-    const response = await fetch(`${API_BASE_URL}/api/v1/auth/validate_token`, {
+    console.log(API_BASE_URL1);
+    const response = await fetch(`${API_BASE_URL1}/api/v1/auth/validate_token`, {
       headers: {
         "access-token": tokenData["access-token"] ?? "",
         "client": tokenData.client ?? "",
@@ -66,7 +66,7 @@ export const restoreAuthState = () => {
 
 export const startOnLogIn = (payload: ILogin) => {
   console.log("FIRING LOGIN");
-  console.log(`${API_BASE_URL}/api/v1/auth/sign_in`,);
+  console.log(`${API_BASE_URL1}/api/v1/auth/sign_in`,);
   
   
   return async (dispatch: AppDispatch) => {
@@ -77,7 +77,7 @@ export const startOnLogIn = (payload: ILogin) => {
     
     if (netState.isConnected) {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/auth/sign_in`, {
+        const response = await fetch(`${API_BASE_URL1}/api/v1/auth/sign_in`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',

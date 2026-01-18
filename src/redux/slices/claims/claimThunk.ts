@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { IAuthToken } from "../../../types/IAuthToken";
 import { AppDispatch } from "../../store";
 import { onAddClaim, onCheckingClaims, onEditClaim, onSetActiveClaim, onSetErrorMessage } from "./claimSlice";
-import { API_BASE_URL } from '@env';
+import { API_BASE_URL1 } from '@env';
 import { ICreateEditClaim } from "../../../types/claims/ICreateEditClaim";
 import {  createClaimsTable, insertClaim } from "../../../localDB/claims/claims";
 import { getDBConnection } from "../../../localDB/db";
@@ -52,7 +52,7 @@ export const startGetClaims=(formId:number)=>{
               uid: tokenObject['uid'] ?? '',
             };
             const headers = setTokenHeader(tokenData);
-            const response = await fetch(`${API_BASE_URL}/api/v1/forms/${formId}/claims`,{headers:headers});
+            const response = await fetch(`${API_BASE_URL1}/api/v1/forms/${formId}/claims`,{headers:headers});
             const data=await response.json();
             for (const claim of data) {
               await insertClaim(db, {...claim,isSynced:true});
@@ -96,7 +96,7 @@ export const startAddClaim = (inClaim: ICreateEditClaim) => {
           'Content-Type': 'application/json',
         };
 
-        const response = await fetch(`${API_BASE_URL}/api/v1/forms/${inClaim.claim.form_id}/claims`, {
+        const response = await fetch(`${API_BASE_URL1}/api/v1/forms/${inClaim.claim.form_id}/claims`, {
           method: 'POST',
           headers,
           body: JSON.stringify(inClaim),
@@ -196,7 +196,7 @@ export const startEditClaim = (inClaim: ICreateEditClaim) => {
         ...setTokenHeader(tokenData),
         'Content-Type': 'application/json',
       };
-      const response = await fetch(`${API_BASE_URL}/api/v1/forms/${inClaim.claim.form_id}/claims/${inClaim.claim.id}`, {
+      const response = await fetch(`${API_BASE_URL1}/api/v1/forms/${inClaim.claim.form_id}/claims/${inClaim.claim.id}`, {
         method: 'PUT',
         headers,
         body: JSON.stringify(inClaim),
@@ -248,7 +248,7 @@ export const startDeleteClaim=(claimId:number,formId:number)=>{
             ...setTokenHeader(tokenData),
             'Content-Type': 'application/json',
           };
-          const response = await fetch(`${API_BASE_URL}/api/v1/forms/${formId}/claims/${claimId}`, {
+          const response = await fetch(`${API_BASE_URL1}/api/v1/forms/${formId}/claims/${claimId}`, {
             method: 'DELETE',
             headers,
           });
